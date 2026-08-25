@@ -1,0 +1,796 @@
+{
+  "Task": {
+    "screenName": "Rumper Workspace — Free Trial Gamification & Due Diligence Stepper",
+    "productName": "Rumper",
+    "platform": "Responsive web application",
+    "objective": "Create a high-fidelity main workspace for a Free Trial user reviewing a property-location risk analysis.",
+    "implementation": {
+      "framework": "React",
+      "styling": "Tailwind CSS",
+      "componentModel": "Reusable functional components",
+      "defaultViewport": {
+        "width": 1536,
+        "height": 1024,
+        "unit": "px"
+      }
+    },
+    "referenceDirection": "Reproduce the attached reference screen as closely as possible. Preserve its visual hierarchy, proportions, spacing, colors, card positions, timeline alignment, map placement, and control positioning.",
+    "productPositioning": {
+      "role": "Rumper acts as a location risk advisor for property buyers.",
+      "notAPropertySearchEngine": true,
+      "notAnAIScoreGenerator": true,
+      "analysisMechanism": [
+        "Structured desk research",
+        "Traceable evidence",
+        "Evidence-strength labeling",
+        "Deterministic scoring",
+        "Red-flag overrides",
+        "Field validation measures"
+      ],
+      "responsibilityModel": {
+        "ai": [
+          "Assist with research",
+          "Summarize evidence",
+          "Explain risk findings",
+          "Help users understand analysis outputs"
+        ],
+        "deterministicCode": [
+          "Calculate scoring formulas",
+          "Assign score bands",
+          "Apply recommendation rules",
+          "Apply red-flag override rules"
+        ],
+        "human": [
+          "Review the completed analysis",
+          "Retain final decision-making authority",
+          "Confirm or reject analysis conclusions"
+        ]
+      }
+    },
+    "defaultScreenRequirements": [
+      "Dark application header",
+      "Pill-style secondary navigation",
+      "Left-side due-diligence timeline",
+      "Location risk report cards",
+      "Dark upgrade banner positioned between report stages",
+      "Locked red-flag verification card below the upgrade banner",
+      "Large interactive map workspace in the right column"
+    ],
+    "designIntent": [
+      "Trustworthy",
+      "Analytical",
+      "Evidence-driven",
+      "Easy to understand",
+      "Conversion-aware without feeling aggressive"
+    ]
+  },
+  "Context": {
+    "targetUser": {
+      "role": "First-time homebuyer",
+      "plan": "Free Trial",
+      "region": "Jabodetabek",
+      "primaryNeed": "Evaluate risks associated with a property location before making a purchase decision"
+    },
+    "currentLocation": {
+      "id": "loc_01",
+      "name": "Grand Galaxy City Blok R, Bekasi Selatan",
+      "quotaUsed": 2,
+      "quotaLimit": 5
+    },
+    "workspacePurpose": [
+      "Help users understand the overall location-risk score",
+      "Show evidence quality and individual risk categories",
+      "Connect report findings to geographic risks on the map",
+      "Communicate due-diligence progress through a continuous stepper",
+      "Encourage upgrading to unlock the full report for Rp50.000"
+    ],
+    "analysisPrinciples": {
+      "evidenceTraceability": "Every risk finding should be associated with evidence or an explicit evidence gap.",
+      "evidenceStrength": "The interface must distinguish between Data kuat, Data sedang, and Perlu validasi.",
+      "deterministicScoring": "Scores and recommendation bands are calculated using deterministic rules rather than generative AI.",
+      "redFlagOverride": "Critical red flags may override otherwise acceptable numerical scores.",
+      "humanDecision": "The interface must avoid presenting the output as an automatic final decision."
+    },
+    "riskScore": {
+      "score": 68,
+      "maximum": 100,
+      "verdict": "Layak dengan catatan",
+      "bandColor": "amber",
+      "description": "Skor keseluruhan berada pada band Layak dengan catatan, tetapi critical red flag banjir dan evidence gap lingkungan tetap harus ditindaklanjuti."
+    },
+    "evidenceMeta": {
+      "status": "Data sedang",
+      "sourcesCount": 6,
+      "supportingText": "Berdasarkan 6 sumber data terverifikasi"
+    },
+    "timelineNodes": [
+      {
+        "step": 1,
+        "status": "completed",
+        "associatedComponent": "ScoreCard"
+      },
+      {
+        "step": 2,
+        "status": "completed",
+        "associatedComponent": "FactorRisksCard"
+      },
+      {
+        "step": 3,
+        "status": "locked",
+        "associatedComponent": "LockedStepCard"
+      }
+    ],
+    "factorRows": [
+      {
+        "id": "flood",
+        "name": "Banjir",
+        "score": 42,
+        "maximum": 100,
+        "tag": "RISIKO UTAMA",
+        "tagType": "danger",
+        "detail": "2 bukti • 1 gap",
+        "status": "Data sedang",
+        "color": "red"
+      },
+      {
+        "id": "travel",
+        "name": "Perjalanan",
+        "score": 58,
+        "maximum": 100,
+        "tag": null,
+        "detail": "1 bukti belum ditinjau",
+        "status": "Data sedang",
+        "color": "amber"
+      },
+      {
+        "id": "physical-access",
+        "name": "Akses fisik",
+        "score": 67,
+        "maximum": 100,
+        "tag": null,
+        "detail": "Belum ditinjau",
+        "status": "Perlu validasi",
+        "color": "teal"
+      },
+      {
+        "id": "facilities",
+        "name": "Fasilitas",
+        "score": 78,
+        "maximum": 100,
+        "tag": null,
+        "detail": "Belum ditinjau",
+        "status": "Data kuat",
+        "color": "green"
+      },
+      {
+        "id": "environment",
+        "name": "Lingkungan",
+        "score": null,
+        "maximum": 100,
+        "tag": null,
+        "detail": "Bukti belum mencukupi",
+        "status": "Perlu validasi",
+        "color": "gray"
+      }
+    ],
+    "lockedStep": {
+      "step": 4,
+      "title": "Tahap 4 · Verifikasi Red Flag",
+      "lockNote": "Terbuka setelah upgrade",
+      "riskTag": "High Risk",
+      "riskText": "Verifikasi Bukti Banjir",
+      "actionText": "Lihat di peta",
+      "status": "locked"
+    },
+    "pricing": {
+      "promoPrice": "Rp50.000",
+      "normalPrice": "Rp150.000",
+      "upgradeLabel": "Upgrade"
+    }
+  },
+  "Elements": {
+    "page": {
+      "backgroundColor": "#F4F7F8",
+      "desktopPaddingX": "20px",
+      "desktopContentGap": "20px",
+      "fontFamily": "Inter, ui-sans-serif, system-ui, sans-serif",
+      "layout": {
+        "type": "two-column",
+        "leftColumnWidth": "51%",
+        "rightColumnWidth": "47%",
+        "gap": "20px"
+      }
+    },
+    "AppHeader": {
+      "height": "68px",
+      "backgroundColor": "#061E28",
+      "layout": "Horizontal flex layout with left and right groups",
+      "leftGroup": [
+        {
+          "type": "logo",
+          "name": "Rumper",
+          "visual": "Green and blue shield-style icon with white wordmark"
+        },
+        {
+          "type": "badge",
+          "label": "Free Trial",
+          "style": "Small green outlined pill"
+        }
+      ],
+      "rightGroup": [
+        {
+          "type": "locationSelector",
+          "label": "Grand Galaxy City Blok R, Bekasi Selatan",
+          "leadingIcon": "location-pin",
+          "trailingIcon": "chevron-down",
+          "truncateLongText": true
+        },
+        {
+          "type": "quotaBadge",
+          "label": "2 dari 5 lokasi digunakan"
+        },
+        {
+          "type": "profileButton",
+          "shape": "circle",
+          "icon": "user-outline"
+        }
+      ],
+      "style": {
+        "textColor": "#FFFFFF",
+        "borderColor": "rgba(148, 163, 184, 0.32)",
+        "controlBackground": "rgba(15, 41, 51, 0.8)"
+      }
+    },
+    "SubHeaderTabs": {
+      "position": "Directly below the application header",
+      "paddingTop": "20px",
+      "layout": "Tabs on the left and assistant action aligned to the right edge of the report column",
+      "tabs": [
+        {
+          "label": "Ringkasan",
+          "state": "active",
+          "icon": null
+        },
+        {
+          "label": "Faktor risiko",
+          "state": "locked",
+          "icon": "lock"
+        },
+        {
+          "label": "Perjalanan",
+          "state": "locked",
+          "icon": "lock"
+        },
+        {
+          "label": "Checklist",
+          "state": "locked",
+          "icon": "lock"
+        }
+      ],
+      "activeStyle": {
+        "backgroundColor": "#FFFFFF",
+        "borderColor": "#0F2B38",
+        "textColor": "#0F2B38",
+        "fontWeight": 600
+      },
+      "lockedStyle": {
+        "backgroundColor": "#F8FAFC",
+        "borderColor": "#B9C8D2",
+        "borderStyle": "dashed",
+        "textColor": "#64748B"
+      },
+      "assistantButton": {
+        "label": "Tanya Asisten",
+        "icon": "message-square",
+        "style": "Blue outlined pill",
+        "textColor": "#4F6FFF",
+        "borderColor": "#4F6FFF"
+      }
+    },
+    "VerticalTimeline": {
+      "position": {
+        "leftOffset": "40px",
+        "cardStartOffset": "80px"
+      },
+      "line": {
+        "width": "3px",
+        "completedColor": "#00E676",
+        "lockedColor": "#94A3B8",
+        "renderBehindNodes": true,
+        "continuous": true
+      },
+      "node": {
+        "size": "38px",
+        "completedStyle": {
+          "backgroundColor": "#00E676",
+          "borderColor": "#00A65A",
+          "icon": "check",
+          "iconColor": "#062B23"
+        },
+        "lockedStyle": {
+          "backgroundColor": "#F1F5F9",
+          "borderColor": "#B8C6D1",
+          "icon": "lock",
+          "iconColor": "#718096"
+        }
+      },
+      "alignment": [
+        "Node 1 aligned with ScoreCard",
+        "Node 2 aligned with FactorRisksCard",
+        "Locked node aligned with LockedStepCard"
+      ]
+    },
+    "ScoreCard": {
+      "component": "ScoreCard",
+      "width": "100%",
+      "minHeight": "270px",
+      "backgroundColor": "#FFFFFF",
+      "borderRadius": "24px",
+      "padding": "26px",
+      "shadow": "0 8px 24px rgba(15, 42, 51, 0.08)",
+      "content": {
+        "eyebrow": "INDEKS RISIKO LOKASI",
+        "score": "68",
+        "maximum": "/100",
+        "verdictBadge": "Layak dengan catatan",
+        "description": "Skor keseluruhan berada pada band Layak dengan catatan, tetapi critical red flag banjir dan evidence gap lingkungan tetap harus ditindaklanjuti.",
+        "evidenceStatus": "Data sedang",
+        "evidenceText": "Berdasarkan 6 sumber data terverifikasi"
+      },
+      "gauge": {
+        "value": 68,
+        "maximum": 100,
+        "size": "86px",
+        "progressColor": "#064557",
+        "trackColor": "#DCE5E9",
+        "centerIcon": "shield"
+      }
+    },
+    "FactorRisksCard": {
+      "component": "FactorRisksCard",
+      "backgroundColor": "#FFFFFF",
+      "borderRadius": "24px",
+      "padding": "18px",
+      "shadow": "0 8px 24px rgba(15, 42, 51, 0.08)",
+      "innerPanel": {
+        "borderColor": "#E4EAED",
+        "borderRadius": "16px",
+        "header": {
+          "label": "Faktor risiko",
+          "icon": "info"
+        }
+      },
+      "rows": [
+        {
+          "label": "Banjir",
+          "iconColor": "red",
+          "score": "42/100",
+          "progress": 42,
+          "progressColor": "#C72E2E",
+          "tag": "RISIKO UTAMA",
+          "tagStyle": "Red danger pill",
+          "detail": "2 bukti • 1 gap",
+          "status": "Data sedang",
+          "statusStyle": "Pale amber pill",
+          "trailingIcon": "chevron-right"
+        },
+        {
+          "label": "Perjalanan",
+          "iconColor": "amber",
+          "score": "58/100",
+          "progress": 58,
+          "progressColor": "#DF971E",
+          "detail": "1 bukti belum ditinjau",
+          "status": "Data sedang",
+          "statusStyle": "Pale amber pill",
+          "trailingIcon": "chevron-right"
+        },
+        {
+          "label": "Akses fisik",
+          "iconColor": "teal",
+          "score": "67/100",
+          "progress": 67,
+          "progressColor": "#397D80",
+          "detail": "Belum ditinjau",
+          "status": "Perlu validasi",
+          "statusStyle": "Pale yellow pill",
+          "trailingIcon": "chevron-right"
+        },
+        {
+          "label": "Fasilitas",
+          "iconColor": "green",
+          "score": "78/100",
+          "progress": 78,
+          "progressColor": "#4A9A59",
+          "detail": "Belum ditinjau",
+          "status": "Data kuat",
+          "statusStyle": "Pale green pill",
+          "trailingIcon": "chevron-right"
+        },
+        {
+          "label": "Lingkungan",
+          "iconColor": "gray",
+          "score": "-",
+          "progress": null,
+          "progressColor": "#B7BEC5",
+          "detail": "Bukti belum mencukupi",
+          "status": "Perlu validasi",
+          "statusStyle": "Pale yellow pill",
+          "trailingIcon": "chevron-right"
+        }
+      ],
+      "footerToggle": {
+        "expandedLabel": "Sembunyikan faktor",
+        "collapsedLabel": "Tampilkan semua faktor",
+        "expandedIcon": "chevron-up",
+        "collapsedIcon": "chevron-down",
+        "alignment": "center"
+      }
+    },
+    "UpgradeBanner": {
+      "component": "UpgradeBanner",
+      "position": "Directly below FactorRisksCard and above LockedStepCard",
+      "height": "80px",
+      "backgroundColor": "#061E28",
+      "borderRadius": "22px",
+      "paddingX": "20px",
+      "shadow": "0 10px 24px rgba(6, 30, 40, 0.2)",
+      "leftContent": {
+        "label": "Buka laporan lengkap",
+        "promoPrice": "Rp50.000",
+        "promoPriceColor": "#00E676",
+        "normalPrice": "Rp150.000",
+        "normalPriceStyle": "Muted strikethrough"
+      },
+      "button": {
+        "label": "Upgrade",
+        "backgroundColor": "#00E676",
+        "textColor": "#062B23",
+        "fontWeight": 700,
+        "height": "46px",
+        "minimumWidth": "92px",
+        "borderRadius": "9999px"
+      }
+    },
+    "LockedStepCard": {
+      "component": "LockedStepCard",
+      "position": "Immediately below UpgradeBanner",
+      "marginTop": "14px",
+      "backgroundColor": "#FFFFFF",
+      "borderRadius": "24px",
+      "padding": "18px",
+      "disabledAppearance": true,
+      "metadata": {
+        "icon": "lock",
+        "label": "Terbuka setelah upgrade"
+      },
+      "title": "Tahap 4 · Verifikasi Red Flag",
+      "risk": {
+        "badge": "High Risk",
+        "badgeStyle": "Pale red pill with red status dot",
+        "label": "Verifikasi Bukti Banjir"
+      },
+      "action": {
+        "label": "Lihat di peta",
+        "icon": "arrow-up-right",
+        "style": "Muted outlined pill"
+      }
+    },
+    "MapPanel": {
+      "component": "MapPanel",
+      "backgroundColor": "#FFFFFF",
+      "borderRadius": "24px",
+      "padding": "20px",
+      "shadow": "0 8px 24px rgba(15, 42, 51, 0.1)",
+      "height": "Fill available viewport height below secondary navigation",
+      "mapStyle": {
+        "roads": "Pale cream and light yellow",
+        "localStreets": "#FFFFFF",
+        "buildingAreas": "Light gray",
+        "water": "Muted blue-green",
+        "contrast": "Low contrast base map so risk overlays remain dominant"
+      },
+      "topControlBar": {
+        "position": "Floating inside the map at the top",
+        "backgroundColor": "#FFFFFF",
+        "borderRadius": "18px",
+        "leftLabel": "Map Layers",
+        "leftIcon": "layers",
+        "toggles": [
+          {
+            "id": "flood",
+            "label": "Flood",
+            "defaultEnabled": true
+          },
+          {
+            "id": "poi-markers",
+            "label": "POI Markers",
+            "defaultEnabled": true
+          },
+          {
+            "id": "radius-circle",
+            "label": "Radius Circle",
+            "defaultEnabled": true
+          }
+        ],
+        "toggleActiveColor": "#00D972"
+      },
+      "overlays": {
+        "radiusCircle": {
+          "visible": true,
+          "strokeColor": "#5C5CE2",
+          "strokeStyle": "dashed",
+          "fillColor": "rgba(92, 92, 226, 0.05)"
+        },
+        "floodPolygon": {
+          "visible": true,
+          "label": "Grand Galaxy",
+          "strokeColor": "#E12626",
+          "strokeStyle": "dashed",
+          "fillColor": "rgba(225, 38, 38, 0.22)",
+          "shape": "Irregular polygon"
+        },
+        "selectedProperty": {
+          "markerColor": "#5B5CE2",
+          "outlineColor": "#FFFFFF",
+          "tooltip": "Grand Galaxy"
+        },
+        "poiMarkers": [
+          {
+            "type": "alert",
+            "color": "#E12626",
+            "position": "Top-right of polygon"
+          },
+          {
+            "type": "school",
+            "color": "#5B4DE5",
+            "position": "Upper-left of polygon"
+          },
+          {
+            "type": "shop",
+            "color": "#09A9DA",
+            "position": "Right of polygon"
+          },
+          {
+            "type": "infrastructure",
+            "color": "#169BD5",
+            "position": "Lower-left of polygon"
+          }
+        ]
+      },
+      "utilityControls": {
+        "bottomLeft": [
+          {
+            "action": "zoomIn",
+            "icon": "plus"
+          },
+          {
+            "action": "zoomOut",
+            "icon": "minus"
+          },
+          {
+            "action": "recenter",
+            "icon": "crosshair"
+          }
+        ],
+        "bottomRight": {
+          "action": "expandMap",
+          "label": "Perluas Peta",
+          "icon": "maximize",
+          "style": "White pill with blue icon and text"
+        }
+      }
+    },
+    "UpgradeDrawer": {
+      "component": "UpgradeDrawer",
+      "defaultVisible": false,
+      "placement": "right",
+      "title": "Buka laporan lengkap",
+      "promoPrice": "Rp50.000",
+      "normalPrice": "Rp150.000",
+      "unlockedFeatures": [
+        "Akses penuh seluruh faktor risiko",
+        "Verifikasi red flag",
+        "Rincian bukti dan evidence gap",
+        "Checklist due diligence lengkap",
+        "Rekomendasi tindakan lapangan"
+      ],
+      "primaryAction": "Upgrade sekarang",
+      "secondaryAction": "Tutup",
+      "style": {
+        "backgroundColor": "#FFFFFF",
+        "accentColor": "#00E676",
+        "darkSurface": "#061E28"
+      }
+    }
+  },
+  "Behaviour": {
+    "initialState": {
+      "activeTab": "Ringkasan",
+      "factorList": "expanded",
+      "upgradeDrawerOpen": false,
+      "assistantPanelOpen": false,
+      "expandedMapOpen": false,
+      "mapLayers": {
+        "flood": true,
+        "poiMarkers": true,
+        "radiusCircle": true
+      }
+    },
+    "locationSelector": {
+      "onClick": "Open a dropdown containing saved locations",
+      "longNameHandling": "Truncate the location name with an ellipsis while preserving the location icon and chevron"
+    },
+    "navigationTabs": {
+      "Ringkasan": "Remain active in the default state",
+      "lockedTabs": "Open UpgradeDrawer instead of navigating",
+      "hover": "Show a subtle hover state while retaining the locked appearance"
+    },
+    "assistantButton": {
+      "onClick": "Open a right-side assistant panel",
+      "initialContext": [
+        "Current selected location",
+        "Overall risk score",
+        "Current evidence-strength status",
+        "Primary red flag"
+      ],
+      "assistantGuardrail": "Present AI as a research and explanation assistant, not as the source of the deterministic score or final recommendation."
+    },
+    "factorRows": {
+      "hover": "Apply subtle background emphasis",
+      "onClick": "Reveal or open supporting evidence details",
+      "primaryRisk": "Keep the Banjir row visually emphasized"
+    },
+    "factorListToggle": {
+      "expandedRows": [
+        "Banjir",
+        "Perjalanan",
+        "Akses fisik",
+        "Fasilitas",
+        "Lingkungan"
+      ],
+      "collapsedRows": [
+        "Banjir",
+        "Perjalanan",
+        "Akses fisik"
+      ],
+      "animation": "Animate card height without shifting or resizing the map column"
+    },
+    "upgradeTriggers": [
+      "Click Upgrade button",
+      "Click any locked navigation tab",
+      "Click LockedStepCard",
+      "Click locked red-flag action"
+    ],
+    "upgradeDrawer": {
+      "openDirection": "Slide in from the right",
+      "onClose": "Restore the previous page scroll position",
+      "overlay": "Use a subtle dark backdrop"
+    },
+    "lockedMapAction": {
+      "onClick": [
+        "Focus the map on the flood-risk polygon",
+        "Briefly pulse or strengthen the red polygon border",
+        "Open the UpgradeDrawer after the focus animation"
+      ]
+    },
+    "mapToggles": {
+      "flood": "Show or hide the red flood-risk polygon",
+      "poiMarkers": "Show or hide all colored POI markers",
+      "radiusCircle": "Show or hide the dashed radius circle",
+      "updateMode": "Immediate"
+    },
+    "mapControls": {
+      "zoomIn": "Increase map zoom level",
+      "zoomOut": "Decrease map zoom level",
+      "recenter": "Return the map to the selected property",
+      "expandMap": "Open a full-screen map overlay",
+      "statePersistence": "Preserve zoom level and active layers when switching between embedded and expanded map states"
+    },
+    "responsive": {
+      "desktop": {
+        "minimumWidth": "1024px",
+        "layout": "Two-column report and map workspace",
+        "mapBehavior": "Keep the map panel visible while the report column scrolls when viewport height is limited"
+      },
+      "mobileAndTablet": {
+        "maximumWidth": "1023px",
+        "layout": "Single-column",
+        "contentOrder": [
+          "Compact header",
+          "Sticky horizontal due-diligence progress",
+          "Report cards",
+          "Upgrade call to action"
+        ],
+        "timeline": "Replace vertical timeline with a sticky horizontal progress indicator",
+        "map": "Open through a sticky Lihat Peta button as a full-screen overlay",
+        "upgrade": "Keep the upgrade action accessible without requiring users to reach the bottom of the page"
+      }
+    }
+  },
+  "Constraints": {
+    "visualFidelity": [
+      "Match the attached reference image before introducing additional visual ideas",
+      "Do not reinterpret the interface as a generic analytics dashboard",
+      "Preserve the two-column composition and timeline-to-card alignment",
+      "Keep the map as the dominant right-column element"
+    ],
+    "content": [
+      "Use Indonesian interface copy exactly as specified",
+      "Do not describe Rumper as a property search engine",
+      "Do not describe the score as AI-generated",
+      "Make evidence strength and evidence gaps visible",
+      "Do not imply that the system automatically makes the final buying decision"
+    ],
+    "architecture": {
+      "requiredComponents": [
+        "AppHeader",
+        "SubHeaderTabs",
+        "VerticalTimeline",
+        "ScoreCard",
+        "FactorRisksCard",
+        "UpgradeBanner",
+        "LockedStepCard",
+        "MapPanel",
+        "UpgradeDrawer"
+      ],
+      "componentRules": [
+        "Use React functional components",
+        "Use reusable component props",
+        "Keep state management separated from presentation where practical",
+        "Use semantic HTML controls"
+      ]
+    },
+    "styling": {
+      "headerAndUpgradeSurface": [
+        "#061E28",
+        "#0F172A"
+      ],
+      "upgradeGreen": [
+        "#00E676",
+        "#10B981"
+      ],
+      "timelineCompleted": "#00E676",
+      "pageBackground": "#F4F7F8",
+      "desktopCardRadius": "22px to 24px",
+      "shadowDirection": "Soft and restrained",
+      "glassmorphism": false,
+      "heavyGradients": false,
+      "typography": "Clean sans-serif similar to Inter"
+    },
+    "layoutRules": [
+      "Do not move LockedStepCard above UpgradeBanner",
+      "Do not separate timeline nodes from their corresponding report cards",
+      "Prevent header controls, map controls, timeline nodes, and upgrade elements from overlapping",
+      "Keep factor rows compact while maintaining readable spacing",
+      "Keep the right map panel stable when the factor list expands or collapses"
+    ],
+    "dataRules": [
+      "A missing score must display '-' rather than 0",
+      "RISIKO UTAMA must remain red regardless of the numerical score",
+      "The flood polygon, POI markers, and radius circle must be visible in the default state",
+      "A critical red flag may visually override an otherwise acceptable overall score"
+    ],
+    "mapRules": [
+      "Do not replace the map with a chart",
+      "Use a live map when available",
+      "When a live map is unavailable, create a static map-like vector or image layer while keeping map controls interactive"
+    ],
+    "accessibility": [
+      "Maintain at least WCAG AA contrast for text and controls",
+      "Provide visible keyboard focus states",
+      "Use keyboard-operable buttons and toggles",
+      "Use semantic buttons instead of generic clickable containers",
+      "Provide accessible labels for icon-only controls",
+      "Do not rely on color alone to communicate evidence status or risk level"
+    ],
+    "completionCriteria": [
+      "The desktop output closely matches the attached reference screen",
+      "The vertical timeline visibly connects completed and locked stages",
+      "LockedStepCard appears directly below UpgradeBanner",
+      "The red Grand Galaxy polygon is visible on the map",
+      "All locked interactions open the same UpgradeDrawer",
+      "The initial output is complete without requiring a backend or external data source"
+    ]
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-16T07:33:00.000Z",
+  "title": "Design System: Rumper Location Intelligence",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Deep Emerald Primary",
+        "canonical": "#00684a",
+        "tonalRamp": ["#002419", "#003828", "#004f38", "#00684a", "#008761", "#00a87a", "#29ca9b", "#e9f5ef"]
+      },
+      "rumper-green": {
+        "role": "accent",
+        "displayName": "Electric Mint Accent",
+        "canonical": "#00ed64",
+        "tonalRamp": ["#003d19", "#00662a", "#00993f", "#00cc54", "#00ed64", "#33f183", "#80f6b2", "#e6fde8"]
+      },
+      "deep-teal": {
+        "role": "neutral",
+        "displayName": "Deep Teal Slate",
+        "canonical": "#001e2b",
+        "tonalRamp": ["#000d14", "#001e2b", "#003145", "#004763", "#005f84", "#3d4f5b", "#7c8c9a", "#f6f8f7"]
+      },
+      "secondary": {
+        "role": "secondary",
+        "displayName": "Soft Mint Tint",
+        "canonical": "#e9f5ef",
+        "tonalRamp": ["#004f38", "#008761", "#318266", "#70c2a5", "#a4dfc8", "#c7f0e0", "#e9f5ef", "#f6fbf8"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display Hero", "purpose": "Main property score title and hero callouts." },
+      "headline": { "displayName": "Section Headline", "purpose": "Workspace section headings and drawer titles." },
+      "title": { "displayName": "Card Title", "purpose": "Card titles and feature item headers." },
+      "body": { "displayName": "Body Text", "purpose": "Descriptive copy, rationale text, and checklist guidance." },
+      "label": { "displayName": "Meta Label", "purpose": "Filter pills, telemetry tags, and micro badges." }
+    },
+    "shadows": [
+      { "name": "card-hover", "value": "0 4px 20px -2px rgba(0, 30, 43, 0.08)", "purpose": "Subtle hover lift for cards and list items." },
+      { "name": "drawer-overlay", "value": "0 12px 32px -4px rgba(0, 30, 43, 0.16)", "purpose": "Elevation for floating bottom sheets and modal overlays." }
+    ],
+    "motion": [
+      { "name": "ease-spring", "value": "cubic-bezier(0.34, 1.56, 0.64, 1)", "purpose": "Spring animation for badge pops and button micro-interactions." },
+      { "name": "ease-out-decel", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Smooth deceleration for sheet slide-ins and drawer reveals." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid deep emerald button for primary actions and confirmations.",
+      "html": "<button class=\"ds-btn-primary\">VERIFIKASI LOKASI</button>",
+      "css": ".ds-btn-primary { background: #00684a; color: #ffffff; padding: 10px 20px; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; border: none; cursor: pointer; transition: background 0.2s ease, transform 0.15s ease; } .ds-btn-primary:hover { background: #004f38; transform: translateY(-1px); }"
+    },
+    {
+      "name": "Gamified Accent Button",
+      "kind": "button",
+      "refersTo": "button-accent",
+      "description": "High-contrast electric mint button for key gamified triggers and upgrades.",
+      "html": "<button class=\"ds-btn-accent\">⚡ Buka Fitur Premium</button>",
+      "css": ".ds-btn-accent { background: #00ed64; color: #001e2b; padding: 10px 20px; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; border: none; cursor: pointer; transition: background 0.2s ease, transform 0.15s ease; } .ds-btn-accent:hover { background: #00b545; transform: translateY(-1px); }"
+    },
+    {
+      "name": "Score Telemetry Badge",
+      "kind": "chip",
+      "refersTo": "chip-score",
+      "description": "Pill badge displaying property liveability score.",
+      "html": "<div class=\"ds-score-badge\"><span class=\"ds-score-val\">85</span><span class=\"ds-score-lbl\">Skor Rumper</span></div>",
+      "css": ".ds-score-badge { display: inline-flex; align-items: center; gap: 8px; background: #e9f5ef; border: 1px solid #00ed64; border-radius: 9999px; padding: 6px 14px; font-family: 'DM Sans', sans-serif; } .ds-score-val { background: #00684a; color: #ffffff; font-weight: 700; font-size: 13px; padding: 2px 8px; border-radius: 9999px; } .ds-score-lbl { color: #001e2b; font-size: 12px; font-weight: 600; }"
+    },
+    {
+      "name": "Risk Factor Card",
+      "kind": "card",
+      "refersTo": "card-surface",
+      "description": "White surface card displaying neighborhood risk metrics.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">Faktor Risiko Banjir</div><div class=\"ds-card-desc\">Bebas banjir 10 tahun terakhir berdasarkan data BMKG & BPBD.</div></div>",
+      "css": ".ds-card { background: #ffffff; border: 1px solid #d7e1e5; border-radius: 16px; padding: 16px; font-family: 'DM Sans', sans-serif; transition: box-shadow 0.2s ease; } .ds-card:hover { box-shadow: 0 4px 20px -2px rgba(0, 30, 43, 0.08); } .ds-card-title { color: #001e2b; font-size: 15px; font-weight: 600; margin-bottom: 4px; } .ds-card-desc { color: #5c6c7a; font-size: 13px; line-height: 1.4; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Emerald Navigator",
+    "overview": "Rumper provides a friendly, gamified property discovery and location verification interface designed for Indonesian home buyers, renters, and property seekers. The system blends live interactive Leaflet map telemetry with structured risk factor scoring, commute planning, facility filters, and step-by-step verification checklists.",
+    "keyCharacteristics": [
+      "Gamified Telemetry: Vibrant score badges, risk factor tags, and interactive map filter chips.",
+      "Tonal & Floating Depth: Flat card surfaces at rest with subtle hairlines, soft ambient shadows on hover.",
+      "Tactile & Energetic: Pill/rounded corners (16px default radius) paired with spring transitions.",
+      "Bilingual & Scannable: Clear Indonesian-first copy with structured typography hierarchy."
+    ],
+    "rules": [
+      { "name": "The 10% Mint Highlight Rule", "body": "Electric Mint (#00ed64) is reserved strictly for score telemetry, main action triggers, and active status indicators.", "section": "colors" },
+      { "name": "The Risk Color Contract Rule", "body": "Risk colors (Positive Green, Warning Amber, Danger Coral) must always be accompanied by descriptive text labels and icons.", "section": "colors" },
+      { "name": "The Numeric Clarity Rule", "body": "Tabular numbers or DM Mono must be used for score values, commute durations, and monetary estimates.", "section": "typography" },
+      { "name": "The Flat-Rest Floating-Action Rule", "body": "Cards and containers rest flat with hairline borders. Drop shadows are reserved exclusively for floating drawers and active popovers.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do maintain high contrast ratio for all text on emerald and teal backgrounds.",
+      "Do use rounded pill badges (rounded-full) for all risk score and facility category indicators.",
+      "Do provide clear Indonesian microcopy for all verification checklist items and risk descriptions.",
+      "Do apply smooth spring transitions (transition-all duration-200 ease-out) for drawer slide-ins."
+    ],
+    "donts": [
+      "Don't use raw harsh red #ff0000; use curated evidence danger coral #c95746.",
+      "Don't apply heavy dark drop-shadows on resting cards; keep cards flat with subtle 1px border strokes.",
+      "Don't clutter the Leaflet map panel; keep facility controls in clean floating glassmorphic pills."
+    ]
+  }
+}

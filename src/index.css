@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=DM+Mono:wght@400;500&display=swap');
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+@import '../default_shadcn_theme.css';
+[style*="scrollbar-width: none"]::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ── Sleek, auto-fading transparent scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 30, 43, 0.15);
+}
+
+*:hover::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 30, 43, 0.35);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Firefox transparent scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+*:hover {
+  scrollbar-color: rgba(0, 30, 43, 0.15) transparent;
+}
+
+.custom-scrollbar,
+.subtle-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.custom-scrollbar:hover,
+.subtle-scrollbar:hover {
+  scrollbar-color: rgba(0, 30, 43, 0.2) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar,
+.subtle-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track,
+.subtle-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.subtle-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 9999px;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb,
+.subtle-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 30, 43, 0.18);
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb:hover,
+.subtle-scrollbar:hover::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 30, 43, 0.35);
+}
+
+body {
+  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+@theme {
+  --color-rumper-green: #00ed64;
+  --color-rumper-green-hover: #00b545;
+  --color-deep-teal: #001e2b;
+  --color-supporting-teal: #003d4f;
+  --color-canvas-white: #ffffff;
+  --color-reading-surface: #f9fbfa;
+  --color-recessed: #f4f7f6;
+  --color-primary-ink: #001e2b;
+  --color-secondary-ink: #3d4f5b;
+  --color-tertiary-ink: #5c6c7a;
+  --color-muted-ink: #7c8c9a;
+  --color-hairline: #e1e5e8;
+  --color-strong-border: #c1ccd6;
+  --color-evidence-positive: #318266;
+  --color-evidence-positive-bg: #dceee7;
+  --color-evidence-warning: #d79a2b;
+  --color-evidence-warning-bg: #fff8e0;
+  --color-evidence-danger: #c95746;
+  --color-evidence-danger-bg: #f4ded9;
+}
+
+@keyframes checkPop {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+@keyframes lockWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-8deg); }
+  40% { transform: rotate(8deg); }
+  60% { transform: rotate(-4deg); }
+  80% { transform: rotate(4deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.03); }
+}
+
+.animate-check-pop {
+  animation: checkPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-lock-wiggle {
+  animation: lockWiggle 0.45s ease-in-out;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s infinite ease-in-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.9;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.ease-spring {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ease-out-decel {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ease-sheet {
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-check-pop,
+  .animate-lock-wiggle,
+  .animate-pulse-glow {
+    animation: none !important;
+  }
+
+  *, ::before, ::after {
+    transition-duration: 0.001s !important;
+    scroll-behavior: auto !important;
+  }
+}
+

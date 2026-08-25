@@ -1,0 +1,11 @@
+{
+  "title": "rumper-web",
+  "description": "This web application streamlines project management by providing users with a structured platform to track tasks, collaborate, and ensure design consistency.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
