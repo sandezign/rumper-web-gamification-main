@@ -1,11 +1,22 @@
-import React from 'react'
-import { User, Heart, Users, Briefcase, Building2, Laptop, Check } from 'lucide-react'
-import type { HouseholdType, WorkPattern } from '../../../store/useWizardStore'
+import React from "react"
+import {
+  User,
+  Heart,
+  Users,
+  Briefcase,
+  Building2,
+  Laptop,
+  Check,
+} from "lucide-react"
+import type { HouseholdType, WorkPattern } from "../../../store/useWizardStore"
 
 interface Step1Props {
   householdType: HouseholdType
   workPattern: WorkPattern
-  onChange: (fields: { householdType?: HouseholdType; workPattern?: WorkPattern }) => void
+  onChange: (fields: {
+    householdType?: HouseholdType
+    workPattern?: WorkPattern
+  }) => void
 }
 
 const HOUSEHOLD_OPTIONS: {
@@ -16,22 +27,22 @@ const HOUSEHOLD_OPTIONS: {
   isDefault?: boolean
 }[] = [
   {
-    id: 'single',
-    title: 'Lajang / Mandiri',
-    subtitle: 'Ruang ringkas & akses transit',
+    id: "single",
+    title: "Lajang / Mandiri",
+    subtitle: "Ruang ringkas & akses transit",
     icon: User,
   },
   {
-    id: 'pasangan',
-    title: 'Pasangan (Default)',
-    subtitle: 'Dua titik kerja & ruang bersama',
+    id: "pasangan",
+    title: "Pasangan (Default)",
+    subtitle: "Dua titik kerja & ruang bersama",
     icon: Heart,
     isDefault: true,
   },
   {
-    id: 'keluarga-muda',
-    title: 'Keluarga dengan Anak',
-    subtitle: 'Fasilitas kesehatan & sekolah',
+    id: "keluarga-muda",
+    title: "Keluarga dengan Anak",
+    subtitle: "Fasilitas kesehatan & sekolah",
     icon: Users,
   },
 ]
@@ -43,26 +54,30 @@ const WORK_OPTIONS: {
   icon: React.ElementType
 }[] = [
   {
-    id: 'wfo',
-    title: 'WFO Penuh (5 Hari)',
-    subtitle: 'Komuter jam sibuk setiap hari',
+    id: "wfo",
+    title: "WFO Penuh (5 Hari)",
+    subtitle: "Komuter jam sibuk setiap hari",
     icon: Building2,
   },
   {
-    id: 'hybrid',
-    title: 'Hybrid (2–3 Hari WFO)',
-    subtitle: 'Keseimbangan komuter & WFH',
+    id: "hybrid",
+    title: "Hybrid (2–3 Hari WFO)",
+    subtitle: "Keseimbangan komuter & WFH",
     icon: Briefcase,
   },
   {
-    id: 'remote',
-    title: 'Remote Penuh (WFH)',
-    subtitle: 'Bebas mobilitas harian kantor',
+    id: "remote",
+    title: "Remote Penuh (WFH)",
+    subtitle: "Bebas mobilitas harian kantor",
     icon: Laptop,
   },
 ]
 
-export default function Step1HouseholdWork({ householdType, workPattern, onChange }: Step1Props) {
+export default function Step1HouseholdWork({
+  householdType,
+  workPattern,
+  onChange,
+}: Step1Props) {
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Step Header */}
@@ -73,10 +88,11 @@ export default function Step1HouseholdWork({ householdType, workPattern, onChang
           <span>Profil & Pola Kerja</span>
         </div>
         <h2 className="text-2xl md:text-3xl font-extrabold text-[#001E2B] tracking-tight">
-          Tipe Rumah Tangga & Pola Kerja
+          Siapa Saja yang Tinggal & Pola Kerjamu?
         </h2>
         <p className="text-sm md:text-base text-[#5C6C7A] mt-1">
-          Pilih opsi yang paling menggambarkan kebutuhan dan rutinitas harian Anda.
+          Pilih yang paling pas sama rencana tempat tinggal dan rutinitas
+          kerjamu.
         </p>
       </div>
 
@@ -98,14 +114,16 @@ export default function Step1HouseholdWork({ householdType, workPattern, onChang
                 onClick={() => onChange({ householdType: opt.id })}
                 className={`relative p-4 md:p-5 rounded-2xl border cursor-pointer transition-all duration-200 flex flex-col justify-between min-h-[110px] select-none ${
                   isSelected
-                    ? 'border-[#001E2B] bg-white shadow-sm ring-2 ring-[#001E2B]/5 scale-[1.01]'
-                    : 'border-[#D7E1E5] bg-white hover:border-[#C1CCD6] hover:bg-[#F9FBFA]'
+                    ? "border-[#001E2B] bg-white shadow-sm ring-2 ring-[#001E2B]/5 scale-[1.01]"
+                    : "border-[#D7E1E5] bg-white hover:border-[#C1CCD6] hover:bg-[#F9FBFA]"
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                      isSelected ? 'bg-[#001E2B] text-white' : 'bg-[#F4F7F6] text-[#5C6C7A]'
+                      isSelected
+                        ? "bg-[#001E2B] text-white"
+                        : "bg-[#F4F7F6] text-[#5C6C7A]"
                     }`}
                   >
                     <Icon size={18} />
@@ -121,12 +139,14 @@ export default function Step1HouseholdWork({ householdType, workPattern, onChang
                 <div className="mt-3">
                   <h3
                     className={`text-sm md:text-base font-bold ${
-                      isSelected ? 'text-[#001E2B]' : 'text-[#3D4F5B]'
+                      isSelected ? "text-[#001E2B]" : "text-[#3D4F5B]"
                     }`}
                   >
                     {opt.title}
                   </h3>
-                  <p className="text-xs text-[#5C6C7A] font-medium mt-0.5">{opt.subtitle}</p>
+                  <p className="text-xs text-[#5C6C7A] font-medium mt-0.5">
+                    {opt.subtitle}
+                  </p>
                 </div>
               </div>
             )
@@ -152,14 +172,16 @@ export default function Step1HouseholdWork({ householdType, workPattern, onChang
                 onClick={() => onChange({ workPattern: opt.id })}
                 className={`relative p-4 md:p-5 rounded-2xl border cursor-pointer transition-all duration-200 flex flex-col justify-between min-h-[110px] select-none ${
                   isSelected
-                    ? 'border-[#001E2B] bg-white shadow-sm ring-2 ring-[#001E2B]/5 scale-[1.01]'
-                    : 'border-[#D7E1E5] bg-white hover:border-[#C1CCD6] hover:bg-[#F9FBFA]'
+                    ? "border-[#001E2B] bg-white shadow-sm ring-2 ring-[#001E2B]/5 scale-[1.01]"
+                    : "border-[#D7E1E5] bg-white hover:border-[#C1CCD6] hover:bg-[#F9FBFA]"
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                      isSelected ? 'bg-[#001E2B] text-white' : 'bg-[#F4F7F6] text-[#5C6C7A]'
+                      isSelected
+                        ? "bg-[#001E2B] text-white"
+                        : "bg-[#F4F7F6] text-[#5C6C7A]"
                     }`}
                   >
                     <Icon size={18} />
@@ -175,12 +197,14 @@ export default function Step1HouseholdWork({ householdType, workPattern, onChang
                 <div className="mt-3">
                   <h3
                     className={`text-sm md:text-base font-bold ${
-                      isSelected ? 'text-[#001E2B]' : 'text-[#3D4F5B]'
+                      isSelected ? "text-[#001E2B]" : "text-[#3D4F5B]"
                     }`}
                   >
                     {opt.title}
                   </h3>
-                  <p className="text-xs text-[#5C6C7A] font-medium mt-0.5">{opt.subtitle}</p>
+                  <p className="text-xs text-[#5C6C7A] font-medium mt-0.5">
+                    {opt.subtitle}
+                  </p>
                 </div>
               </div>
             )

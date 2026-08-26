@@ -4,28 +4,32 @@ interface UpgradeDrawerProps {
   onUpgradeConfirm: () => void
 }
 
-import { useState, useEffect } from 'react'
-import { X, Check, ShieldCheck, Zap } from 'lucide-react'
+import { useState, useEffect } from "react"
+import { X, Check, ShieldCheck, Zap } from "lucide-react"
 
 const FEATURES = [
-  'Akses penuh seluruh faktor risiko',
-  'Verifikasi red flag & deteksi banjir',
-  'Rincian bukti dan evidence gap',
-  'Checklist due diligence lengkap',
-  'Rekomendasi tindakan lapangan',
+  "Akses penuh seluruh faktor risiko",
+  "Verifikasi red flag & deteksi banjir",
+  "Rincian bukti dan evidence gap",
+  "Checklist due diligence lengkap",
+  "Rekomendasi tindakan lapangan",
 ]
 
-export default function UpgradeDrawer({ open, onClose, onUpgradeConfirm }: UpgradeDrawerProps) {
+export default function UpgradeDrawer({
+  open,
+  onClose,
+  onUpgradeConfirm,
+}: UpgradeDrawerProps) {
   const [success, setSuccess] = useState(false)
 
   // Listen to Escape key to dismiss drawer
   useEffect(() => {
     if (!open) return
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === "Escape") onClose()
     }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
   }, [open, onClose])
 
   function handleConfirm() {
@@ -50,7 +54,9 @@ export default function UpgradeDrawer({ open, onClose, onUpgradeConfirm }: Upgra
       {/* Responsive Container: Bottom Sheet on Mobile (<sm), Sidebar Drawer on Desktop (>=sm) */}
       <aside
         className={`fixed bottom-0 left-0 right-0 z-[2000] flex flex-col bg-white shadow-2xl rounded-t-[28px] max-h-[90vh] sm:top-0 sm:right-0 sm:left-auto sm:bottom-0 sm:h-full sm:w-[400px] sm:max-h-none sm:rounded-t-none sm:rounded-l-[28px] overflow-hidden transition-transform duration-300 ease-out ${
-          open ? 'translate-y-0 sm:translate-x-0' : 'translate-y-full sm:translate-y-0 sm:translate-x-full'
+          open
+            ? "translate-y-0 sm:translate-x-0"
+            : "translate-y-full sm:translate-y-0 sm:translate-x-full"
         }`}
         role="dialog"
         aria-modal="true"
@@ -59,7 +65,10 @@ export default function UpgradeDrawer({ open, onClose, onUpgradeConfirm }: Upgra
         {/* Header Section */}
         <header className="relative bg-[#001E2B] px-6 pt-3 pb-6 shrink-0 border-b border-white/10">
           {/* Mobile Drag Indicator Handle */}
-          <div className="flex justify-center pt-1 pb-3 sm:hidden" aria-hidden="true">
+          <div
+            className="flex justify-center pt-1 pb-3 sm:hidden"
+            aria-hidden="true"
+          >
             <div className="w-10 h-1 rounded-full bg-white/30" />
           </div>
 
@@ -69,7 +78,7 @@ export default function UpgradeDrawer({ open, onClose, onUpgradeConfirm }: Upgra
                 <Zap size={11} className="fill-current" /> Premium Pass
               </span>
               <h2 className="font-bold text-xl text-white leading-tight">
-                {success ? 'Berhasil diupgrade! 🎉' : 'Buka laporan lengkap'}
+                {success ? "Berhasil dibuka! 🎉" : "Buka Laporan Lengkap"}
               </h2>
             </div>
             <button
@@ -83,11 +92,15 @@ export default function UpgradeDrawer({ open, onClose, onUpgradeConfirm }: Upgra
           </div>
 
           <div className="flex items-baseline gap-2.5">
-            <span className="font-extrabold text-3xl text-[#00ED64] tracking-tight">Rp50.000</span>
-            <span className="text-sm font-medium line-through text-white/40">Rp150.000</span>
+            <span className="font-extrabold text-3xl text-[#00ED64] tracking-tight">
+              Rp50.000
+            </span>
+            <span className="text-sm font-medium line-through text-white/40">
+              Rp150.000
+            </span>
           </div>
           <p className="text-xs text-slate-300 mt-1 font-medium">
-            Bayar sekali, akses penuh untuk lokasi ini
+            Sekali bayar, akses selamanya untuk investigasi unit di lokasi ini
           </p>
         </header>
 
@@ -95,15 +108,21 @@ export default function UpgradeDrawer({ open, onClose, onUpgradeConfirm }: Upgra
         <div className="flex-1 px-6 py-6 overflow-y-auto space-y-5">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-widest text-[#7C8C9A] mb-3">
-              Yang akan terbuka
+              Yang akan kamu dapatkan
             </p>
             <ul className="space-y-3">
               {FEATURES.map((f) => (
                 <li key={f} className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-[#DCEEE7] flex items-center justify-center shrink-0 mt-0.5">
-                    <Check size={11} className="text-[#318266]" strokeWidth={2.5} />
+                    <Check
+                      size={11}
+                      className="text-[#318266]"
+                      strokeWidth={2.5}
+                    />
                   </div>
-                  <span className="text-sm font-semibold text-[#001E2B] leading-snug">{f}</span>
+                  <span className="text-sm font-semibold text-[#001E2B] leading-snug">
+                    {f}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -113,7 +132,8 @@ export default function UpgradeDrawer({ open, onClose, onUpgradeConfirm }: Upgra
           <div className="flex items-start gap-3 p-4 rounded-2xl bg-[#F9FBFA] border border-[#E1E5E8] text-xs text-[#5C6C7A] leading-relaxed">
             <ShieldCheck size={18} className="text-[#318266] shrink-0 mt-0.5" />
             <p>
-              Analisis menggunakan data terverifikasi dan metodologi deterministik — bukan rekomendasi otomatis dari AI.
+              Analisis berbasis bukti spasial resmi & metodologi deterministik —
+              anti-halusinasi biar kamu gak boncos di kemudian hari.
             </p>
           </div>
         </div>
@@ -132,7 +152,7 @@ export default function UpgradeDrawer({ open, onClose, onUpgradeConfirm }: Upgra
                 Upgrade berhasil!
               </>
             ) : (
-              'Upgrade sekarang'
+              "Upgrade sekarang"
             )}
           </button>
           <button

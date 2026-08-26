@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback } from "react"
 
-export type HouseholdType = 'single' | 'pasangan' | 'keluarga-muda'
-export type WorkPattern = 'wfo' | 'hybrid' | 'remote'
-export type ScenarioChoice = 'A' | 'B' | 'neither' | 'reject'
+export type HouseholdType = "single" | "pasangan" | "keluarga-muda"
+export type WorkPattern = "wfo" | "hybrid" | "remote"
+export type ScenarioChoice = "A" | "B" | "neither" | "reject"
 
 export interface WizardFormData {
   householdType: HouseholdType
@@ -19,18 +19,19 @@ export interface WizardFormData {
 }
 
 export const initialWizardData: WizardFormData = {
-  householdType: 'pasangan',
-  workPattern: 'hybrid',
-  mainAnchor: 'Sudirman / SCBD (Jaksel)',
-  secondAnchor: 'Mega Kuningan / Rasuna Said (Jaksel)',
-  budgetPreset: '800-1200',
+  householdType: "pasangan",
+  workPattern: "hybrid",
+  mainAnchor: "Sudirman / SCBD (Jaksel)",
+  secondAnchor: "Mega Kuningan / Rasuna Said (Jaksel)",
+  budgetPreset: "800-1200",
   budgetMin: 600,
   budgetMax: 1800,
   selectedCorridors: [
-    'Tangerang Selatan (Bintaro, BSD, Serpong)',
-    'Bogor & Cibubur (Cibinong, Sentul, LRT)',
+    "Tangerang Selatan (Bintaro, BSD, Serpong)",
+    "Bogor & Cibubur (Cibinong, Sentul, LRT)",
   ],
-  selectedFriction: 'Khawatir risiko banjir & jalan akses tergenang saat musim hujan',
+  selectedFriction:
+    "Khawatir risiko banjir & jalan akses tergenang saat musim hujan",
   scenarioResponses: {},
 }
 
@@ -44,15 +45,18 @@ export function useWizardState() {
     setFormData((prev) => ({ ...prev, ...fields }))
   }, [])
 
-  const setScenarioResponse = useCallback((scenarioId: string, choice: ScenarioChoice) => {
-    setFormData((prev) => ({
-      ...prev,
-      scenarioResponses: {
-        ...prev.scenarioResponses,
-        [scenarioId]: choice,
-      },
-    }))
-  }, [])
+  const setScenarioResponse = useCallback(
+    (scenarioId: string, choice: ScenarioChoice) => {
+      setFormData((prev) => ({
+        ...prev,
+        scenarioResponses: {
+          ...prev.scenarioResponses,
+          [scenarioId]: choice,
+        },
+      }))
+    },
+    [],
+  )
 
   const toggleCorridor = useCallback((corridor: string) => {
     setFormData((prev) => {
@@ -66,21 +70,21 @@ export function useWizardState() {
 
   const nextStage = useCallback(() => {
     setFlowStage((prevStage) => {
-      if (prevStage < 5) {
+      if (prevStage < 6) {
         return prevStage + 1
       }
-      // If at Stage 5, advance parameter steps
+      // If at Stage 6, advance parameter steps
       setParameterStep((prevStep) => {
         if (prevStep < 4) return prevStep + 1
         setIsCompleted(true)
         return prevStep
       })
-      return 5
+      return 6
     })
   }, [])
 
   const prevStage = useCallback(() => {
-    if (flowStage === 5 && parameterStep > 1) {
+    if (flowStage === 6 && parameterStep > 1) {
       setParameterStep((prev) => prev - 1)
     } else {
       setFlowStage((prev) => Math.max(1, prev - 1))
@@ -88,21 +92,21 @@ export function useWizardState() {
   }, [flowStage, parameterStep])
 
   const skipToParameterSetup = useCallback(() => {
-    setFlowStage(5)
+    setFlowStage(6)
     setParameterStep(1)
   }, [])
 
   const goToFlowStage = useCallback((stage: number) => {
-    if (stage >= 1 && stage <= 5) {
+    if (stage >= 1 && stage <= 6) {
       setFlowStage(stage)
-      if (stage < 5) {
+      if (stage < 6) {
         setParameterStep(1)
       }
     }
   }, [])
 
   const goToParameterStep = useCallback((step: number) => {
-    setFlowStage(5)
+    setFlowStage(6)
     setParameterStep(step)
   }, [])
 

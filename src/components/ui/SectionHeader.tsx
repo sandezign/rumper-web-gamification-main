@@ -1,5 +1,5 @@
-import React from 'react'
-import Badge from './Badge'
+import React from "react"
+import Badge from "./Badge"
 
 interface SectionHeaderProps {
   stepNumber?: number | string
@@ -14,13 +14,13 @@ interface SectionHeaderProps {
 
 export default function SectionHeader({
   stepNumber,
-  stepLabel = 'TAHAP',
+  stepLabel = "TAHAP",
   title,
   subtitle,
   action,
   statusBadge,
   icon,
-  className = '',
+  className = "",
 }: SectionHeaderProps) {
   return (
     <div className={`flex flex-col gap-2 sm:gap-3 ${className}`}>
@@ -30,7 +30,7 @@ export default function SectionHeader({
           {stepNumber && (
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <Badge variant="dark" size="sm" icon={icon}>
-                {stepLabel} {String(stepNumber).padStart(2, '0')}
+                {stepLabel} {String(stepNumber).padStart(2, "0")}
               </Badge>
             </div>
           )}

@@ -90,8 +90,11 @@ body {
 @theme {
   --color-rumper-green: #00ed64;
   --color-rumper-green-hover: #00b545;
+  --color-rumper-green-dark: #00684a;
   --color-deep-teal: #001e2b;
   --color-supporting-teal: #003d4f;
+  --color-feature-mint: #e3fcef;
+  --color-soft-green: #c3f0d2;
   --color-canvas-white: #ffffff;
   --color-reading-surface: #f9fbfa;
   --color-recessed: #f4f7f6;
@@ -99,7 +102,9 @@ body {
   --color-secondary-ink: #3d4f5b;
   --color-tertiary-ink: #5c6c7a;
   --color-muted-ink: #7c8c9a;
+  --color-quiet-ink: #a8b3bc;
   --color-hairline: #e1e5e8;
+  --color-subtle-border: #d7e1e5;
   --color-strong-border: #c1ccd6;
   --color-evidence-positive: #318266;
   --color-evidence-positive-bg: #dceee7;
@@ -192,4 +197,3 @@ body {
     scroll-behavior: auto !important;
   }
 }
-

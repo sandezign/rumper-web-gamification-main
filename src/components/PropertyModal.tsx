@@ -1,8 +1,15 @@
-import { useState } from 'react'
-import { X, Plus, Lock, AlertTriangle, CheckCircle2, OctagonAlert } from 'lucide-react'
-import Badge from './ui/Badge'
-import Button from './ui/Button'
-import { PropertyLocation } from '../data/mockProperties'
+import { useState } from "react"
+import {
+  X,
+  Plus,
+  Lock,
+  AlertTriangle,
+  CheckCircle2,
+  OctagonAlert,
+} from "lucide-react"
+import Badge from "./ui/Badge"
+import Button from "./ui/Button"
+import { PropertyLocation } from "../data/mockProperties"
 
 interface PropertyModalProps {
   isOpen: boolean
@@ -17,7 +24,7 @@ interface PropertyModalProps {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  if (status === 'LANJUTKAN') {
+  if (status === "LANJUTKAN") {
     return (
       <Badge
         variant="success"
@@ -29,7 +36,7 @@ function StatusBadge({ status }: { status: string }) {
       </Badge>
     )
   }
-  if (status === 'TUNDA') {
+  if (status === "TUNDA") {
     return (
       <Badge
         variant="danger"
@@ -57,7 +64,9 @@ function RadioButton({ selected }: { selected: boolean }) {
   return (
     <div
       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-        selected ? 'border-[#0F2B38] bg-[#0F2B38]' : 'border-slate-300 bg-white group-hover:border-slate-400'
+        selected
+          ? "border-[#0F2B38] bg-[#0F2B38]"
+          : "border-slate-300 bg-white group-hover:border-slate-400"
       }`}
     >
       {selected && <div className="w-2 h-2 rounded-full bg-white" />}
@@ -77,12 +86,13 @@ export default function PropertyModal({
   onOpenUpgrade,
 }: PropertyModalProps) {
   const [isAdding, setIsAdding] = useState(false)
-  const [newName, setNewName] = useState('')
-  const [newLocation, setNewLocation] = useState('')
+  const [newName, setNewName] = useState("")
+  const [newLocation, setNewLocation] = useState("")
 
   if (!isOpen) return null
 
-  const activeProperty = properties.find((p) => p.id === activePropertyId) || properties[0]
+  const activeProperty =
+    properties.find((p) => p.id === activePropertyId) || properties[0]
   const savedProperties = properties.filter((p) => p.id !== activePropertyId)
 
   const handleSelect = (id: string) => {
@@ -93,9 +103,9 @@ export default function PropertyModal({
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!newName.trim()) return
-    onAddProperty(newName.trim(), newLocation.trim() || 'Indonesia')
-    setNewName('')
-    setNewLocation('')
+    onAddProperty(newName.trim(), newLocation.trim() || "Indonesia")
+    setNewName("")
+    setNewLocation("")
     setIsAdding(false)
   }
 
@@ -117,11 +127,18 @@ export default function PropertyModal({
         {/* Modal Header */}
         <div className="flex items-start justify-between px-5 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 shrink-0">
           <div className="flex flex-col gap-1 min-w-0 pr-2">
-            <h2 id="modal-title" className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+            <h2
+              id="modal-title"
+              className="text-base sm:text-lg font-bold text-slate-900 leading-tight"
+            >
               Pilih Properti Aktif
             </h2>
             <div className="flex items-center gap-2 mt-0.5">
-              <Badge variant={remainingQuota > 0 ? 'success' : 'danger'} size="sm" className="text-[10px] sm:text-xs">
+              <Badge
+                variant={remainingQuota > 0 ? "success" : "danger"}
+                size="sm"
+                className="text-[10px] sm:text-xs"
+              >
                 {remainingQuota > 0
                   ? `${remainingQuota} dari ${totalQuota} kuota lokasi tersisa`
                   : `Kuota lokasi penuh (${totalQuota}/${totalQuota})`}
@@ -195,8 +212,13 @@ export default function PropertyModal({
 
           {/* Section 3: Add New Property Form / CTA */}
           {isAdding ? (
-            <form onSubmit={handleAddSubmit} className="p-4 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col gap-3">
-              <h4 className="font-bold text-xs sm:text-sm text-slate-900">Tambah Properti Baru</h4>
+            <form
+              onSubmit={handleAddSubmit}
+              className="p-4 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col gap-3"
+            >
+              <h4 className="font-bold text-xs sm:text-sm text-slate-900">
+                Tambah Properti Baru
+              </h4>
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Nama Properti
@@ -223,7 +245,12 @@ export default function PropertyModal({
                 />
               </div>
               <div className="flex items-center justify-end gap-2 mt-2">
-                <Button variant="ghost" size="sm" type="button" onClick={() => setIsAdding(false)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  type="button"
+                  onClick={() => setIsAdding(false)}
+                >
                   Batal
                 </Button>
                 <Button variant="primary" size="sm" type="submit">
@@ -252,7 +279,9 @@ export default function PropertyModal({
                   className="w-full py-3.5 px-4 rounded-2xl border border-amber-300 bg-amber-50/80 hover:bg-amber-100 text-amber-900 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.98] min-h-[48px]"
                 >
                   <Lock size={16} className="text-amber-700 shrink-0" />
-                  <span>Kuota lokasi penuh (5/5). Upgrade untuk tambah lokasi</span>
+                  <span>
+                    Kuota lokasi penuh (5/5). Upgrade untuk tambah lokasi
+                  </span>
                 </button>
               )}
             </div>

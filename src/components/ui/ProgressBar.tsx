@@ -1,6 +1,6 @@
-import React from 'react'
+import React from "react"
 
-export type ProgressVariant = 'danger' | 'warning' | 'info' | 'success' | 'neutral'
+export type ProgressVariant = "danger" | "warning" | "info" | "success" | "neutral"
 
 interface ProgressBarProps {
   value: number | null
@@ -8,33 +8,34 @@ interface ProgressBarProps {
   variant?: ProgressVariant
   showValueLabel?: boolean
   label?: string
-  size?: 'sm' | 'md' | 'lg'
+  size?: "sm" | "md" | "lg"
   className?: string
 }
 
 export default function ProgressBar({
   value,
   max = 100,
-  variant = 'neutral',
+  variant = "neutral",
   showValueLabel = false,
   label,
-  size = 'md',
-  className = '',
+  size = "md",
+  className = "",
 }: ProgressBarProps) {
-  const percentage = value !== null ? Math.min(100, Math.max(0, (value / max) * 100)) : 0
+  const percentage =
+    value !== null ? Math.min(100, Math.max(0, (value / max) * 100)) : 0
 
   const variantStyles: Record<ProgressVariant, string> = {
-    danger: 'bg-rose-500 shadow-2xs',
-    warning: 'bg-amber-500 shadow-2xs',
-    info: 'bg-sky-500 shadow-2xs',
-    success: 'bg-emerald-500 shadow-2xs',
-    neutral: 'bg-slate-300/80',
+    danger: "bg-rose-500 shadow-2xs",
+    warning: "bg-amber-500 shadow-2xs",
+    info: "bg-sky-500 shadow-2xs",
+    success: "bg-emerald-500 shadow-2xs",
+    neutral: "bg-slate-300/80",
   }
 
   const heightStyles = {
-    sm: 'h-1.5',
-    md: 'h-2',
-    lg: 'h-2.5',
+    sm: "h-1.5",
+    md: "h-2",
+    lg: "h-2.5",
   }
 
   return (
@@ -44,7 +45,7 @@ export default function ProgressBar({
           {label && <span>{label}</span>}
           {showValueLabel && (
             <span className="tabular-nums font-bold text-slate-900">
-              {value !== null ? `${Math.round(percentage)}%` : 'Belum dinilai'}
+              {value !== null ? `${Math.round(percentage)}%` : "Belum dinilai"}
             </span>
           )}
         </div>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string
@@ -8,7 +8,7 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export default function Skeleton({
-  className = '',
+  className = "",
   width,
   height,
   circle = false,
@@ -20,7 +20,9 @@ export default function Skeleton({
 
   return (
     <div
-      className={`animate-pulse bg-slate-200/80 ${circle ? 'rounded-full' : 'rounded-md'} ${className}`}
+      className={`animate-pulse bg-slate-200/80 ${
+        circle ? "rounded-full" : "rounded-md"
+      } ${className}`}
       style={style}
       aria-hidden="true"
       {...props}

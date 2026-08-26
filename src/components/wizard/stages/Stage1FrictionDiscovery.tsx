@@ -1,5 +1,13 @@
-import React, { useState } from 'react'
-import { Search, ShieldAlert, Train, Compass, Check, AlertTriangle, Calculator, FileCheck } from 'lucide-react'
+import React, { useState } from "react"
+import { Check } from "lucide-react"
+import mascotRumper from "../../../../mascott-rumper.webp"
+import floodIcon from "../../../assets/illustrations/onboarding/rumper-icon-flood.svg"
+import commuteIcon from "../../../assets/illustrations/onboarding/rumper-icon-commute.svg"
+import compareIcon from "../../../assets/illustrations/onboarding/rumper-icon-compare.svg"
+import facilitiesIcon from "../../../assets/illustrations/onboarding/rumper-icon-facilities.svg"
+import researchIcon from "../../../assets/illustrations/onboarding/rumper-icon-research.svg"
+import budgetIcon from "../../../assets/illustrations/onboarding/rumper-icon-budget.svg"
+import otherIcon from "../../../assets/illustrations/onboarding/rumper-icon-other.svg"
 
 interface Stage1Props {
   onSelect: (friction: string) => void
@@ -7,51 +15,56 @@ interface Stage1Props {
 
 const FRICTION_OPTIONS = [
   {
-    id: 'flood-access',
-    label: 'Khawatir risiko banjir & jalan akses tergenang saat musim hujan',
-    icon: ShieldAlert,
+    id: "flood-access",
+    label: "Takut drama banjir & jalan akses tergenang pas puncak musim hujan",
+    icon: floodIcon,
   },
   {
-    id: 'commute-discrepancy',
-    label: 'Waktu tempuh komuter riil meleset jauh dari klaim brosur marketing',
-    icon: Train,
+    id: "commute-discrepancy",
+    label: "Waktu komut riil meleset jauh dari klaim manis brosur marketing",
+    icon: commuteIcon,
   },
   {
-    id: 'tradeoff-confusion',
-    label: 'Bingung membandingkan trade-off lokasi di antara banyak pilihan rumah',
-    icon: Compass,
+    id: "tradeoff-confusion",
+    label: "Pusing bandingin trade-off lokasi antara puluhan opsi rumah",
+    icon: compareIcon,
   },
   {
-    id: 'essential-facilities',
-    label: 'Sulit memastikan keandalan air bersih, RS terdekat, & transportasi umum',
-    icon: FileCheck,
+    id: "essential-facilities",
+    label: "Khawatir air tanah keruh, minimarket jauh, & RS susah dijangkau",
+    icon: facilitiesIcon,
   },
   {
-    id: 'research-overload',
-    label: 'Menghabiskan banyak waktu menyatukan data peta, forum warga, & berita',
-    icon: Search,
+    id: "research-overload",
+    label:
+      "Kelelahan riset: harus buka puluhan tab peta, berita banjir, & grup warga",
+    icon: researchIcon,
   },
   {
-    id: 'budget-kpr',
-    label: 'Menyeimbangkan batas cicilan KPR dengan kenyamanan mobilitas harian',
-    icon: Calculator,
+    id: "budget-kpr",
+    label:
+      "Takut boncos di cicilan KPR dan biaya tak terduga pas udah nempatin",
+    icon: budgetIcon,
   },
   {
-    id: 'something-else',
-    label: 'Pertimbangan atau kendala penting lainnya',
-    icon: AlertTriangle,
+    id: "something-else",
+    label: "Ada pertimbangan atau kekhawatiran spesifik lainnya",
+    icon: otherIcon,
   },
 ]
 
 export default function Stage1FrictionDiscovery({ onSelect }: Stage1Props) {
-  const [selectedId, setSelectedId] = useState<string>('flood-access')
+  const [selectedId, setSelectedId] = useState<string>("flood-access")
 
   React.useEffect(() => {
-    const defaultOption = FRICTION_OPTIONS.find((opt) => opt.id === 'flood-access')
+    const defaultOption = FRICTION_OPTIONS.find(
+      (opt) => opt.id === "flood-access",
+    )
     if (defaultOption) {
       onSelect(defaultOption.label)
     }
-  }, [onSelect])
+    // This initializes the default choice once. Later updates only come from user selection.
+  }, [])
 
   const handleSelect = (id: string, label: string) => {
     setSelectedId(id)
@@ -59,58 +72,81 @@ export default function Stage1FrictionDiscovery({ onSelect }: Stage1Props) {
   }
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6">
       {/* Title */}
       <div>
-        <div className="text-xs font-bold uppercase tracking-wider text-[#00684A] mb-2 flex items-center gap-1.5">
-          <span>01</span>
-          <span className="text-[#A8B3BC]">/</span>
-          <span>Kendala Pencarian</span>
+        <div className="grid grid-cols-[minmax(0,1fr)_clamp(4.5rem,18vw,6rem)] items-start gap-x-3 sm:grid-cols-[minmax(0,1fr)_7rem] sm:gap-x-5 md:grid-cols-[minmax(0,1fr)_9rem] lg:grid-cols-[minmax(0,1fr)_10rem] lg:gap-x-6">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-2xl font-extrabold leading-tight tracking-tight text-deep-teal md:text-3xl">
+              Apa hal yang paling bikin kamu cemas pas cari rumah?
+            </h2>
+            <p className="text-sm md:text-base text-tertiary-ink mt-1">
+              Pilih kendala utamamu biar Rumper bisa fokus nyaring risiko yang
+              paling relevan buat kamu.
+            </p>
+          </div>
+          <img
+            src={mascotRumper}
+            alt=""
+            aria-hidden="true"
+            className="h-auto w-full justify-self-end object-contain"
+          />
         </div>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-[#001E2B] tracking-tight">
-          Apa tantangan terbesar Anda saat mencari rumah?
-        </h2>
-        <p className="text-sm md:text-base text-[#5C6C7A] mt-1">
-          Pilih kendala utama agar kami dapat memprioritaskan analisis risiko yang paling relevan.
-        </p>
       </div>
 
       {/* Selectable List Options */}
-      <div className="space-y-3">
+      <fieldset className="space-y-3">
+        <legend className="sr-only">Kendala utama saat mencari rumah</legend>
         {FRICTION_OPTIONS.map((opt) => {
           const isSelected = selectedId === opt.id
-          const Icon = opt.icon
 
           return (
-            <div
+            <label
               key={opt.id}
-              onClick={() => handleSelect(opt.id, opt.label)}
-              className={`p-4 md:p-4.5 rounded-2xl border cursor-pointer transition-all duration-200 flex items-center justify-between min-h-[56px] select-none ${
+              className={`relative w-full p-4 md:p-4.5 rounded-2xl border cursor-pointer transition-[border-color,background-color,box-shadow] duration-200 flex items-center justify-between min-h-[72px] select-none text-left has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-deep-teal ${
                 isSelected
-                  ? 'border-[#001E2B] bg-white shadow-sm ring-2 ring-[#001E2B]/5 font-bold text-[#001E2B]'
-                  : 'border-[#D7E1E5] bg-white text-[#3D4F5B] hover:border-[#C1CCD6] hover:bg-[#F9FBFA] font-semibold'
+                  ? "border-deep-teal bg-canvas-white shadow-sm ring-2 ring-deep-teal/5 text-deep-teal"
+                  : "border-subtle-border bg-canvas-white text-secondary-ink hover:border-strong-border hover:bg-reading-surface"
               }`}
             >
+              <input
+                type="radio"
+                name="friction"
+                value={opt.id}
+                checked={isSelected}
+                onChange={() => handleSelect(opt.id, opt.label)}
+                className="sr-only"
+              />
               <div className="flex items-center gap-3.5 pr-2">
                 <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                    isSelected ? 'bg-[#001E2B] text-white' : 'bg-[#F4F7F6] text-[#5C6C7A]'
+                  className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors duration-200 ${
+                    isSelected ? "bg-soft-green" : "bg-feature-mint"
                   }`}
                 >
-                  <Icon size={18} />
+                  <img
+                    src={opt.icon}
+                    alt=""
+                    aria-hidden="true"
+                    className="h-8 w-8 object-contain"
+                  />
                 </div>
-                <span className="text-xs md:text-sm leading-snug">{opt.label}</span>
+                <span className="text-sm font-semibold leading-snug">
+                  {opt.label}
+                </span>
               </div>
 
               {isSelected && (
-                <div className="w-6 h-6 rounded-full bg-[#00ED64] text-[#001E2B] flex items-center justify-center shrink-0 shadow-xs">
+                <div
+                  aria-hidden="true"
+                  className="w-6 h-6 rounded-full bg-rumper-green text-deep-teal flex items-center justify-center shrink-0 shadow-xs"
+                >
                   <Check size={14} className="stroke-[3]" />
                 </div>
               )}
-            </div>
+            </label>
           )
         })}
-      </div>
+      </fieldset>
     </div>
   )
 }

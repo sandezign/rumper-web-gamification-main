@@ -1,19 +1,23 @@
-import React from 'react'
-import { DollarSign, Sliders } from 'lucide-react'
+import React from "react"
+import { DollarSign, Sliders } from "lucide-react"
 
 interface Step3Props {
   budgetPreset: string
   budgetMin: number
   budgetMax: number
-  onChange: (fields: { budgetPreset?: string; budgetMin?: number; budgetMax?: number }) => void
+  onChange: (fields: {
+    budgetPreset?: string
+    budgetMin?: number
+    budgetMax?: number
+  }) => void
 }
 
 const PRESETS = [
-  { id: 'under-500', label: '< Rp 500 Jt', min: 300, max: 500 },
-  { id: '500-800', label: 'Rp 500 Jt – 800 Jt', min: 500, max: 800 },
-  { id: '800-1200', label: 'Rp 800 Jt – 1,2 M', min: 800, max: 1200 },
-  { id: '1200-1800', label: 'Rp 1,2 M – 1,8 M', min: 1200, max: 1800 },
-  { id: 'above-1800', label: '> Rp 1,8 M', min: 1800, max: 3000 },
+  { id: "under-500", label: "< Rp 500 Jt", min: 300, max: 500 },
+  { id: "500-800", label: "Rp 500 Jt – 800 Jt", min: 500, max: 800 },
+  { id: "800-1200", label: "Rp 800 Jt – 1,2 M", min: 800, max: 1200 },
+  { id: "1200-1800", label: "Rp 1,2 M – 1,8 M", min: 1200, max: 1800 },
+  { id: "above-1800", label: "> Rp 1,8 M", min: 1800, max: 3000 },
 ]
 
 export default function Step3BudgetRange({
@@ -24,12 +28,12 @@ export default function Step3BudgetRange({
 }: Step3Props) {
   const formatRupiah = (valInMillions: number) => {
     if (valInMillions >= 1000) {
-      return `Rp ${(valInMillions / 1000).toFixed(1).replace('.0', '')} Miliar`
+      return `Rp ${(valInMillions / 1000).toFixed(1).replace(".0", "")} Miliar`
     }
     return `Rp ${valInMillions} Juta`
   }
 
-  const handleSelectPreset = (preset: (typeof PRESETS)[number]) => {
+  const handleSelectPreset = (preset: typeof PRESETS[number]) => {
     onChange({
       budgetPreset: preset.id,
       budgetMin: preset.min,
@@ -44,13 +48,14 @@ export default function Step3BudgetRange({
         <div className="text-xs font-bold uppercase tracking-wider text-[#00684A] mb-2 flex items-center gap-1.5">
           <span>Langkah 03</span>
           <span className="text-[#A8B3BC]">/</span>
-          <span>Batas Anggaran</span>
+          <span>Batas Budget</span>
         </div>
         <h2 className="text-2xl md:text-3xl font-extrabold text-[#001E2B] tracking-tight">
-          Rentang Anggaran Pembelian
+          Batas Anggaran & Cicilan KPR
         </h2>
         <p className="text-sm md:text-base text-[#5C6C7A] mt-1">
-          Filter hunian yang sesuai kapasitas cicilan KPR atau pembayaran tunai Anda.
+          Biar dompet tetap napas, pasang rentang harga yang realistis sesuai
+          kapasitas cicilanmu.
         </p>
       </div>
 
@@ -78,8 +83,8 @@ export default function Step3BudgetRange({
                   onClick={() => handleSelectPreset(p)}
                   className={`min-h-[48px] px-3 py-2.5 rounded-2xl border text-xs md:text-sm font-bold transition-all cursor-pointer select-none active:scale-[0.98] ${
                     isSelected
-                      ? 'border-[#001E2B] bg-white text-[#001E2B] shadow-sm ring-2 ring-[#001E2B]/10'
-                      : 'border-[#D7E1E5] bg-white text-[#3D4F5B] hover:border-[#C1CCD6] hover:bg-[#F9FBFA]'
+                      ? "border-[#001E2B] bg-white text-[#001E2B] shadow-sm ring-2 ring-[#001E2B]/10"
+                      : "border-[#D7E1E5] bg-white text-[#3D4F5B] hover:border-[#C1CCD6] hover:bg-[#F9FBFA]"
                   }`}
                 >
                   {p.label}
@@ -107,7 +112,9 @@ export default function Step3BudgetRange({
             <div>
               <div className="flex justify-between text-xs font-bold text-[#5C6C7A] mb-1.5">
                 <span>Batas Minimum:</span>
-                <span className="text-[#001E2B] font-extrabold">{formatRupiah(budgetMin)}</span>
+                <span className="text-[#001E2B] font-extrabold">
+                  {formatRupiah(budgetMin)}
+                </span>
               </div>
               <input
                 type="range"
@@ -116,7 +123,10 @@ export default function Step3BudgetRange({
                 step={50}
                 value={budgetMin}
                 onChange={(e) =>
-                  onChange({ budgetMin: Number(e.target.value), budgetPreset: 'custom' })
+                  onChange({
+                    budgetMin: Number(e.target.value),
+                    budgetPreset: "custom",
+                  })
                 }
                 className="w-full accent-[#001E2B] cursor-pointer h-2 bg-[#E1E5E8] rounded-lg touch-action-none"
               />
@@ -125,7 +135,9 @@ export default function Step3BudgetRange({
             <div>
               <div className="flex justify-between text-xs font-bold text-[#5C6C7A] mb-1.5">
                 <span>Batas Maksimum:</span>
-                <span className="text-[#001E2B] font-extrabold">{formatRupiah(budgetMax)}</span>
+                <span className="text-[#001E2B] font-extrabold">
+                  {formatRupiah(budgetMax)}
+                </span>
               </div>
               <input
                 type="range"
@@ -134,7 +146,10 @@ export default function Step3BudgetRange({
                 step={50}
                 value={budgetMax}
                 onChange={(e) =>
-                  onChange({ budgetMax: Number(e.target.value), budgetPreset: 'custom' })
+                  onChange({
+                    budgetMax: Number(e.target.value),
+                    budgetPreset: "custom",
+                  })
                 }
                 className="w-full accent-[#001E2B] cursor-pointer h-2 bg-[#E1E5E8] rounded-lg touch-action-none"
               />

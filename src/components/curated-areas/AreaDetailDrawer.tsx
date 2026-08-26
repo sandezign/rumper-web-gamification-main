@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 import {
   X,
   MapPin,
@@ -14,8 +14,8 @@ import {
   Clock,
   Coins,
   Mountain,
-} from 'lucide-react'
-import type { CuratedArea } from '../../data/mockCuratedAreas'
+} from "lucide-react"
+import type { CuratedArea } from "../../data/mockCuratedAreas"
 
 interface AreaDetailDrawerProps {
   isOpen: boolean
@@ -58,11 +58,11 @@ export default function AreaDetailDrawer({
               <div className="flex items-center gap-2 flex-wrap">
                 <span
                   className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
-                    area.category === 'strong-fit'
-                      ? 'bg-[#003D4F] text-[#00ED64] border-[#00ED64]/30'
-                      : area.category === 'interesting-tradeoff'
-                      ? 'bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30'
-                      : 'bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30'
+                    area.category === "strong-fit"
+                      ? "bg-[#003D4F] text-[#00ED64] border-[#00ED64]/30"
+                      : area.category === "interesting-tradeoff"
+                        ? "bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30"
+                        : "bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30"
                   }`}
                 >
                   {area.categoryLabel}
@@ -72,7 +72,10 @@ export default function AreaDetailDrawer({
                   {area.region}
                 </span>
               </div>
-              <h2 id="area-detail-title" className="text-xl font-black tracking-tight text-white leading-tight">
+              <h2
+                id="area-detail-title"
+                className="text-xl font-black tracking-tight text-white leading-tight"
+              >
                 {area.name}
               </h2>
               <p className="text-xs text-[#A8B3BC] leading-relaxed line-clamp-2 sm:line-clamp-none">
@@ -103,7 +106,9 @@ export default function AreaDetailDrawer({
               <span className="text-xs sm:text-sm font-black text-[#001E2B] mt-0.5 block truncate">
                 {area.commuteTime}
               </span>
-              <span className="text-[10px] text-[#5C6C7A] font-medium">ke Sudirman</span>
+              <span className="text-[10px] text-[#5C6C7A] font-medium">
+                ke Sudirman
+              </span>
             </div>
 
             <div className="bg-[#F4F7F8] p-3 rounded-2xl border border-[#E1E5E8] text-center flex flex-col justify-center">
@@ -114,7 +119,9 @@ export default function AreaDetailDrawer({
               <span className="text-xs sm:text-sm font-black text-[#00684A] mt-0.5 block truncate">
                 {area.elevationDpl}
               </span>
-              <span className="text-[10px] text-[#00684A] font-bold">{area.elevationScore}</span>
+              <span className="text-[10px] text-[#00684A] font-bold">
+                {area.elevationScore}
+              </span>
             </div>
 
             <div className="bg-[#F4F7F8] p-3 rounded-2xl border border-[#E1E5E8] text-center flex flex-col justify-center">
@@ -125,7 +132,9 @@ export default function AreaDetailDrawer({
               <span className="text-xs sm:text-sm font-black text-[#001E2B] mt-0.5 block truncate">
                 {area.priceRange}
               </span>
-              <span className="text-[10px] text-[#5C6C7A] font-medium truncate">Tipe 2 Lantai</span>
+              <span className="text-[10px] text-[#5C6C7A] font-medium truncate">
+                Tipe 2 Lantai
+              </span>
             </div>
           </div>
 
@@ -165,7 +174,9 @@ export default function AreaDetailDrawer({
                   className="p-3 sm:p-3.5 rounded-2xl bg-[#F4F7F8] border border-[#E1E5E8] flex items-center justify-between gap-2 text-xs"
                 >
                   <div className="min-w-0 flex-1">
-                    <span className="font-bold text-[#001E2B] block truncate">{opt.label}</span>
+                    <span className="font-bold text-[#001E2B] block truncate">
+                      {opt.label}
+                    </span>
                     <span className="text-[#5C6C7A] text-[11px] font-medium block truncate">
                       {opt.interval}
                     </span>
@@ -197,7 +208,10 @@ export default function AreaDetailDrawer({
 
               <div className="p-3 rounded-2xl bg-[#F4F7F8] border border-[#E1E5E8] space-y-1">
                 <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#5C6C7A]">
-                  <GraduationCap size={12} className="text-[#7C3AED] shrink-0" />
+                  <GraduationCap
+                    size={12}
+                    className="text-[#7C3AED] shrink-0"
+                  />
                   <span>Pendidikan:</span>
                 </div>
                 <span className="font-bold text-[#001E2B] block leading-tight truncate">
@@ -254,4 +268,3 @@ export default function AreaDetailDrawer({
     </div>
   )
 }
-

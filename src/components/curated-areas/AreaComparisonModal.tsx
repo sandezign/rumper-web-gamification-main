@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 import {
   X,
   Check,
@@ -13,8 +13,8 @@ import {
   Scale,
   Train,
   Building2,
-} from 'lucide-react'
-import type { CuratedArea } from '../../data/mockCuratedAreas'
+} from "lucide-react"
+import type { CuratedArea } from "../../data/mockCuratedAreas"
 
 interface AreaComparisonModalProps {
   isOpen: boolean
@@ -76,23 +76,32 @@ export default function AreaComparisonModal({
                   Parameter
                 </th>
                 {areas.map((area) => {
-                  const isStrongFit = area.category === 'strong-fit'
-                  const isTradeoff = area.category === 'interesting-tradeoff'
-                  const dotColor = isStrongFit ? 'bg-[#00B545]' : isTradeoff ? 'bg-[#D4A017]' : 'bg-[#D9383A]'
+                  const isStrongFit = area.category === "strong-fit"
+                  const isTradeoff = area.category === "interesting-tradeoff"
+                  const dotColor = isStrongFit
+                    ? "bg-[#00B545]"
+                    : isTradeoff
+                      ? "bg-[#D4A017]"
+                      : "bg-[#D9383A]"
 
                   return (
-                    <th key={area.id} className="p-4 font-black text-[#001E2B] min-w-[240px]">
+                    <th
+                      key={area.id}
+                      className="p-4 font-black text-[#001E2B] min-w-[240px]"
+                    >
                       <div className="space-y-1.5">
                         <span
                           className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full border inline-flex items-center gap-1 ${
                             isStrongFit
-                              ? 'bg-[#DCEEE7] text-[#004F38] border-[#318266]/30'
+                              ? "bg-[#DCEEE7] text-[#004F38] border-[#318266]/30"
                               : isTradeoff
-                              ? 'bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30'
-                              : 'bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30'
+                                ? "bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30"
+                                : "bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30"
                           }`}
                         >
-                          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`} />
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`}
+                          />
                           <span>{area.categoryLabel}</span>
                         </span>
                         <h4 className="text-base font-black text-[#001E2B] leading-tight">
@@ -119,7 +128,10 @@ export default function AreaComparisonModal({
                   </div>
                 </td>
                 {areas.map((area) => (
-                  <td key={area.id} className="p-4 font-black text-sm text-[#001E2B]">
+                  <td
+                    key={area.id}
+                    className="p-4 font-black text-sm text-[#001E2B]"
+                  >
                     {area.commuteTime}
                     <span className="block text-[11px] font-medium text-[#5C6C7A] mt-0.5">
                       {area.commuteMode}
@@ -137,7 +149,10 @@ export default function AreaComparisonModal({
                   </div>
                 </td>
                 {areas.map((area) => (
-                  <td key={area.id} className="p-4 font-black text-sm text-[#001E2B]">
+                  <td
+                    key={area.id}
+                    className="p-4 font-black text-sm text-[#001E2B]"
+                  >
                     {area.priceRange}
                     <span className="block text-[11px] font-normal text-[#5C6C7A] mt-0.5">
                       Tipe 2 Lantai
@@ -173,7 +188,10 @@ export default function AreaComparisonModal({
                   </div>
                 </td>
                 {areas.map((area) => (
-                  <td key={area.id} className="p-4 text-[#003D2E] font-medium leading-relaxed">
+                  <td
+                    key={area.id}
+                    className="p-4 text-[#003D2E] font-medium leading-relaxed"
+                  >
                     {area.cocokReason}
                   </td>
                 ))}
@@ -188,7 +206,10 @@ export default function AreaComparisonModal({
                   </div>
                 </td>
                 {areas.map((area) => (
-                  <td key={area.id} className="p-4 text-[#523A00] font-medium leading-relaxed">
+                  <td
+                    key={area.id}
+                    className="p-4 text-[#523A00] font-medium leading-relaxed"
+                  >
                     {area.tradeoffReason}
                   </td>
                 ))}
@@ -206,7 +227,9 @@ export default function AreaComparisonModal({
                   <td key={area.id} className="p-4 text-[#3D4F5B]">
                     {area.transitOptions.map((opt, i) => (
                       <div key={i} className="mb-1 last:mb-0">
-                        <span className="font-bold text-[#001E2B]">{opt.label}:</span>{' '}
+                        <span className="font-bold text-[#001E2B]">
+                          {opt.label}:
+                        </span>{" "}
                         <span className="text-[#5C6C7A]">{opt.distance}</span>
                       </div>
                     ))}
@@ -225,12 +248,16 @@ export default function AreaComparisonModal({
                 {areas.map((area) => (
                   <td key={area.id} className="p-4 text-[#3D4F5B] space-y-1">
                     <div>
-                      <span className="font-bold text-[#001E2B]">RS:</span>{' '}
-                      <span className="text-[#5C6C7A]">{area.essentialFacilities.hospital}</span>
+                      <span className="font-bold text-[#001E2B]">RS:</span>{" "}
+                      <span className="text-[#5C6C7A]">
+                        {area.essentialFacilities.hospital}
+                      </span>
                     </div>
                     <div>
-                      <span className="font-bold text-[#001E2B]">Sekolah:</span>{' '}
-                      <span className="text-[#5C6C7A]">{area.essentialFacilities.school}</span>
+                      <span className="font-bold text-[#001E2B]">Sekolah:</span>{" "}
+                      <span className="text-[#5C6C7A]">
+                        {area.essentialFacilities.school}
+                      </span>
                     </div>
                   </td>
                 ))}
@@ -259,7 +286,7 @@ export default function AreaComparisonModal({
                 onClick={() => onSelectArea(areas[0])}
                 className="px-5 py-2.5 rounded-full bg-[#00ED64] hover:bg-[#00B545] text-[#001E2B] font-extrabold text-xs flex items-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer"
               >
-                <span>Evaluasi {areas[0].name.split('&')[0]}</span>
+                <span>Evaluasi {areas[0].name.split("&")[0]}</span>
                 <ArrowRight size={14} />
               </button>
             )}

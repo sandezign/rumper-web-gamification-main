@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from "react"
 import {
   Check,
   AlertTriangle,
@@ -8,10 +8,10 @@ import {
   HelpCircle,
   ChevronRight,
   HandMetal,
-} from 'lucide-react'
-import type { ScenarioChoice } from '../../../store/useWizardStore'
-import type { ScenarioData, ScenarioHouseOption } from './ScenarioView'
-import BlueprintVisual from './BlueprintVisual'
+} from "lucide-react"
+import type { ScenarioChoice } from "../../../store/useWizardStore"
+import type { ScenarioData, ScenarioHouseOption } from "./ScenarioView"
+import BlueprintVisual from "./BlueprintVisual"
 
 interface MobileSwipeDeckProps {
   data: ScenarioData
@@ -28,13 +28,16 @@ export default function MobileSwipeDeck({
   onSelectChoice,
   onSkip,
 }: MobileSwipeDeckProps) {
-  const [activeTab, setActiveTab] = useState<'A' | 'B'>('A')
-  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const [activeTab, setActiveTab] = useState<"A" | "B">("A")
+  const [dragOffset, setDragOffset] = useState<{ x: number y: number }>({
+    x: 0,
+    y: 0,
+  })
   const [isDragging, setIsDragging] = useState<boolean>(false)
   const [showWhyModal, setShowWhyModal] = useState<boolean>(false)
   const [swipeHintVisible, setSwipeHintVisible] = useState<boolean>(true)
 
-  const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const dragStartRef = useRef<{ x: number y: number }>({ x: 0, y: 0 })
   const cardRef = useRef<HTMLDivElement>(null)
   const WeatherIcon = data.weatherIcon
 
@@ -46,21 +49,27 @@ export default function MobileSwipeDeck({
   }, [selectedChoice, isDragging])
 
   // Current active house option & background option
-  const activeHouse: ScenarioHouseOption = activeTab === 'A' ? data.optionA : data.optionB
-  const backgroundHouse: ScenarioHouseOption = activeTab === 'A' ? data.optionB : data.optionA
+  const activeHouse: ScenarioHouseOption =
+    activeTab === "A" ? data.optionA : data.optionB
+  const backgroundHouse: ScenarioHouseOption =
+    activeTab === "A" ? data.optionB : data.optionA
 
   // Touch / Pointer Event Handlers
   const handleTouchStart = (e: React.TouchEvent | React.MouseEvent) => {
     setIsDragging(true)
-    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX
-    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY
+    const clientX =
+      "touches" in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX
+    const clientY =
+      "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY
     dragStartRef.current = { x: clientX, y: clientY }
   }
 
   const handleTouchMove = (e: React.TouchEvent | React.MouseEvent) => {
     if (!isDragging) return
-    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX
-    const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY
+    const clientX =
+      "touches" in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX
+    const clientY =
+      "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY
 
     const deltaX = clientX - dragStartRef.current.x
     const deltaY = clientY - dragStartRef.current.y
@@ -78,15 +87,15 @@ export default function MobileSwipeDeck({
 
     if (dragOffset.x < -SWIPE_THRESHOLD) {
       // Swiped Left -> Choose House A
-      onSelectChoice('A')
-      setActiveTab('A')
+      onSelectChoice("A")
+      setActiveTab("A")
     } else if (dragOffset.x > SWIPE_THRESHOLD) {
       // Swiped Right -> Choose House B
-      onSelectChoice('B')
-      setActiveTab('B')
+      onSelectChoice("B")
+      setActiveTab("B")
     } else if (dragOffset.y > VERTICAL_THRESHOLD) {
       // Swiped Down -> Moderate Compromise
-      onSelectChoice('neither')
+      onSelectChoice("neither")
     }
 
     // Elastic snap-back to center
@@ -104,7 +113,9 @@ export default function MobileSwipeDeck({
       {/* Mobile Top Header: Eyebrow & Skip */}
       <div className="flex items-center justify-between px-1">
         <div className="text-xs font-bold uppercase tracking-wider text-[#00684A] flex items-center gap-1.5">
-          <span>Skenario 0{data.stepNumber} dari 0{data.totalScenarios}</span>
+          <span>
+            Skenario 0{data.stepNumber} dari 0{data.totalScenarios}
+          </span>
           <span className="text-[#A8B3BC]">/</span>
           <span className="text-[#5C6C7A]">Uji Prioritas</span>
         </div>
@@ -126,7 +137,7 @@ export default function MobileSwipeDeck({
         <div className="flex items-center gap-2 px-3 py-2 bg-[#DCEEE7]/70 rounded-xl border border-[#318266]/30 text-[11px] text-[#004F38] font-medium">
           <Sparkles size={13} className="text-[#00684A] shrink-0" />
           <span className="line-clamp-1">
-            <strong>Konteks Anda:</strong> &ldquo;{selectedFriction}&rdquo;
+            <strong>Konteksmu:</strong> &ldquo;{selectedFriction}&rdquo;
           </span>
         </div>
       )}
@@ -145,7 +156,7 @@ export default function MobileSwipeDeck({
             className="inline-flex items-center gap-1 text-[11px] font-bold text-[#5C6C7A] hover:text-[#00684A] cursor-pointer"
           >
             <HelpCircle size={13} />
-            <span>Mengapa penting?</span>
+            <span>Kenapa penting?</span>
           </button>
         </div>
 
@@ -176,29 +187,31 @@ export default function MobileSwipeDeck({
           <button
             type="button"
             onClick={() => {
-              setActiveTab('A')
+              setActiveTab("A")
             }}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeTab === 'A'
-                ? 'bg-[#001E2B] text-white shadow-xs'
-                : 'text-[#5C6C7A] hover:text-[#001E2B]'
+              activeTab === "A"
+                ? "bg-[#001E2B] text-white shadow-xs"
+                : "text-[#5C6C7A] hover:text-[#001E2B]"
             }`}
           >
-            Pilihan A: {data.optionA.title.split(' ')[0]} {data.optionA.title.split(' ')[1] || ''}
+            Pilihan A: {data.optionA.title.split(" ")[0]}{" "}
+            {data.optionA.title.split(" ")[1] || ""}
           </button>
 
           <button
             type="button"
             onClick={() => {
-              setActiveTab('B')
+              setActiveTab("B")
             }}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeTab === 'B'
-                ? 'bg-[#001E2B] text-white shadow-xs'
-                : 'text-[#5C6C7A] hover:text-[#001E2B]'
+              activeTab === "B"
+                ? "bg-[#001E2B] text-white shadow-xs"
+                : "text-[#5C6C7A] hover:text-[#001E2B]"
             }`}
           >
-            Pilihan B: {data.optionB.title.split(' ')[0]} {data.optionB.title.split(' ')[1] || ''}
+            Pilihan B: {data.optionB.title.split(" ")[0]}{" "}
+            {data.optionB.title.split(" ")[1] || ""}
           </button>
         </div>
       </div>
@@ -209,14 +222,16 @@ export default function MobileSwipeDeck({
         <div
           className="absolute inset-x-2 top-4 bottom-0 bg-[#F4F7F6] rounded-3xl border border-[#D7E1E5] p-5 shadow-xs transition-transform duration-300 pointer-events-none opacity-80"
           style={{
-            transform: 'scale(0.95) translateY(12px)',
+            transform: "scale(0.95) translateY(12px)",
           }}
         >
           <div className="flex justify-between items-center opacity-60">
             <span className="text-xs font-bold uppercase text-[#5C6C7A]">
               {backgroundHouse.badgeLabel}
             </span>
-            <span className="text-xs font-extrabold text-[#001E2B]">{backgroundHouse.price}</span>
+            <span className="text-xs font-extrabold text-[#001E2B]">
+              {backgroundHouse.price}
+            </span>
           </div>
           <h3 className="text-sm font-bold text-[#5C6C7A] mt-2 truncate">
             {backgroundHouse.title}
@@ -236,8 +251,10 @@ export default function MobileSwipeDeck({
           className="w-full bg-white rounded-3xl p-5 border border-[#D7E1E5] relative z-10 cursor-grab active:cursor-grabbing transition-shadow shadow-md"
           style={{
             transform: `translate3d(${dragOffset.x}px, ${dragOffset.y}px, 0) rotate(${rotation}deg)`,
-            transition: isDragging ? 'none' : 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-            touchAction: 'pan-y',
+            transition: isDragging
+              ? "none"
+              : "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+            touchAction: "pan-y",
           }}
         >
           {/* Dynamic Drag Stamp Overlay: Swipe Left -> Stamp A */}
@@ -279,8 +296,8 @@ export default function MobileSwipeDeck({
               <span
                 className={`w-6 h-6 rounded-full font-extrabold text-xs flex items-center justify-center ${
                   selectedChoice === activeHouse.key
-                    ? 'bg-[#001E2B] text-white'
-                    : 'bg-[#F4F7F6] border border-[#D7E1E5] text-[#001E2B]'
+                    ? "bg-[#001E2B] text-white"
+                    : "bg-[#F4F7F6] border border-[#D7E1E5] text-[#001E2B]"
                 }`}
               >
                 {activeHouse.key}
@@ -299,7 +316,9 @@ export default function MobileSwipeDeck({
             <h3 className="text-base font-extrabold text-[#001E2B] leading-snug">
               {activeHouse.title}
             </h3>
-            <p className="text-xs text-[#5C6C7A] font-medium mt-0.5">{activeHouse.corridor}</p>
+            <p className="text-xs text-[#5C6C7A] font-medium mt-0.5">
+              {activeHouse.corridor}
+            </p>
           </div>
 
           {/* Context Image Banner */}
@@ -325,7 +344,10 @@ export default function MobileSwipeDeck({
           {/* 4 Metric Boxes Grid */}
           <div className="grid grid-cols-2 gap-2 mt-3">
             {activeHouse.metrics.map((m, idx) => (
-              <div key={idx} className="bg-[#F4F7F6] rounded-xl p-2 border border-[#E1E5E8]">
+              <div
+                key={idx}
+                className="bg-[#F4F7F6] rounded-xl p-2 border border-[#E1E5E8]"
+              >
                 <div className="text-[9px] font-bold uppercase tracking-wider text-[#7C8C9A]">
                   {m.label}
                 </div>
@@ -343,21 +365,29 @@ export default function MobileSwipeDeck({
 
           {/* Compact Bullets */}
           <div className="text-xs text-[#3D4F5B] space-y-1 mt-3">
-            <p><strong>Akses:</strong> {activeHouse.akses}</p>
-            <p><strong>Fasilitas:</strong> {activeHouse.fasilitas}</p>
+            <p>
+              <strong>Akses:</strong> {activeHouse.akses}
+            </p>
+            <p>
+              <strong>Fasilitas:</strong> {activeHouse.fasilitas}
+            </p>
           </div>
 
           {/* Real Compromise Box */}
           <div className="bg-[#FFF8E0] border border-[#D79A2B]/40 rounded-xl p-2.5 text-xs text-[#001E2B] mt-3">
-            <span className="font-bold text-[#8A5B00] block text-[11px] mb-0.5">Kompromi Nyata:</span>
-            <span className="font-medium text-[#5A4000] text-xs">{activeHouse.kompromiNyata}</span>
+            <span className="font-bold text-[#8A5B00] block text-[11px] mb-0.5">
+              Kompromi Nyata:
+            </span>
+            <span className="font-medium text-[#5A4000] text-xs">
+              {activeHouse.kompromiNyata}
+            </span>
           </div>
 
           {/* Active Choice Confirmation Badge */}
           {selectedChoice === activeHouse.key && (
             <div className="mt-3 py-1.5 px-3 rounded-full bg-[#001E2B] text-white text-xs font-bold flex items-center justify-center gap-1.5 animate-fadeIn">
               <Check size={14} className="stroke-[3] text-[#00ED64]" />
-              <span>Pilihan Anda ({activeHouse.badgeLabel} Terpilih)</span>
+              <span>Pilihanmu ({activeHouse.badgeLabel} Terpilih)</span>
             </div>
           )}
         </div>
@@ -382,16 +412,23 @@ export default function MobileSwipeDeck({
           <button
             type="button"
             onClick={() => {
-              onSelectChoice('A')
-              setActiveTab('A')
+              onSelectChoice("A")
+              setActiveTab("A")
             }}
             className={`py-2.5 px-1 rounded-xl text-xs font-bold border transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 active:scale-95 ${
-              selectedChoice === 'A'
-                ? 'border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs'
-                : 'border-[#D7E1E5] bg-white text-[#001E2B] hover:bg-[#F4F7F6]'
+              selectedChoice === "A"
+                ? "border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs"
+                : "border-[#D7E1E5] bg-white text-[#001E2B] hover:bg-[#F4F7F6]"
             }`}
           >
-            <Check size={14} className={selectedChoice === 'A' ? 'text-[#00684A] stroke-[3]' : 'text-[#7C8C9A]'} />
+            <Check
+              size={14}
+              className={
+                selectedChoice === "A"
+                  ? "text-[#00684A] stroke-[3]"
+                  : "text-[#7C8C9A]"
+              }
+            />
             <span className="truncate text-[11px]">Rumah A</span>
           </button>
 
@@ -399,41 +436,55 @@ export default function MobileSwipeDeck({
           <button
             type="button"
             onClick={() => {
-              onSelectChoice('B')
-              setActiveTab('B')
+              onSelectChoice("B")
+              setActiveTab("B")
             }}
             className={`py-2.5 px-1 rounded-xl text-xs font-bold border transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 active:scale-95 ${
-              selectedChoice === 'B'
-                ? 'border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs'
-                : 'border-[#D7E1E5] bg-white text-[#001E2B] hover:bg-[#F4F7F6]'
+              selectedChoice === "B"
+                ? "border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs"
+                : "border-[#D7E1E5] bg-white text-[#001E2B] hover:bg-[#F4F7F6]"
             }`}
           >
-            <Check size={14} className={selectedChoice === 'B' ? 'text-[#00684A] stroke-[3]' : 'text-[#7C8C9A]'} />
+            <Check
+              size={14}
+              className={
+                selectedChoice === "B"
+                  ? "text-[#00684A] stroke-[3]"
+                  : "text-[#7C8C9A]"
+              }
+            />
             <span className="truncate text-[11px]">Rumah B</span>
           </button>
 
           {/* Kompromi Moderat */}
           <button
             type="button"
-            onClick={() => onSelectChoice('neither')}
+            onClick={() => onSelectChoice("neither")}
             className={`py-2.5 px-1 rounded-xl text-xs font-bold border transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 active:scale-95 ${
-              selectedChoice === 'neither'
-                ? 'border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs'
-                : 'border-[#D7E1E5] bg-white text-[#5C6C7A] hover:bg-[#F4F7F6]'
+              selectedChoice === "neither"
+                ? "border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs"
+                : "border-[#D7E1E5] bg-white text-[#5C6C7A] hover:bg-[#F4F7F6]"
             }`}
           >
-            <XCircle size={14} className={selectedChoice === 'neither' ? 'text-[#001E2B]' : 'text-[#7C8C9A]'} />
+            <XCircle
+              size={14}
+              className={
+                selectedChoice === "neither"
+                  ? "text-[#001E2B]"
+                  : "text-[#7C8C9A]"
+              }
+            />
             <span className="truncate text-[11px]">Moderat</span>
           </button>
 
           {/* Hard No */}
           <button
             type="button"
-            onClick={() => onSelectChoice('reject')}
+            onClick={() => onSelectChoice("reject")}
             className={`py-2.5 px-1 rounded-xl text-xs font-bold border transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 active:scale-95 ${
-              selectedChoice === 'reject'
-                ? 'border-2 border-[#C95746] bg-[#FFF5F5] text-[#C95746] ring-2 ring-[#C95746]/10 shadow-xs'
-                : 'border-[#F4DED9] bg-white text-[#C95746] hover:bg-[#FFF5F5]'
+              selectedChoice === "reject"
+                ? "border-2 border-[#C95746] bg-[#FFF5F5] text-[#C95746] ring-2 ring-[#C95746]/10 shadow-xs"
+                : "border-[#F4DED9] bg-white text-[#C95746] hover:bg-[#FFF5F5]"
             }`}
           >
             <AlertTriangle size={14} />
@@ -449,7 +500,7 @@ export default function MobileSwipeDeck({
             </span>
             <button
               type="button"
-              onClick={() => onSelectChoice('neither')}
+              onClick={() => onSelectChoice("neither")}
               className="text-[#7C8C9A] hover:text-[#001E2B] flex items-center gap-1 font-bold shrink-0 ml-2 cursor-pointer"
             >
               <RotateCcw size={11} />

@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { MapPin, ChevronDown, Search, Check, X } from 'lucide-react'
+import React, { useState, useRef, useEffect } from "react"
+import { MapPin, ChevronDown, Search, Check, X } from "lucide-react"
 
 interface Step2Props {
   mainAnchor: string
   secondAnchor: string
-  onChange: (fields: { mainAnchor?: string; secondAnchor?: string }) => void
+  onChange: (fields: { mainAnchor?: string secondAnchor?: string }) => void
 }
 
 interface LocationGroup {
@@ -14,42 +14,37 @@ interface LocationGroup {
 
 const LOCATION_GROUPS: LocationGroup[] = [
   {
-    region: 'Jakarta Selatan & Pusat',
+    region: "Jakarta Selatan & Pusat",
     items: [
-      'Sudirman / SCBD (Jaksel)',
-      'Mega Kuningan / Rasuna Said (Jaksel)',
-      'Gatot Subroto / Slipi (Jaksel/Jakbar)',
-      'TB Simatupang / Cilandak (Jaksel)',
-      'Kuningan / Setiabudi (Jaksel)',
+      "Sudirman / SCBD (Jaksel)",
+      "Mega Kuningan / Rasuna Said (Jaksel)",
+      "Gatot Subroto / Slipi (Jaksel/Jakbar)",
+      "TB Simatupang / Cilandak (Jaksel)",
+      "Kuningan / Setiabudi (Jaksel)",
     ],
   },
   {
-    region: 'Jakarta Barat & Utara',
+    region: "Jakarta Barat & Utara",
     items: [
-      'Puri Indah / Kembangan (Jakbar)',
-      'Kelapa Gading / Sunter (Jakut)',
+      "Puri Indah / Kembangan (Jakbar)",
+      "Kelapa Gading / Sunter (Jakut)",
     ],
   },
   {
-    region: 'Tangerang & Tangsel',
+    region: "Tangerang & Tangsel",
     items: [
-      'Serpong / BSD City (Tangerang Selatan)',
-      'Bintaro Jaya (Tangerang Selatan)',
-      'Alam Sutera (Tangerang)',
+      "Serpong / BSD City (Tangerang Selatan)",
+      "Bintaro Jaya (Tangerang Selatan)",
+      "Alam Sutera (Tangerang)",
     ],
   },
   {
-    region: 'Depok & Bogor',
-    items: [
-      'Margonda / UI (Depok)',
-      'Sentul & Cibinong (Bogor)',
-    ],
+    region: "Depok & Bogor",
+    items: ["Margonda / UI (Depok)", "Sentul & Cibinong (Bogor)"],
   },
   {
-    region: 'Bekasi',
-    items: [
-      'Bekasi Barat / Summarecon (Bekasi)',
-    ],
+    region: "Bekasi",
+    items: ["Bekasi Barat / Summarecon (Bekasi)"],
   },
 ]
 
@@ -69,21 +64,24 @@ function CustomLocationSelect({
   onSelect,
 }: LocationDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState("")
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   // Handle click outside to close
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false)
       }
     }
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener("mousedown", handleClickOutside)
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener("mousedown", handleClickOutside)
     }
   }, [isOpen])
 
@@ -91,19 +89,19 @@ function CustomLocationSelect({
   const filteredGroups = LOCATION_GROUPS.map((group) => ({
     region: group.region,
     items: group.items.filter((item) =>
-      item.toLowerCase().includes(searchQuery.toLowerCase())
+      item.toLowerCase().includes(searchQuery.toLowerCase()),
     ),
   })).filter((group) => group.items.length > 0)
 
   const handleChoose = (item: string) => {
     onSelect(item)
     setIsOpen(false)
-    setSearchQuery('')
+    setSearchQuery("")
   }
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation()
-    onSelect('')
+    onSelect("")
     setIsOpen(false)
   }
 
@@ -115,25 +113,29 @@ function CustomLocationSelect({
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full h-14 pl-14 pr-4 rounded-2xl border text-sm md:text-base font-bold text-left flex items-center justify-between transition-all cursor-pointer ${
           isOpen
-            ? 'bg-white border-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-sm text-[#001E2B]'
-            : 'bg-[#F4F7F6] border-[#D7E1E5] text-[#001E2B] hover:bg-[#EEF2F0] hover:border-[#C1CCD6]'
+            ? "bg-white border-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-sm text-[#001E2B]"
+            : "bg-[#F4F7F6] border-[#D7E1E5] text-[#001E2B] hover:bg-[#EEF2F0] hover:border-[#C1CCD6]"
         }`}
       >
         {/* Left Icon Pill */}
         <div
           className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center pointer-events-none transition-colors ${
             isPrimary
-              ? 'bg-[#001E2B] text-white'
+              ? "bg-[#001E2B] text-white"
               : value
-              ? 'bg-[#003D4F] text-white'
-              : 'bg-[#E1E5E8] text-[#7C8C9A]'
+                ? "bg-[#003D4F] text-white"
+                : "bg-[#E1E5E8] text-[#7C8C9A]"
           }`}
         >
           <MapPin size={16} />
         </div>
 
         {/* Display Text */}
-        <span className={`truncate mr-2 ${value ? 'text-[#001E2B]' : 'text-[#7C8C9A] font-medium'}`}>
+        <span
+          className={`truncate mr-2 ${
+            value ? "text-[#001E2B]" : "text-[#7C8C9A] font-medium"
+          }`}
+        >
           {value || placeholder}
         </span>
 
@@ -150,7 +152,9 @@ function CustomLocationSelect({
           )}
           <ChevronDown
             size={18}
-            className={`transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#001E2B]' : ''}`}
+            className={`transition-transform duration-200 ${
+              isOpen ? "rotate-180 text-[#001E2B]" : ""
+            }`}
           />
         </div>
       </button>
@@ -173,7 +177,7 @@ function CustomLocationSelect({
               {searchQuery && (
                 <button
                   type="button"
-                  onClick={() => setSearchQuery('')}
+                  onClick={() => setSearchQuery("")}
                   className="text-[#7C8C9A] hover:text-[#001E2B]"
                 >
                   <X size={12} />
@@ -186,13 +190,17 @@ function CustomLocationSelect({
           <div className="overflow-y-auto max-h-60 py-1 space-y-2">
             {allowClear && (
               <div
-                onClick={() => handleChoose('')}
+                onClick={() => handleChoose("")}
                 className={`px-4 py-2.5 mx-2 rounded-xl text-xs md:text-sm font-semibold cursor-pointer transition-colors flex items-center justify-between ${
-                  !value ? 'bg-[#E9F5EF] text-[#004F38] font-bold' : 'text-[#5C6C7A] hover:bg-[#F4F7F6]'
+                  !value
+                    ? "bg-[#E9F5EF] text-[#004F38] font-bold"
+                    : "text-[#5C6C7A] hover:bg-[#F4F7F6]"
                 }`}
               >
                 <span>-- Tidak ada / Opsional --</span>
-                {!value && <Check size={16} className="text-[#00ED64] stroke-[3]" />}
+                {!value && (
+                  <Check size={16} className="text-[#00ED64] stroke-[3]" />
+                )}
               </div>
             )}
 
@@ -214,12 +222,17 @@ function CustomLocationSelect({
                         onClick={() => handleChoose(item)}
                         className={`px-3 py-2.5 rounded-xl text-xs md:text-sm cursor-pointer transition-all flex items-center justify-between select-none ${
                           isSelected
-                            ? 'bg-[#E9F5EF] text-[#004F38] font-bold'
-                            : 'text-[#001E2B] hover:bg-[#F4F7F6] font-medium'
+                            ? "bg-[#E9F5EF] text-[#004F38] font-bold"
+                            : "text-[#001E2B] hover:bg-[#F4F7F6] font-medium"
                         }`}
                       >
                         <span>{item}</span>
-                        {isSelected && <Check size={16} className="text-[#00ED64] stroke-[3]" />}
+                        {isSelected && (
+                          <Check
+                            size={16}
+                            className="text-[#00ED64] stroke-[3]"
+                          />
+                        )}
                       </div>
                     )
                   })}
@@ -233,7 +246,11 @@ function CustomLocationSelect({
   )
 }
 
-export default function Step2LocationAnchors({ mainAnchor, secondAnchor, onChange }: Step2Props) {
+export default function Step2LocationAnchors({
+  mainAnchor,
+  secondAnchor,
+  onChange,
+}: Step2Props) {
   return (
     <div className="space-y-6 animate-fadeIn">
       {/* Step Header */}
@@ -241,13 +258,14 @@ export default function Step2LocationAnchors({ mainAnchor, secondAnchor, onChang
         <div className="text-xs font-bold uppercase tracking-wider text-[#00684A] mb-2 flex items-center gap-1.5">
           <span>Langkah 02</span>
           <span className="text-[#A8B3BC]">/</span>
-          <span>Titik Aktivitas Rutin</span>
+          <span>Titik Gravitasi</span>
         </div>
         <h2 className="text-2xl md:text-3xl font-extrabold text-[#001E2B] tracking-tight">
-          Titik Aktivitas Rutin & Kantor
+          Titik Gravitasi & Lokasi Kerjamu
         </h2>
         <p className="text-sm md:text-base text-[#5C6C7A] mt-1">
-          Tentukan lokasi utama untuk perhitungan estimasi waktu tempuh komuter riil.
+          Kunci lokasi yang wajib kamu datengin tiap hari biar simulasi komut
+          jam sibuk akurat.
         </p>
       </div>
 
@@ -257,7 +275,7 @@ export default function Step2LocationAnchors({ mainAnchor, secondAnchor, onChang
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#5C6C7A]">
             <MapPin size={15} className="text-[#001E2B]" />
-            <span>Titik Aktivitas Utama (Kantor / Destinasi Rutin):</span>
+            <span>Titik Gravitasi Utama (Kantor / Tempat Rutinmu):</span>
           </label>
 
           <CustomLocationSelect
@@ -276,9 +294,11 @@ export default function Step2LocationAnchors({ mainAnchor, secondAnchor, onChang
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#5C6C7A]">
               <MapPin size={15} className="text-[#7C8C9A]" />
-              <span>Titik Aktivitas Kedua (Pasangan / Keluarga):</span>
+              <span>Titik Gravitasi Kedua (Kantor Pasangan / Kampus):</span>
             </label>
-            <span className="text-xs text-[#7C8C9A] font-medium">(Opsional)</span>
+            <span className="text-xs text-[#7C8C9A] font-medium">
+              (Opsional)
+            </span>
           </div>
 
           <CustomLocationSelect

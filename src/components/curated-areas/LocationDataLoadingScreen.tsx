@@ -1,5 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import { Sparkles, ArrowRight, ShieldCheck, MapPin, Database } from 'lucide-react'
+import React, { useState, useEffect } from "react"
+import {
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  MapPin,
+  Database,
+} from "lucide-react"
 
 interface LocationDataLoadingScreenProps {
   onComplete: () => void
@@ -9,26 +15,27 @@ interface LocationDataLoadingScreenProps {
 const SCANNING_STEPS = [
   {
     progressThreshold: 25,
-    title: 'Mengambil data batas wilayah & peta spasial',
-    source: 'Badan Informasi Geospasial (BIG)',
+    title: "Narik data batas wilayah & peta spasial resmi",
+    source: "Badan Informasi Geospasial (BIG)",
     icon: MapPin,
   },
   {
     progressThreshold: 60,
-    title: 'Memetakan kontur elevasi & riwayat genangan 10 tahun',
-    source: 'BNPB & Kementerian PUPR',
+    title: "Nyisir kontur elevasi tanah & riwayat genangan 10 tahun",
+    source: "BNPB & Kementerian PUPR",
     icon: ShieldCheck,
   },
   {
     progressThreshold: 85,
-    title: 'Menghitung estimasi rute komuter riil jam sibuk pagi/sore',
-    source: 'Kementerian Perhubungan & KAI Commuter',
+    title: "Ngitung estimasi rute komuter riil jam sibuk pagi/sore",
+    source: "Kementerian Perhubungan & KAI Commuter",
     icon: Database,
   },
   {
     progressThreshold: 100,
-    title: 'Menyusun keselarasan kompromi koridor Jabodetabek',
-    source: 'Rumper Evidence Synthesis Engine',
+    title:
+      "Ngeracik rekomendasi koridor Jabodetabek biar kamu gak beli kucing dalam karung",
+    source: "Rumper Evidence Engine",
     icon: Sparkles,
   },
 ]
@@ -92,7 +99,7 @@ export default function LocationDataLoadingScreen({
           {/* Rotating Scanner Needle */}
           <div
             className="absolute inset-0 rounded-full border-t-2 border-r-2 border-[#00ED64] animate-spin"
-            style={{ animationDuration: '2s' }}
+            style={{ animationDuration: "2s" }}
           />
 
           {/* Concentric Inner Circles */}
@@ -130,7 +137,9 @@ export default function LocationDataLoadingScreen({
               {currentStep.title}...
             </p>
             <div className="inline-flex items-center gap-1.5 text-xs text-[#A8B3BC] bg-[#003D4F]/50 px-3 py-1 rounded-full border border-[#003D4F]">
-              <span className="text-[10px] uppercase font-bold text-[#00ED64]">Sumber:</span>
+              <span className="text-[10px] uppercase font-bold text-[#00ED64]">
+                Sumber:
+              </span>
               <span>{currentStep.source}</span>
             </div>
           </div>

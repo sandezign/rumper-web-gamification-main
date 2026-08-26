@@ -1,8 +1,15 @@
-import { useState } from 'react'
-import { Car, Clock, Navigation, CheckCircle2, ShieldCheck, Plus } from 'lucide-react'
-import Card from './ui/Card'
-import Badge from './ui/Badge'
-import SectionHeader from './ui/SectionHeader'
+import { useState } from "react"
+import {
+  Car,
+  Clock,
+  Navigation,
+  CheckCircle2,
+  ShieldCheck,
+  Plus,
+} from "lucide-react"
+import Card from "./ui/Card"
+import Badge from "./ui/Badge"
+import SectionHeader from "./ui/SectionHeader"
 
 interface RouteOption {
   id: string
@@ -10,53 +17,65 @@ interface RouteOption {
   destination: string
   duration: string
   mode: string
-  riskBadge: 'warning' | 'success' | 'danger' | 'info'
+  riskBadge: "warning" | "success" | "danger" | "info"
   riskText: string
   recommendedTag?: string
-  legs: { mode: string; detail: string; time: string }[]
+  legs: { mode: string detail: string time: string }[]
 }
 
 const routes: RouteOption[] = [
   {
-    id: 'r1',
-    title: 'KRL Commuter Line',
-    destination: 'Stasiun Bekasi ➔ Sudirman',
-    duration: '45 min',
-    mode: 'Transit',
-    riskBadge: 'warning',
-    riskText: 'Waktu tempuh jam sibuk tinggi',
-    recommendedTag: 'Tertinggi',
+    id: "r1",
+    title: "KRL Commuter Line",
+    destination: "Stasiun Bekasi ➔ Sudirman",
+    duration: "45 min",
+    mode: "Transit",
+    riskBadge: "warning",
+    riskText: "Waktu tempuh jam sibuk tinggi",
+    recommendedTag: "Tertinggi",
     legs: [
-      { mode: 'Jalan Kaki', detail: 'Ke Halte Galaxy', time: '5 min' },
-      { mode: 'Angkot K05', detail: 'Ke Stasiun Bekasi', time: '15 min' },
-      { mode: 'KRL Commuter Line', detail: 'Bekasi ➔ Manggarai', time: '25 min' },
+      { mode: "Jalan Kaki", detail: "Ke Halte Galaxy", time: "5 min" },
+      { mode: "Angkot K05", detail: "Ke Stasiun Bekasi", time: "15 min" },
+      {
+        mode: "KRL Commuter Line",
+        detail: "Bekasi ➔ Manggarai",
+        time: "25 min",
+      },
     ],
   },
   {
-    id: 'r2',
-    title: 'Tol Jakarta–Cikampek',
-    destination: 'Pintu Tol Bekasi Barat ➔ Semanggi',
-    duration: '55 min',
-    mode: 'Mobil / Taxi',
-    riskBadge: 'danger',
-    riskText: 'Potensi macet titik Cikunir',
+    id: "r2",
+    title: "Tol Jakarta–Cikampek",
+    destination: "Pintu Tol Bekasi Barat ➔ Semanggi",
+    duration: "55 min",
+    mode: "Mobil / Taxi",
+    riskBadge: "danger",
+    riskText: "Potensi macet titik Cikunir",
     legs: [
-      { mode: 'Mobil', detail: 'Jalan Raya Pekayon ➔ Tol Japek', time: '15 min' },
-      { mode: 'Tol Utama', detail: 'Bekasi Barat ➔ Halim ➔ Semanggi', time: '40 min' },
+      {
+        mode: "Mobil",
+        detail: "Jalan Raya Pekayon ➔ Tol Japek",
+        time: "15 min",
+      },
+      {
+        mode: "Tol Utama",
+        detail: "Bekasi Barat ➔ Halim ➔ Semanggi",
+        time: "40 min",
+      },
     ],
   },
   {
-    id: 'r3',
-    title: 'Rute Arteri / Sepeda Motor',
-    destination: 'Jl. Kalimalang ➔ MT Haryono',
-    duration: '40 min',
-    mode: 'Motor',
-    riskBadge: 'info',
-    riskText: 'Sensitif terhadap cuaca hujan',
-    recommendedTag: 'Tercepat',
+    id: "r3",
+    title: "Rute Arteri / Sepeda Motor",
+    destination: "Jl. Kalimalang ➔ MT Haryono",
+    duration: "40 min",
+    mode: "Motor",
+    riskBadge: "info",
+    riskText: "Sensitif terhadap cuaca hujan",
+    recommendedTag: "Tercepat",
     legs: [
-      { mode: 'Motor', detail: 'Jl. KH Noer Ali Kalimalang', time: '25 min' },
-      { mode: 'Arteri Utama', detail: 'Cawang ➔ Pancoran', time: '15 min' },
+      { mode: "Motor", detail: "Jl. KH Noer Ali Kalimalang", time: "25 min" },
+      { mode: "Arteri Utama", detail: "Cawang ➔ Pancoran", time: "15 min" },
     ],
   },
 ]
@@ -65,10 +84,13 @@ interface CommuteWorkspaceProps {
   onSwitchToChecklist?: () => void
 }
 
-export default function CommuteWorkspace({ onSwitchToChecklist }: CommuteWorkspaceProps) {
-  const [selectedRouteId, setSelectedRouteId] = useState<string>('r1')
+export default function CommuteWorkspace({
+  onSwitchToChecklist,
+}: CommuteWorkspaceProps) {
+  const [selectedRouteId, setSelectedRouteId] = useState<string>("r1")
   const [addedToChecklist, setAddedToChecklist] = useState<boolean>(false)
-  const selectedRoute = routes.find((r) => r.id === selectedRouteId) || routes[0]
+  const selectedRoute =
+    routes.find((r) => r.id === selectedRouteId) || routes[0]
 
   const handleChecklistClick = () => {
     setAddedToChecklist(true)
@@ -83,7 +105,7 @@ export default function CommuteWorkspace({ onSwitchToChecklist }: CommuteWorkspa
         stepLabel="TAHAP"
         icon={<Car size={12} className="text-emerald-400" />}
         title="Mobilitas & Waktu Tempuh Perjalanan"
-        subtitle="Analisis aksesibilitas transportasi, rute utama, dan estimasi waktu tempuh komut."
+        subtitle="Estimasi rute & waktu tempuh riil ke titik gravitasimu pas jam sibuk pagi dan sore."
       />
 
       {/* ── Route Selection Grid Cards ── */}
@@ -97,15 +119,22 @@ export default function CommuteWorkspace({ onSwitchToChecklist }: CommuteWorkspa
               onClick={() => setSelectedRouteId(r.id)}
               className={`p-4 rounded-2xl text-left transition-all duration-150 ease-out-decel flex flex-col justify-between gap-3 cursor-pointer active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0F2B38] ${
                 isSelected
-                  ? 'bg-white border-2 border-[#0F2B38] shadow-2xs'
-                  : 'bg-slate-50/80 border border-slate-200 hover:bg-white hover:border-slate-300'
+                  ? "bg-white border-2 border-[#0F2B38] shadow-2xs"
+                  : "bg-slate-50/80 border border-slate-200 hover:bg-white hover:border-slate-300"
               }`}
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <span className="text-xs font-semibold text-slate-500">{r.mode}</span>
+                  <span className="text-xs font-semibold text-slate-500">
+                    {r.mode}
+                  </span>
                   {r.recommendedTag && (
-                    <Badge variant={r.recommendedTag === 'Tercepat' ? 'success' : 'info'} size="sm">
+                    <Badge
+                      variant={
+                        r.recommendedTag === "Tercepat" ? "success" : "info"
+                      }
+                      size="sm"
+                    >
                       {r.recommendedTag}
                     </Badge>
                   )}
@@ -114,7 +143,9 @@ export default function CommuteWorkspace({ onSwitchToChecklist }: CommuteWorkspa
                 <h4 className="font-bold text-sm sm:text-base text-slate-900 leading-snug">
                   {r.title}
                 </h4>
-                <p className="text-xs text-slate-500 mt-0.5 truncate">{r.destination}</p>
+                <p className="text-xs text-slate-500 mt-0.5 truncate">
+                  {r.destination}
+                </p>
               </div>
 
               <div className="flex items-center justify-between pt-2 border-t border-slate-100">
@@ -148,12 +179,17 @@ export default function CommuteWorkspace({ onSwitchToChecklist }: CommuteWorkspa
 
           <div className="flex flex-col divide-y divide-slate-200/60">
             {selectedRoute.legs.map((leg, i) => (
-              <div key={i} className="py-2.5 flex items-center justify-between gap-3 text-xs">
+              <div
+                key={i}
+                className="py-2.5 flex items-center justify-between gap-3 text-xs"
+              >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-700 font-bold flex items-center justify-center text-[10px] tabular-nums shrink-0">
                     {i + 1}
                   </span>
-                  <span className="font-bold text-slate-900 shrink-0">{leg.mode}</span>
+                  <span className="font-bold text-slate-900 shrink-0">
+                    {leg.mode}
+                  </span>
                   <span className="text-slate-400 hidden sm:inline">•</span>
                   <span className="text-slate-600 truncate">{leg.detail}</span>
                 </div>
@@ -167,7 +203,11 @@ export default function CommuteWorkspace({ onSwitchToChecklist }: CommuteWorkspa
       </Card>
 
       {/* ── Field Verification Recommendation Banner ── */}
-      <Card variant="bordered" padding="md" className="bg-[#fffdf5] border-amber-200/90 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <Card
+        variant="bordered"
+        padding="md"
+        className="bg-[#fffdf5] border-amber-200/90 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
         <div className="flex items-start gap-3">
           <ShieldCheck size={20} className="text-amber-700 shrink-0 mt-0.5" />
           <div>
@@ -175,7 +215,9 @@ export default function CommuteWorkspace({ onSwitchToChecklist }: CommuteWorkspa
               Rekomendasi verifikasi lapangan rute perjalanan
             </h5>
             <p className="text-xs text-slate-600 leading-relaxed mt-1 text-wrap-pretty">
-              Lakukan uji coba perjalanan ({selectedRoute.title}) pada hari kerja jam 07:15–08:00 WIB untuk mengonfirmasi durasi riil dan kondisi lalu lintas sebelum menyelesaikan komitmen hunian.
+              Lakukan uji coba perjalanan ({selectedRoute.title}) pada hari
+              kerja jam 07:15–08:00 WIB untuk mengonfirmasi durasi riil dan
+              kondisi lalu lintas sebelum menyelesaikan komitmen hunian.
             </p>
           </div>
         </div>

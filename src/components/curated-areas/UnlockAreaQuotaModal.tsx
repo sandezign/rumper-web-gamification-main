@@ -1,12 +1,6 @@
-import React from 'react'
-import {
-  ShieldCheck,
-  X,
-  Check,
-  ArrowRight,
-  MapPin,
-} from 'lucide-react'
-import type { CuratedArea } from '../../data/mockCuratedAreas'
+import React from "react"
+import { ShieldCheck, X, Check, ArrowRight, MapPin } from "lucide-react"
+import type { CuratedArea } from "../../data/mockCuratedAreas"
 
 interface UnlockAreaQuotaModalProps {
   isOpen: boolean
@@ -58,11 +52,15 @@ export default function UnlockAreaQuotaModal({
                 <ShieldCheck size={22} />
               </div>
               <div>
-                <h3 id="unlock-quota-title" className="text-base sm:text-lg font-black tracking-tight text-white leading-tight">
-                  Buka Laporan Evaluasi Rumah?
+                <h3
+                  id="unlock-quota-title"
+                  className="text-base sm:text-lg font-black tracking-tight text-white leading-tight"
+                >
+                  Buka Mini Check Rumah Ini?
                 </h3>
                 <p className="text-xs text-[#A8B3BC] mt-0.5 font-medium leading-normal">
-                  Sistem akan membuka analisis mendalam 5 tahap di Workspace.
+                  Rumper bakal ngebuka riset mendalam 5 tahap lokasi ini di
+                  Workspace.
                 </p>
               </div>
             </div>
@@ -85,11 +83,11 @@ export default function UnlockAreaQuotaModal({
             <div className="flex items-center justify-between gap-2">
               <span
                 className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border ${
-                  area.category === 'strong-fit'
-                    ? 'bg-[#DCEEE7] text-[#004F38] border-[#318266]/30'
-                    : area.category === 'interesting-tradeoff'
-                    ? 'bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30'
-                    : 'bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30'
+                  area.category === "strong-fit"
+                    ? "bg-[#DCEEE7] text-[#004F38] border-[#318266]/30"
+                    : area.category === "interesting-tradeoff"
+                      ? "bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30"
+                      : "bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30"
                 }`}
               >
                 {area.categoryLabel}
@@ -109,16 +107,28 @@ export default function UnlockAreaQuotaModal({
             {/* Quick 3 Metrics Pill Grid */}
             <div className="grid grid-cols-3 gap-2 pt-1 border-t border-[#E1E5E8] text-center">
               <div className="bg-white rounded-xl p-2 border border-[#E1E5E8] shadow-2xs">
-                <div className="text-[10px] font-bold text-[#7C8C9A] uppercase tracking-wider truncate">Komuter</div>
-                <div className="text-xs font-black text-[#001E2B] mt-0.5 truncate">{area.commuteTime}</div>
+                <div className="text-[10px] font-bold text-[#7C8C9A] uppercase tracking-wider truncate">
+                  Komuter
+                </div>
+                <div className="text-xs font-black text-[#001E2B] mt-0.5 truncate">
+                  {area.commuteTime}
+                </div>
               </div>
               <div className="bg-white rounded-xl p-2 border border-[#E1E5E8] shadow-2xs">
-                <div className="text-[10px] font-bold text-[#7C8C9A] uppercase tracking-wider truncate">Elevasi</div>
-                <div className="text-xs font-black text-[#00684A] mt-0.5 truncate">{area.elevationDpl}</div>
+                <div className="text-[10px] font-bold text-[#7C8C9A] uppercase tracking-wider truncate">
+                  Elevasi
+                </div>
+                <div className="text-xs font-black text-[#00684A] mt-0.5 truncate">
+                  {area.elevationDpl}
+                </div>
               </div>
               <div className="bg-white rounded-xl p-2 border border-[#E1E5E8] shadow-2xs">
-                <div className="text-[10px] font-bold text-[#7C8C9A] uppercase tracking-wider truncate">Kisaran Harga</div>
-                <div className="text-xs font-black text-[#001E2B] mt-0.5 truncate">{area.priceRange}</div>
+                <div className="text-[10px] font-bold text-[#7C8C9A] uppercase tracking-wider truncate">
+                  Kisaran Harga
+                </div>
+                <div className="text-xs font-black text-[#001E2B] mt-0.5 truncate">
+                  {area.priceRange}
+                </div>
               </div>
             </div>
           </div>
@@ -126,32 +136,43 @@ export default function UnlockAreaQuotaModal({
           {/* 4 Value Deliverables Unlocked */}
           <div className="space-y-2.5">
             <span className="text-xs font-black uppercase tracking-wider text-[#5C6C7A] block">
-              Laporan Investigasi yang Akan Anda Akses:
+              Laporan Investigasi yang Bakal Kamu Buka:
             </span>
             <div className="space-y-2 text-xs font-semibold text-[#3D4F5B]">
               <div className="flex items-start gap-2.5">
                 <div className="w-4 h-4 rounded-full bg-[#DCEEE7] text-[#00684A] flex items-center justify-center shrink-0 mt-0.5">
                   <Check size={11} className="stroke-[3]" />
                 </div>
-                <span className="leading-snug">Analisis 5 Tahap Faktor Risiko Spasial & Elevasi Kontur (BIG & BNPB)</span>
+                <span className="leading-snug">
+                  Analisis 5 Tahap Faktor Risiko Spasial & Elevasi Kontur (BIG &
+                  BNPB)
+                </span>
               </div>
               <div className="flex items-start gap-2.5">
                 <div className="w-4 h-4 rounded-full bg-[#DCEEE7] text-[#00684A] flex items-center justify-center shrink-0 mt-0.5">
                   <Check size={11} className="stroke-[3]" />
                 </div>
-                <span className="leading-snug">Simulasi Waktu Tempuh Jam Sibuk Pagi vs Sore (KRL & Tol)</span>
+                <span className="leading-snug">
+                  Simulasi Waktu Tempuh Jam Sibuk Pagi vs Sore (KRL & Tol)
+                </span>
               </div>
               <div className="flex items-start gap-2.5">
                 <div className="w-4 h-4 rounded-full bg-[#DCEEE7] text-[#00684A] flex items-center justify-center shrink-0 mt-0.5">
                   <Check size={11} className="stroke-[3]" />
                 </div>
-                <span className="leading-snug">12 Parameter Kritis Checklist Survei Lapangan & Pertanyaan Developer</span>
+                <span className="leading-snug">
+                  12 Parameter Kritis Checklist Survei Lapangan & Pertanyaan
+                  Developer
+                </span>
               </div>
               <div className="flex items-start gap-2.5">
                 <div className="w-4 h-4 rounded-full bg-[#DCEEE7] text-[#00684A] flex items-center justify-center shrink-0 mt-0.5">
                   <Check size={11} className="stroke-[3]" />
                 </div>
-                <span className="leading-snug">Verifikasi Fasilitas Esensial (RS, Sekolah, Pasar radius 1–3 km)</span>
+                <span className="leading-snug">
+                  Verifikasi Fasilitas Esensial (RS, Sekolah, Pasar radius 1–3
+                  km)
+                </span>
               </div>
             </div>
           </div>
@@ -160,9 +181,13 @@ export default function UnlockAreaQuotaModal({
           <div className="p-3 rounded-2xl bg-[#F4F7F8] border border-[#E1E5E8] flex items-center justify-between gap-2 text-xs font-semibold">
             <span className="text-[#5C6C7A]">Status Kuota Evaluasi:</span>
             <div className="flex items-center gap-1.5 font-bold shrink-0">
-              <span className="text-[#001E2B]">{effectiveQuota} Kuota Tersisa</span>
+              <span className="text-[#001E2B]">
+                {effectiveQuota} Kuota Tersisa
+              </span>
               <ArrowRight size={12} className="text-[#7C8C9A]" />
-              <span className="text-[#00684A]">{quotaAfterUse} dari {totalQuota}</span>
+              <span className="text-[#00684A]">
+                {quotaAfterUse} dari {totalQuota}
+              </span>
             </div>
           </div>
         </div>
@@ -190,4 +215,3 @@ export default function UnlockAreaQuotaModal({
     </div>
   )
 }
-

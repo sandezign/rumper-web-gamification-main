@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 import {
   Bookmark,
   Sparkles,
@@ -10,8 +10,8 @@ import {
   Clock,
   Coins,
   Mountain,
-} from 'lucide-react'
-import type { CuratedArea } from '../../data/mockCuratedAreas'
+} from "lucide-react"
+import type { CuratedArea } from "../../data/mockCuratedAreas"
 
 interface DaftarAksesibelViewProps {
   areas: CuratedArea[]
@@ -32,9 +32,12 @@ export default function DaftarAksesibelView({
         <div className="w-12 h-12 rounded-2xl bg-[#E9F5EF] text-[#00684A] flex items-center justify-center mx-auto border border-[#318266]/20">
           <Sparkles size={24} />
         </div>
-        <h3 className="text-base font-extrabold text-[#001E2B]">Tidak Ada Area dalam Kategori Ini</h3>
+        <h3 className="text-base font-extrabold text-[#001E2B]">
+          Tidak Ada Area dalam Kategori Ini
+        </h3>
         <p className="text-xs text-[#5C6C7A] max-w-md mx-auto">
-          Pilih filter kategori keselarasan lain di atas untuk meninjau opsi koridor Jabodetabek lainnya.
+          Pilih filter kategori keselarasan lain di atas untuk meninjau opsi
+          koridor Jabodetabek lainnya.
         </p>
       </div>
     )
@@ -43,9 +46,13 @@ export default function DaftarAksesibelView({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 animate-fadeIn pb-12">
       {areas.map((area) => {
-        const isStrongFit = area.category === 'strong-fit'
-        const isTradeoff = area.category === 'interesting-tradeoff'
-        const dotColor = isStrongFit ? 'bg-[#00B545]' : isTradeoff ? 'bg-[#D4A017]' : 'bg-[#D9383A]'
+        const isStrongFit = area.category === "strong-fit"
+        const isTradeoff = area.category === "interesting-tradeoff"
+        const dotColor = isStrongFit
+          ? "bg-[#00B545]"
+          : isTradeoff
+            ? "bg-[#D4A017]"
+            : "bg-[#D9383A]"
 
         return (
           <div
@@ -57,13 +64,15 @@ export default function DaftarAksesibelView({
               <span
                 className={`text-[10px] font-extrabold px-3 py-1 rounded-full border flex items-center gap-1.5 shrink-0 ${
                   isStrongFit
-                    ? 'bg-[#DCEEE7] text-[#004F38] border-[#318266]/30'
+                    ? "bg-[#DCEEE7] text-[#004F38] border-[#318266]/30"
                     : isTradeoff
-                    ? 'bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30'
-                    : 'bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30'
+                      ? "bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30"
+                      : "bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30"
                 }`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`} />
+                <span
+                  className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`}
+                />
                 <span>{area.categoryLabel}</span>
               </span>
 
@@ -75,14 +84,21 @@ export default function DaftarAksesibelView({
                 <button
                   type="button"
                   onClick={() => onToggleBookmark(area.id)}
-                  title={area.isShortlisted ? 'Hapus dari Shortlist' : 'Simpan ke Shortlist'}
+                  title={
+                    area.isShortlisted
+                      ? "Hapus dari Shortlist"
+                      : "Simpan ke Shortlist"
+                  }
                   className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all cursor-pointer shrink-0 ${
                     area.isShortlisted
-                      ? 'bg-[#001E2B] text-[#00ED64] border-[#001E2B] shadow-xs'
-                      : 'bg-[#F4F7F6] text-[#7C8C9A] border-[#E1E5E8] hover:text-[#001E2B] hover:bg-[#EAEFEF]'
+                      ? "bg-[#001E2B] text-[#00ED64] border-[#001E2B] shadow-xs"
+                      : "bg-[#F4F7F6] text-[#7C8C9A] border-[#E1E5E8] hover:text-[#001E2B] hover:bg-[#EAEFEF]"
                   }`}
                 >
-                  <Bookmark size={13} className={area.isShortlisted ? 'fill-[#00ED64]' : ''} />
+                  <Bookmark
+                    size={13}
+                    className={area.isShortlisted ? "fill-[#00ED64]" : ""}
+                  />
                 </button>
               </div>
             </div>

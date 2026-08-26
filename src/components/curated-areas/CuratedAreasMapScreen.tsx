@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react'
+import React, { useState, useMemo, useRef, useEffect } from "react"
 import {
   Map,
   List,
@@ -28,7 +28,7 @@ import {
   AlertTriangle,
   Scale,
   Mountain,
-} from 'lucide-react'
+} from "lucide-react"
 import {
   MapContainer,
   TileLayer,
@@ -38,24 +38,25 @@ import {
   Popup,
   Polyline,
   useMap,
-} from 'react-leaflet'
-import L from 'leaflet'
-import svgPaths from '../../imports/Header/svg-n4hssipkeg'
+} from "react-leaflet"
+import L from "leaflet"
+import svgPaths from "../../imports/Header/svg-n4hssipkeg"
 import {
   initialCuratedAreas,
   SUDIRMAN_GRAVITY_CENTER,
   type CuratedArea,
   type FitCategory,
-} from '../../data/mockCuratedAreas'
-import DaftarAksesibelView from './DaftarAksesibelView'
-import ShortlistAreasView from './ShortlistAreasView'
-import AreaDetailDrawer from './AreaDetailDrawer'
-import UnlockAreaQuotaModal from './UnlockAreaQuotaModal'
-import AreaComparisonModal from './AreaComparisonModal'
+} from "../../data/mockCuratedAreas"
+import DaftarAksesibelView from "./DaftarAksesibelView"
+import ShortlistAreasView from "./ShortlistAreasView"
+import AreaDetailDrawer from "./AreaDetailDrawer"
+import UnlockAreaQuotaModal from "./UnlockAreaQuotaModal"
+import AreaComparisonModal from "./AreaComparisonModal"
+import AreaCardCarousel from "./AreaCardCarousel"
 
-type ViewMode = 'peta' | 'daftar'
-type DaftarSubTab = 'semua' | 'shortlist'
-type CategoryFilter = 'all' | FitCategory | 'shortlisted'
+type ViewMode = "peta" | "daftar"
+type DaftarSubTab = "semua" | "shortlist"
+type CategoryFilter = "all" | FitCategory | "shortlisted"
 
 interface CuratedAreasMapScreenProps {
   onUnlockArea: (area: CuratedArea) => void
@@ -65,38 +66,40 @@ interface CuratedAreasMapScreenProps {
 }
 
 // ── Leaflet Default Icons Fix ──────────────────────────────────────────────
-delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl
+delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
+  ._getIconUrl
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconRetinaUrl:
+    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 })
 
 // ── Map Constants ─────────────────────────────────────────────────────────
-const JABODETABEK_CENTER: [number, number] = [-6.295, 106.850]
+const JABODETABEK_CENTER: [number, number] = [-6.295, 106.85]
 const JABODETABEK_DEFAULT_ZOOM = 11
 
 // High-Risk Flood Floodplain Polygons across river basin corridors
 const FLOOD_CORRIDOR_POLYGONS: [number, number][][] = [
   // Ciliwung Basin (Bidara Cina / Kampung Melayu flood trace)
   [
-    [-6.230, 106.860],
-    [-6.240, 106.868],
+    [-6.23, 106.86],
+    [-6.24, 106.868],
     [-6.255, 106.862],
     [-6.245, 106.852],
   ],
   // Kali Bekasi Basin (Bekasi Timur / Babelan floodplain)
   [
-    [-6.220, 106.995],
+    [-6.22, 106.995],
     [-6.235, 107.015],
-    [-6.250, 107.008],
+    [-6.25, 107.008],
     [-6.238, 106.985],
   ],
   // Cisadane Low Basin (Tangerang Utara / Teluknaga)
   [
-    [-6.160, 106.630],
-    [-6.180, 106.650],
-    [-6.200, 106.635],
+    [-6.16, 106.63],
+    [-6.18, 106.65],
+    [-6.2, 106.635],
     [-6.175, 106.615],
   ],
 ]
@@ -105,11 +108,11 @@ const FLOOD_CORRIDOR_POLYGONS: [number, number][][] = [
 const ICON_CACHE: Record<string, L.DivIcon> = {}
 
 function makeSudirmanMarkerIcon() {
-  const cacheKey = 'sudirman-center-marker'
+  const cacheKey = "sudirman-center-marker"
   if (ICON_CACHE[cacheKey]) return ICON_CACHE[cacheKey]
 
   const icon = L.divIcon({
-    className: 'leaflet-custom-marker',
+    className: "leaflet-custom-marker",
     html: `
       <div style="position:relative;display:flex;align-items:center;cursor:pointer;">
         <!-- Pulsing Radar Glow Ring -->
@@ -134,23 +137,23 @@ function makeCorridorMarkerIcon(area: CuratedArea, isSelected: boolean) {
   const cacheKey = `corridor-${area.id}-${isSelected}`
   if (ICON_CACHE[cacheKey]) return ICON_CACHE[cacheKey]
 
-  const isStrongFit = area.category === 'strong-fit'
-  const isTradeoff = area.category === 'interesting-tradeoff'
+  const isStrongFit = area.category === "strong-fit"
+  const isTradeoff = area.category === "interesting-tradeoff"
 
-  const dotColor = isStrongFit ? '#00B545' : isTradeoff ? '#D4A017' : '#D9383A'
+  const dotColor = isStrongFit ? "#00B545" : isTradeoff ? "#D4A017" : "#D9383A"
   const bgStyle = isSelected
-    ? 'background:#001E2B;color:white;border:2.5px solid #00ED64;box-shadow:0 6px 20px rgba(0,237,100,0.45);transform:scale(1.08);'
-    : 'background:rgba(255,255,255,0.96);color:#001E2B;border:1.5px solid rgba(193,204,214,0.9);box-shadow:0 3px 10px rgba(0,0,0,0.15);'
+    ? "background:#001E2B;color:white;border:2.5px solid #00ED64;box-shadow:0 6px 20px rgba(0,237,100,0.45);transform:scale(1.08);"
+    : "background:rgba(255,255,255,0.96);color:#001E2B;border:1.5px solid rgba(193,204,214,0.9);box-shadow:0 3px 10px rgba(0,0,0,0.15);"
 
   const commuteBadgeStyle = isSelected
-    ? 'background:rgba(0,237,100,0.25);color:#00ED64;'
-    : 'background:#F4F7F8;color:#5C6C7A;'
+    ? "background:rgba(0,237,100,0.25);color:#00ED64;"
+    : "background:#F4F7F8;color:#5C6C7A;"
 
-  const shortName = area.name.split('&')[0].trim()
-  const shortCommute = area.commuteTime.replace('Menit', 'm').trim()
+  const shortName = area.name.split("&")[0].trim()
+  const shortCommute = area.commuteTime.replace("Menit", "m").trim()
 
   const icon = L.divIcon({
-    className: 'leaflet-custom-marker',
+    className: "leaflet-custom-marker",
     html: `
       <div style="position:relative;display:flex;align-items:center;cursor:pointer;transition:all 0.2s ease-out;">
         <div style="display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:9999px;font-family:'DM Sans',sans-serif;backdrop-filter:blur(8px);${bgStyle}">
@@ -177,7 +180,7 @@ function MapCamera({
   zoom: number
 }) {
   const map = useMap()
-  const prevKey = useRef<string>('')
+  const prevKey = useRef<string>("")
   const currentKey = `${center[0]},${center[1]},${zoom}`
 
   useEffect(() => {
@@ -198,11 +201,7 @@ function MapCamera({
 }
 
 // ── Map Floating Zoom Controls ────────────────────────────────────────────
-function MapZoomControls({
-  onRecenter,
-}: {
-  onRecenter: () => void
-}) {
+function MapZoomControls({ onRecenter }: { onRecenter: () => void }) {
   const map = useMap()
 
   return (
@@ -238,7 +237,10 @@ function MapZoomControls({
 // Canonical Rumper Logo Mark
 function RumperMark() {
   return (
-    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#001E2B]" aria-hidden="true">
+    <span
+      className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#001E2B]"
+      aria-hidden="true"
+    >
       <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
         <path d={svgPaths.p187fc900} stroke="#00ED64" strokeWidth="2" />
         <path d={svgPaths.p38875b00} fill="#5085FF" />
@@ -249,18 +251,54 @@ function RumperMark() {
 
 function LocationIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d={svgPaths.p3d095780} stroke="#00ED64" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-      <path d={svgPaths.p26d22700} stroke="#00ED64" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d={svgPaths.p3d095780}
+        stroke="#00ED64"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.33333"
+      />
+      <path
+        d={svgPaths.p26d22700}
+        stroke="#00ED64"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.33333"
+      />
     </svg>
   )
 }
 
 function ProfileIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-      <path d={svgPaths.p32d71800} stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
-      <path d={svgPaths.p205a5680} stroke="white" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.66667" />
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 20 20"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d={svgPaths.p32d71800}
+        stroke="white"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.66667"
+      />
+      <path
+        d={svgPaths.p205a5680}
+        stroke="white"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.66667"
+      />
     </svg>
   )
 }
@@ -272,12 +310,12 @@ export default function CuratedAreasMapScreen({
   isPremium = false,
 }: CuratedAreasMapScreenProps) {
   // View State
-  const [viewMode, setViewMode] = useState<ViewMode>('peta')
-  const [daftarSubTab, setDaftarSubTab] = useState<DaftarSubTab>('semua')
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all')
-  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [viewMode, setViewMode] = useState<ViewMode>("peta")
+  const [daftarSubTab, setDaftarSubTab] = useState<DaftarSubTab>("semua")
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all")
+  const [searchQuery, setSearchQuery] = useState<string>("")
   const [areas, setAreas] = useState<CuratedArea[]>(initialCuratedAreas)
-  const [selectedAreaId, setSelectedAreaId] = useState<string>('area-bintaro')
+  const [selectedAreaId, setSelectedAreaId] = useState<string>("area-bintaro")
 
   // GIS Map Layer Toggles
   const [showTransitRoutes, setShowTransitRoutes] = useState<boolean>(true)
@@ -287,35 +325,41 @@ export default function CuratedAreasMapScreen({
   // Modals & Drawers state
   const [drawerArea, setDrawerArea] = useState<CuratedArea | null>(null)
   const [quotaModalArea, setQuotaModalArea] = useState<CuratedArea | null>(null)
-  const [selectedForComparison, setSelectedForComparison] = useState<string[]>([])
-  const [isComparisonModalOpen, setIsComparisonModalOpen] = useState<boolean>(false)
+  const [selectedForComparison, setSelectedForComparison] = useState<string[]>(
+    [],
+  )
+  const [isComparisonModalOpen, setIsComparisonModalOpen] =
+    useState<boolean>(false)
 
   // Counts
   const strongFitCount = useMemo(
-    () => areas.filter((a) => a.category === 'strong-fit').length,
-    [areas]
+    () => areas.filter((a) => a.category === "strong-fit").length,
+    [areas],
   )
   const tradeoffCount = useMemo(
-    () => areas.filter((a) => a.category === 'interesting-tradeoff').length,
-    [areas]
+    () => areas.filter((a) => a.category === "interesting-tradeoff").length,
+    [areas],
   )
   const challengeCount = useMemo(
-    () => areas.filter((a) => a.category === 'challenge-assumptions').length,
-    [areas]
+    () => areas.filter((a) => a.category === "challenge-assumptions").length,
+    [areas],
   )
-  const shortlistedAreas = useMemo(() => areas.filter((a) => a.isShortlisted), [areas])
+  const shortlistedAreas = useMemo(
+    () => areas.filter((a) => a.isShortlisted),
+    [areas],
+  )
 
   // Filtered areas
   const filteredAreas = useMemo(() => {
     return areas.filter((area) => {
       const matchCategory =
-        categoryFilter === 'all'
+        categoryFilter === "all"
           ? true
-          : categoryFilter === 'shortlisted'
-          ? area.isShortlisted
-          : area.category === categoryFilter
+          : categoryFilter === "shortlisted"
+            ? area.isShortlisted
+            : area.category === categoryFilter
       const matchQuery =
-        searchQuery.trim() === ''
+        searchQuery.trim() === ""
           ? true
           : area.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             area.region.toLowerCase().includes(searchQuery.toLowerCase())
@@ -357,10 +401,10 @@ export default function CuratedAreasMapScreen({
     }
   }
 
-  const handleStepArea = (direction: 'prev' | 'next') => {
+  const handleStepArea = (direction: "prev" | "next") => {
     if (filteredAreas.length === 0) return
     const nextIdx =
-      direction === 'next'
+      direction === "next"
         ? (currentAreaIndex + 1) % filteredAreas.length
         : (currentAreaIndex - 1 + filteredAreas.length) % filteredAreas.length
     const nextArea = filteredAreas[nextIdx]
@@ -371,12 +415,14 @@ export default function CuratedAreasMapScreen({
 
   const handleRecenterAll = () => {
     setMapZoomTarget(JABODETABEK_DEFAULT_ZOOM)
-    setSelectedAreaId('')
+    setSelectedAreaId("")
   }
 
   const handleToggleBookmark = (id: string) => {
     setAreas((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, isShortlisted: !a.isShortlisted } : a))
+      prev.map((a) =>
+        a.id === id ? { ...a, isShortlisted: !a.isShortlisted } : a,
+      ),
     )
   }
 
@@ -386,7 +432,7 @@ export default function CuratedAreasMapScreen({
         return prev.filter((item) => item !== id)
       }
       if (prev.length >= 3) {
-        alert('Maksimal 3 area untuk perbandingan side-by-side.')
+        alert("Maksimal 3 area untuk perbandingan side-by-side.")
         return prev
       }
       return [...prev, id]
@@ -395,7 +441,7 @@ export default function CuratedAreasMapScreen({
 
   const handleRemoveFromShortlist = (id: string) => {
     setAreas((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, isShortlisted: false } : a))
+      prev.map((a) => (a.id === id ? { ...a, isShortlisted: false } : a)),
     )
     setSelectedForComparison((prev) => prev.filter((item) => item !== id))
   }
@@ -405,7 +451,8 @@ export default function CuratedAreasMapScreen({
     onUnlockArea(area)
   }
 
-  const isAnyOverlayOpen = drawerArea !== null || quotaModalArea !== null || isComparisonModalOpen
+  const isAnyOverlayOpen =
+    drawerArea !== null || quotaModalArea !== null || isComparisonModalOpen
 
   return (
     <div className="h-screen h-[100dvh] max-h-screen bg-[#F4F7F8] text-[#001E2B] flex flex-col overflow-hidden antialiased font-sans select-none relative">
@@ -427,7 +474,7 @@ export default function CuratedAreasMapScreen({
             className="flex h-8 items-center rounded-full border border-[rgba(1,237,100,0.5)] bg-[rgba(1,237,100,0.1)] px-3 text-xs font-semibold leading-none text-[#00ED64] shrink-0"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            {isPremium ? 'Premium' : 'Free Trial'}
+            {isPremium ? "Premium" : "Free Trial"}
           </div>
         </div>
 
@@ -446,8 +493,21 @@ export default function CuratedAreasMapScreen({
               <span className="text-xs font-semibold leading-none text-white hidden sm:inline">
                 Lanjut ke Workspace
               </span>
-              <svg className="shrink-0" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M6 12L10 8L6 4" stroke="#A8B3BC" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+              <svg
+                className="shrink-0"
+                width="14"
+                height="14"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M6 12L10 8L6 4"
+                  stroke="#A8B3BC"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.33333"
+                />
               </svg>
             </button>
           )}
@@ -485,7 +545,8 @@ export default function CuratedAreasMapScreen({
             </span>
           </div>
           <p className="text-xs text-[#5C6C7A] font-medium hidden sm:block">
-            Dikelompokkan berdasarkan keselarasan kompromi hidup nyata, bukan skor fiktif.
+            Dikelompokkan berdasarkan keselarasan kompromi hidup nyata, bukan
+            skor fiktif.
           </p>
         </div>
 
@@ -494,28 +555,38 @@ export default function CuratedAreasMapScreen({
           {/* Mode 1: Peta Interaktif */}
           <button
             type="button"
-            onClick={() => setViewMode('peta')}
+            onClick={() => setViewMode("peta")}
             className={`flex-1 sm:flex-initial justify-center min-h-[44px] sm:min-h-[36px] px-3.5 sm:px-4 py-2 sm:py-1.5 rounded-full text-xs font-bold transition-transform transition-colors flex items-center gap-1.5 cursor-pointer active:scale-[0.96] whitespace-nowrap ${
-              viewMode === 'peta'
-                ? 'bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs'
-                : 'bg-white sm:bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
+              viewMode === "peta"
+                ? "bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs"
+                : "bg-white sm:bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80"
             }`}
           >
-            <Map size={14} className={viewMode === 'peta' ? 'text-[#00ED64]' : 'text-[#7C8C9A]'} />
+            <Map
+              size={14}
+              className={
+                viewMode === "peta" ? "text-[#00ED64]" : "text-[#7C8C9A]"
+              }
+            />
             <span>Peta Interaktif</span>
           </button>
 
           {/* Mode 2: Daftar Area (With Shortlist Counter Badge Inside) */}
           <button
             type="button"
-            onClick={() => setViewMode('daftar')}
+            onClick={() => setViewMode("daftar")}
             className={`flex-1 sm:flex-initial justify-center min-h-[44px] sm:min-h-[36px] px-3.5 sm:px-4 py-2 sm:py-1.5 rounded-full text-xs font-bold transition-transform transition-colors flex items-center gap-1.5 cursor-pointer active:scale-[0.96] whitespace-nowrap ${
-              viewMode === 'daftar'
-                ? 'bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs'
-                : 'bg-white sm:bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
+              viewMode === "daftar"
+                ? "bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs"
+                : "bg-white sm:bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80"
             }`}
           >
-            <List size={14} className={viewMode === 'daftar' ? 'text-[#00ED64]' : 'text-[#7C8C9A]'} />
+            <List
+              size={14}
+              className={
+                viewMode === "daftar" ? "text-[#00ED64]" : "text-[#7C8C9A]"
+              }
+            />
             <span>Daftar Area</span>
             {shortlistedAreas.length > 0 && (
               <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-black bg-[#00ED64] text-[#001E2B] shadow-2xs tabular-nums">
@@ -531,7 +602,7 @@ export default function CuratedAreasMapScreen({
         {/* ========================================================
             VIEW MODE 1: PETA INTERAKTIF (Leaflet GIS Real Map)
             ======================================================== */}
-        {viewMode === 'peta' && (
+        {viewMode === "peta" && (
           <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden relative">
             {/* DESKTOP PANEL KIRI (1/3 Width): Visible only on Desktop (lg:) */}
             <aside className="hidden lg:flex lg:w-[380px] xl:w-[420px] bg-white border-r border-[#E1E5E8] flex-col h-full shrink-0 z-10 shadow-xs overflow-hidden">
@@ -551,17 +622,27 @@ export default function CuratedAreasMapScreen({
                   <button
                     type="button"
                     onClick={() =>
-                      setCategoryFilter(categoryFilter === 'strong-fit' ? 'all' : 'strong-fit')
+                      setCategoryFilter(
+                        categoryFilter === "strong-fit" ? "all" : "strong-fit",
+                      )
                     }
                     className={`p-2.5 rounded-2xl text-left border transition-all cursor-pointer active:scale-[0.97] ${
-                      categoryFilter === 'strong-fit'
-                        ? 'bg-[#0F2B38] text-white border-[#0F2B38] shadow-2xs'
-                        : 'bg-white border-[#C1CCD6] text-[#3D4F5B] hover:bg-[#F4F7F6]'
+                      categoryFilter === "strong-fit"
+                        ? "bg-[#0F2B38] text-white border-[#0F2B38] shadow-2xs"
+                        : "bg-white border-[#C1CCD6] text-[#3D4F5B] hover:bg-[#F4F7F6]"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className={`w-2 h-2 rounded-full ${categoryFilter === 'strong-fit' ? 'bg-[#00ED64]' : 'bg-[#00B545]'}`} />
-                      <span className="text-[10px] font-black">{strongFitCount}</span>
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          categoryFilter === "strong-fit"
+                            ? "bg-[#00ED64]"
+                            : "bg-[#00B545]"
+                        }`}
+                      />
+                      <span className="text-[10px] font-black">
+                        {strongFitCount}
+                      </span>
                     </div>
                     <span className="text-[11px] font-bold block mt-1 leading-tight truncate">
                       Kesesuaian Kuat
@@ -572,18 +653,28 @@ export default function CuratedAreasMapScreen({
                     type="button"
                     onClick={() =>
                       setCategoryFilter(
-                        categoryFilter === 'interesting-tradeoff' ? 'all' : 'interesting-tradeoff'
+                        categoryFilter === "interesting-tradeoff"
+                          ? "all"
+                          : "interesting-tradeoff",
                       )
                     }
                     className={`p-2.5 rounded-2xl text-left border transition-all cursor-pointer active:scale-[0.97] ${
-                      categoryFilter === 'interesting-tradeoff'
-                        ? 'bg-[#0F2B38] text-white border-[#0F2B38] shadow-2xs'
-                        : 'bg-white border-[#C1CCD6] text-[#3D4F5B] hover:bg-[#F4F7F6]'
+                      categoryFilter === "interesting-tradeoff"
+                        ? "bg-[#0F2B38] text-white border-[#0F2B38] shadow-2xs"
+                        : "bg-white border-[#C1CCD6] text-[#3D4F5B] hover:bg-[#F4F7F6]"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className={`w-2 h-2 rounded-full ${categoryFilter === 'interesting-tradeoff' ? 'bg-[#00ED64]' : 'bg-[#D4A017]'}`} />
-                      <span className="text-[10px] font-black">{tradeoffCount}</span>
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          categoryFilter === "interesting-tradeoff"
+                            ? "bg-[#00ED64]"
+                            : "bg-[#D4A017]"
+                        }`}
+                      />
+                      <span className="text-[10px] font-black">
+                        {tradeoffCount}
+                      </span>
                     </div>
                     <span className="text-[11px] font-bold block mt-1 leading-tight truncate">
                       Kompromi Menarik
@@ -594,18 +685,28 @@ export default function CuratedAreasMapScreen({
                     type="button"
                     onClick={() =>
                       setCategoryFilter(
-                        categoryFilter === 'challenge-assumptions' ? 'all' : 'challenge-assumptions'
+                        categoryFilter === "challenge-assumptions"
+                          ? "all"
+                          : "challenge-assumptions",
                       )
                     }
                     className={`p-2.5 rounded-2xl text-left border transition-all cursor-pointer active:scale-[0.97] ${
-                      categoryFilter === 'challenge-assumptions'
-                        ? 'bg-[#0F2B38] text-white border-[#0F2B38] shadow-2xs'
-                        : 'bg-white border-[#C1CCD6] text-[#3D4F5B] hover:bg-[#F4F7F6]'
+                      categoryFilter === "challenge-assumptions"
+                        ? "bg-[#0F2B38] text-white border-[#0F2B38] shadow-2xs"
+                        : "bg-white border-[#C1CCD6] text-[#3D4F5B] hover:bg-[#F4F7F6]"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className={`w-2 h-2 rounded-full ${categoryFilter === 'challenge-assumptions' ? 'bg-[#00ED64]' : 'bg-[#D9383A]'}`} />
-                      <span className="text-[10px] font-black">{challengeCount}</span>
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          categoryFilter === "challenge-assumptions"
+                            ? "bg-[#00ED64]"
+                            : "bg-[#D9383A]"
+                        }`}
+                      />
+                      <span className="text-[10px] font-black">
+                        {challengeCount}
+                      </span>
                     </div>
                     <span className="text-[11px] font-bold block mt-1 leading-tight truncate">
                       Opsi Alternatif
@@ -618,9 +719,13 @@ export default function CuratedAreasMapScreen({
               <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3 space-y-2">
                 {filteredAreas.map((area) => {
                   const isSelected = area.id === selectedArea.id
-                  const isStrongFit = area.category === 'strong-fit'
-                  const isTradeoff = area.category === 'interesting-tradeoff'
-                  const dotColor = isStrongFit ? 'bg-[#00B545]' : isTradeoff ? 'bg-[#D4A017]' : 'bg-[#D9383A]'
+                  const isStrongFit = area.category === "strong-fit"
+                  const isTradeoff = area.category === "interesting-tradeoff"
+                  const dotColor = isStrongFit
+                    ? "bg-[#00B545]"
+                    : isTradeoff
+                      ? "bg-[#D4A017]"
+                      : "bg-[#D9383A]"
 
                   return (
                     <div
@@ -628,8 +733,8 @@ export default function CuratedAreasMapScreen({
                       onClick={() => handleSelectArea(area.id)}
                       className={`p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-2 select-none relative ${
                         isSelected
-                          ? 'border-[#001E2B] bg-[#FBFDFC] shadow-sm ring-2 ring-[#001E2B]/10'
-                          : 'border-[#E1E5E8] bg-white hover:border-[#A8B8C6] hover:bg-[#F9FBFA]'
+                          ? "border-[#001E2B] bg-[#FBFDFC] shadow-sm ring-2 ring-[#001E2B]/10"
+                          : "border-[#E1E5E8] bg-white hover:border-[#A8B8C6] hover:bg-[#F9FBFA]"
                       }`}
                     >
                       {/* Active Indicator Bar */}
@@ -642,13 +747,15 @@ export default function CuratedAreasMapScreen({
                         <span
                           className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${
                             isStrongFit
-                              ? 'bg-[#DCEEE7] text-[#004F38] border-[#318266]/30'
+                              ? "bg-[#DCEEE7] text-[#004F38] border-[#318266]/30"
                               : isTradeoff
-                              ? 'bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30'
-                              : 'bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30'
+                                ? "bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30"
+                                : "bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30"
                           }`}
                         >
-                          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`} />
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`}
+                          />
                           <span>{area.categoryLabel}</span>
                         </span>
 
@@ -660,14 +767,20 @@ export default function CuratedAreasMapScreen({
                           }}
                           className={`p-1.5 rounded-full transition-colors cursor-pointer ${
                             area.isShortlisted
-                              ? 'text-[#00ED64] bg-[#001E2B]'
-                              : 'text-[#A8B3BC] hover:text-[#001E2B] hover:bg-[#F4F7F6]'
+                              ? "text-[#00ED64] bg-[#001E2B]"
+                              : "text-[#A8B3BC] hover:text-[#001E2B] hover:bg-[#F4F7F6]"
                           }`}
-                          title={area.isShortlisted ? 'Tersimpan di shortlist' : 'Simpan ke shortlist'}
+                          title={
+                            area.isShortlisted
+                              ? "Tersimpan di shortlist"
+                              : "Simpan ke shortlist"
+                          }
                         >
                           <Bookmark
                             size={13}
-                            className={area.isShortlisted ? 'fill-[#00ED64]' : ''}
+                            className={
+                              area.isShortlisted ? "fill-[#00ED64]" : ""
+                            }
                           />
                         </button>
                       </div>
@@ -711,7 +824,7 @@ export default function CuratedAreasMapScreen({
                 zoom={mapZoomTarget}
                 zoomControl={false}
                 scrollWheelZoom={true}
-                style={{ height: '100%', width: '100%' }}
+                style={{ height: "100%", width: "100%" }}
                 className="w-full h-full z-0"
               >
                 {/* Carto Voyager Baseline Tiles */}
@@ -732,10 +845,10 @@ export default function CuratedAreasMapScreen({
                       center={SUDIRMAN_GRAVITY_CENTER.latLng}
                       radius={10000}
                       pathOptions={{
-                        color: '#00ED64',
+                        color: "#00ED64",
                         weight: 1.5,
-                        dashArray: '6, 6',
-                        fillColor: '#00ED64',
+                        dashArray: "6, 6",
+                        fillColor: "#00ED64",
                         fillOpacity: 0.03,
                       }}
                     />
@@ -744,10 +857,10 @@ export default function CuratedAreasMapScreen({
                       center={SUDIRMAN_GRAVITY_CENTER.latLng}
                       radius={20000}
                       pathOptions={{
-                        color: '#3B82F6',
+                        color: "#3B82F6",
                         weight: 1.2,
-                        dashArray: '4, 6',
-                        fillColor: '#3B82F6',
+                        dashArray: "4, 6",
+                        fillColor: "#3B82F6",
                         fillOpacity: 0.02,
                       }}
                     />
@@ -756,10 +869,10 @@ export default function CuratedAreasMapScreen({
                       center={SUDIRMAN_GRAVITY_CENTER.latLng}
                       radius={35000}
                       pathOptions={{
-                        color: '#94A3B8',
+                        color: "#94A3B8",
                         weight: 1,
-                        dashArray: '4, 8',
-                        fillColor: 'transparent',
+                        dashArray: "4, 8",
+                        fillColor: "transparent",
                         fillOpacity: 0,
                       }}
                     />
@@ -773,10 +886,10 @@ export default function CuratedAreasMapScreen({
                       key={i}
                       positions={coords}
                       pathOptions={{
-                        color: '#DC2626',
+                        color: "#DC2626",
                         weight: 1.5,
-                        dashArray: '4, 4',
-                        fillColor: '#DC2626',
+                        dashArray: "4, 4",
+                        fillColor: "#DC2626",
                         fillOpacity: 0.18,
                       }}
                     />
@@ -787,9 +900,9 @@ export default function CuratedAreasMapScreen({
                   <Polyline
                     positions={[...selectedArea.latLngRoute]}
                     pathOptions={{
-                      color: '#00684A',
+                      color: "#00684A",
                       weight: 4,
-                      dashArray: '8, 6',
+                      dashArray: "8, 6",
                       opacity: 0.9,
                     }}
                   />
@@ -848,12 +961,15 @@ export default function CuratedAreasMapScreen({
                     onClick={() => setShowTransitRoutes((prev) => !prev)}
                     className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
                       showTransitRoutes
-                        ? 'bg-[#001E2B] text-white shadow-xs'
-                        : 'text-[#5C6C7A] hover:text-[#001E2B]'
+                        ? "bg-[#001E2B] text-white shadow-xs"
+                        : "text-[#5C6C7A] hover:text-[#001E2B]"
                     }`}
                     title="Toggle Jalur Rute Transit KRL & Tol"
                   >
-                    <Zap size={11} className={showTransitRoutes ? 'text-[#00ED64]' : ''} />
+                    <Zap
+                      size={11}
+                      className={showTransitRoutes ? "text-[#00ED64]" : ""}
+                    />
                     <span className="hidden xs:inline">Transit</span>
                   </button>
 
@@ -862,12 +978,15 @@ export default function CuratedAreasMapScreen({
                     onClick={() => setShowRadiusCircles((prev) => !prev)}
                     className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
                       showRadiusCircles
-                        ? 'bg-[#001E2B] text-white shadow-xs'
-                        : 'text-[#5C6C7A] hover:text-[#001E2B]'
+                        ? "bg-[#001E2B] text-white shadow-xs"
+                        : "text-[#5C6C7A] hover:text-[#001E2B]"
                     }`}
                     title="Toggle Radius Jarak 10-35km dari Sudirman"
                   >
-                    <Compass size={11} className={showRadiusCircles ? 'text-[#00ED64]' : ''} />
+                    <Compass
+                      size={11}
+                      className={showRadiusCircles ? "text-[#00ED64]" : ""}
+                    />
                     <span className="hidden xs:inline">Radius</span>
                   </button>
 
@@ -876,12 +995,17 @@ export default function CuratedAreasMapScreen({
                     onClick={() => setShowFloodZones((prev) => !prev)}
                     className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
                       showFloodZones
-                        ? 'bg-[#DC2626] text-white shadow-xs'
-                        : 'text-[#5C6C7A] hover:text-[#DC2626]'
+                        ? "bg-[#DC2626] text-white shadow-xs"
+                        : "text-[#5C6C7A] hover:text-[#DC2626]"
                     }`}
                     title="Toggle Layer Riwayat Genangan / Banjir BNPB"
                   >
-                    <AlertTriangle size={11} className={showFloodZones ? 'text-white' : 'text-[#DC2626]'} />
+                    <AlertTriangle
+                      size={11}
+                      className={
+                        showFloodZones ? "text-white" : "text-[#DC2626]"
+                      }
+                    />
                     <span className="hidden xs:inline">Banjir</span>
                   </button>
                 </div>
@@ -890,30 +1014,32 @@ export default function CuratedAreasMapScreen({
               {/* Floating Sticky Bottom Telemetry Pill (Desktop only) */}
               <div className="hidden lg:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-10 items-center gap-2 bg-[#001E2B]/90 backdrop-blur-md text-white px-4 py-1.5 rounded-full border border-white/15 text-xs font-semibold shadow-lg pointer-events-none">
                 <span className="w-2 h-2 rounded-full bg-[#00ED64] animate-pulse" />
-                <span>Sintesis Spasial BNPB & BIG 2024 · 8 Koridor Terverifikasi</span>
+                <span>
+                  Sintesis Spasial BNPB & BIG 2024 · 8 Koridor Terverifikasi
+                </span>
               </div>
 
               {/* DESKTOP Floating Selected Area Detail Pop-up Card (lg:block, bottom-4 left-4) */}
               {selectedArea && !isAnyOverlayOpen && (
-                <div className="hidden lg:block absolute bottom-4 left-4 z-20 max-w-md w-[390px] max-h-[calc(100%-80px)] overflow-y-auto bg-white/98 backdrop-blur-xl rounded-3xl border border-[#E1E5E8] shadow-2xl p-4 sm:p-5 space-y-3 animate-slideUp text-[#001E2B] pointer-events-auto">
+                <div className="hidden lg:block absolute bottom-4 left-4 z-20 max-w-md w-[390px] max-h-[calc(100%-80px)] overflow-y-auto bg-white/98 backdrop-blur-xl rounded-3xl border border-[#E1E5E8] shadow-[0_16px_36px_rgba(0,30,43,0.14)] p-4 sm:p-5 space-y-3 animate-slideUp text-[#001E2B] pointer-events-auto">
                   {/* Tag & Region + Bookmark */}
                   <div className="flex items-center justify-between">
                     <span
                       className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${
-                        selectedArea.category === 'strong-fit'
-                          ? 'bg-[#DCEEE7] text-[#004F38] border-[#318266]/30'
-                          : selectedArea.category === 'interesting-tradeoff'
-                          ? 'bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30'
-                          : 'bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30'
+                        selectedArea.category === "strong-fit"
+                          ? "bg-[#DCEEE7] text-[#004F38] border-[#318266]/30"
+                          : selectedArea.category === "interesting-tradeoff"
+                            ? "bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30"
+                            : "bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30"
                       }`}
                     >
                       <span
                         className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                          selectedArea.category === 'strong-fit'
-                            ? 'bg-[#00B545]'
-                            : selectedArea.category === 'interesting-tradeoff'
-                            ? 'bg-[#D4A017]'
-                            : 'bg-[#D9383A]'
+                          selectedArea.category === "strong-fit"
+                            ? "bg-[#00B545]"
+                            : selectedArea.category === "interesting-tradeoff"
+                              ? "bg-[#D4A017]"
+                              : "bg-[#D9383A]"
                         }`}
                       />
                       <span>{selectedArea.categoryLabel}</span>
@@ -927,16 +1053,27 @@ export default function CuratedAreasMapScreen({
                       <button
                         type="button"
                         onClick={() => handleToggleBookmark(selectedArea.id)}
-                        className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+                        className={`min-w-[36px] min-h-[36px] rounded-full flex items-center justify-center transition-transform transition-colors active:scale-[0.96] cursor-pointer ${
                           selectedArea.isShortlisted
-                            ? 'text-[#00ED64] bg-[#001E2B]'
-                            : 'text-[#A8B3BC] hover:text-[#001E2B] hover:bg-[#F4F7F6]'
+                            ? "text-[#00ED64] bg-[#001E2B]"
+                            : "text-[#A8B3BC] hover:text-[#001E2B] hover:bg-[#F4F7F6]"
                         }`}
-                        title={selectedArea.isShortlisted ? 'Tersimpan di shortlist' : 'Simpan ke shortlist'}
+                        title={
+                          selectedArea.isShortlisted
+                            ? "Tersimpan di shortlist"
+                            : "Simpan ke shortlist"
+                        }
+                        aria-label={
+                          selectedArea.isShortlisted
+                            ? `Hapus ${selectedArea.name} dari shortlist`
+                            : `Simpan ${selectedArea.name} ke shortlist`
+                        }
                       >
                         <Bookmark
-                          size={13}
-                          className={selectedArea.isShortlisted ? 'fill-[#00ED64]' : ''}
+                          size={14}
+                          className={
+                            selectedArea.isShortlisted ? "fill-[#00ED64]" : ""
+                          }
                         />
                       </button>
                     </div>
@@ -944,33 +1081,39 @@ export default function CuratedAreasMapScreen({
 
                   {/* Title */}
                   <div>
-                    <h3 className="text-base sm:text-lg font-black tracking-tight text-[#001E2B]">
+                    <h3 className="text-base sm:text-lg font-black tracking-tight text-[#001E2B] [text-wrap:balance]">
                       {selectedArea.name}
                     </h3>
                   </div>
 
                   {/* 3 Metrics Box Grid */}
                   <div className="grid grid-cols-3 gap-1.5 text-center text-xs">
-                    <div className="bg-[#F4F7F8] p-2 rounded-xl border border-[#E1E5E8]">
+                    <div className="bg-[#F4F7F8] p-2.5 rounded-2xl border border-[#E1E5E8]">
                       <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
                         <Clock size={10} />
                         Komuter
                       </span>
-                      <span className="text-xs font-black text-[#001E2B] mt-0.5 block">{selectedArea.commuteTime}</span>
+                      <span className="text-xs font-black text-[#001E2B] mt-0.5 block tabular-nums">
+                        {selectedArea.commuteTime}
+                      </span>
                     </div>
-                    <div className="bg-[#F4F7F8] p-2 rounded-xl border border-[#E1E5E8]">
+                    <div className="bg-[#F4F7F8] p-2.5 rounded-2xl border border-[#E1E5E8]">
                       <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
                         <Coins size={10} />
                         Harga
                       </span>
-                      <span className="text-xs font-black text-[#001E2B] mt-0.5 block truncate">{selectedArea.priceRange}</span>
+                      <span className="text-xs font-black text-[#001E2B] mt-0.5 block truncate tabular-nums">
+                        {selectedArea.priceRange}
+                      </span>
                     </div>
-                    <div className="bg-[#F4F7F8] p-2 rounded-xl border border-[#E1E5E8]">
+                    <div className="bg-[#F4F7F8] p-2.5 rounded-2xl border border-[#E1E5E8]">
                       <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
                         <Mountain size={10} />
                         Elevasi
                       </span>
-                      <span className="text-xs font-black text-[#00684A] mt-0.5 block">{selectedArea.elevationDpl}</span>
+                      <span className="text-xs font-black text-[#00684A] mt-0.5 block tabular-nums">
+                        {selectedArea.elevationDpl}
+                      </span>
                     </div>
                   </div>
 
@@ -978,17 +1121,24 @@ export default function CuratedAreasMapScreen({
                   <div className="space-y-1.5 text-xs">
                     <div className="p-2.5 rounded-2xl bg-[#E9F5EF] border border-[#318266]/20 text-[#003D2E] font-medium leading-snug">
                       <div className="flex items-center gap-1.5 font-bold text-[#004F38] mb-0.5">
-                        <Sparkles size={13} className="text-[#00684A] shrink-0" />
+                        <Sparkles
+                          size={13}
+                          className="text-[#00684A] shrink-0"
+                        />
                         <span>Mengapa Selaras:</span>
                       </div>
-                      <p className="text-[#003D2E] pl-4">{selectedArea.cocokReason}</p>
+                      <p className="text-[#003D2E] pl-4 [text-wrap:pretty]">
+                        {selectedArea.cocokReason}
+                      </p>
                     </div>
                     <div className="p-2.5 rounded-2xl bg-[#FFF9E6] border border-[#D4A017]/20 text-[#523A00] font-medium leading-snug">
                       <div className="flex items-center gap-1.5 font-bold text-[#6E4E00] mb-0.5">
                         <Scale size={13} className="text-[#B37400] shrink-0" />
                         <span>Kompromi Nyata:</span>
                       </div>
-                      <p className="text-[#523A00] pl-4">{selectedArea.tradeoffReason}</p>
+                      <p className="text-[#523A00] pl-4 [text-wrap:pretty]">
+                        {selectedArea.tradeoffReason}
+                      </p>
                     </div>
                   </div>
 
@@ -997,7 +1147,7 @@ export default function CuratedAreasMapScreen({
                     <button
                       type="button"
                       onClick={() => setDrawerArea(selectedArea)}
-                      className="px-4 py-2 rounded-full border border-[#D7E1E5] text-xs font-bold text-[#5C6C7A] hover:bg-[#F4F7F6] hover:text-[#001E2B] transition-all cursor-pointer"
+                      className="min-h-[40px] px-4 py-2 rounded-full border border-[#D7E1E5] text-xs font-bold text-[#5C6C7A] hover:bg-[#F4F7F6] hover:text-[#001E2B] transition-transform transition-colors active:scale-[0.96] cursor-pointer"
                     >
                       Detail Koridor
                     </button>
@@ -1005,7 +1155,7 @@ export default function CuratedAreasMapScreen({
                     <button
                       type="button"
                       onClick={() => setQuotaModalArea(selectedArea)}
-                      className="flex-1 py-2 px-4 rounded-full bg-[#00ED64] hover:bg-[#00B545] text-[#001E2B] font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95 cursor-pointer"
+                      className="min-h-[40px] flex-1 py-2 px-4 rounded-full bg-[#00ED64] hover:bg-[#00B545] text-[#001E2B] font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-transform transition-colors active:scale-[0.96] cursor-pointer"
                     >
                       <span>Evaluasi Rumah Ini</span>
                       <ArrowRight size={14} />
@@ -1014,178 +1164,27 @@ export default function CuratedAreasMapScreen({
                 </div>
               )}
 
-              {/* ── MOBILE CORRIDOR BOTTOM DOCK (lg:hidden) ── */}
-              {selectedArea && !isAnyOverlayOpen && (
-                <div className="lg:hidden absolute bottom-0 inset-x-0 z-20 pointer-events-auto bg-white/98 backdrop-blur-2xl rounded-t-3xl border-t border-[#E1E5E8] shadow-2xl p-4 space-y-3 animate-slideUp text-[#001E2B] max-h-[50vh] overflow-y-auto">
-                  {/* Pull/Drag Handle */}
-                  <div className="w-10 h-1 bg-slate-300 rounded-full mx-auto -mt-1 mb-1 shrink-0" />
-
-                  {/* Top Row: Category Selection Chips on Mobile (Single Horizontal Swipable Layer) */}
-                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none touch-pan-x scroll-smooth">
-                    <button
-                      type="button"
-                      onClick={() => setCategoryFilter('all')}
-                      className={`min-h-[32px] px-3.5 py-1 rounded-full text-[11px] font-bold shrink-0 transition-all cursor-pointer active:scale-[0.96] whitespace-nowrap ${
-                        categoryFilter === 'all'
-                          ? 'bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs'
-                          : 'bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
-                      }`}
-                    >
-                      Semua (<span className="tabular-nums">{areas.length}</span>)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCategoryFilter('strong-fit')}
-                      className={`min-h-[32px] px-3.5 py-1 rounded-full text-[11px] font-bold shrink-0 transition-all cursor-pointer active:scale-[0.96] whitespace-nowrap flex items-center gap-1.5 ${
-                        categoryFilter === 'strong-fit'
-                          ? 'bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs'
-                          : 'bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
-                      }`}
-                    >
-                      <span className={`w-1.5 h-1.5 rounded-full ${categoryFilter === 'strong-fit' ? 'bg-[#00ED64]' : 'bg-[#00B545]'}`} />
-                      <span>Kesesuaian Kuat (<span className="tabular-nums">{strongFitCount}</span>)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCategoryFilter('interesting-tradeoff')}
-                      className={`min-h-[32px] px-3.5 py-1 rounded-full text-[11px] font-bold shrink-0 transition-all cursor-pointer active:scale-[0.96] whitespace-nowrap flex items-center gap-1.5 ${
-                        categoryFilter === 'interesting-tradeoff'
-                          ? 'bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs'
-                          : 'bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
-                      }`}
-                    >
-                      <span className={`w-1.5 h-1.5 rounded-full ${categoryFilter === 'interesting-tradeoff' ? 'bg-[#00ED64]' : 'bg-[#D4A017]'}`} />
-                      <span>Kompromi Menarik (<span className="tabular-nums">{tradeoffCount}</span>)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCategoryFilter('challenge-assumptions')}
-                      className={`min-h-[32px] px-3.5 py-1 rounded-full text-[11px] font-bold shrink-0 transition-all cursor-pointer active:scale-[0.96] whitespace-nowrap flex items-center gap-1.5 ${
-                        categoryFilter === 'challenge-assumptions'
-                          ? 'bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs'
-                          : 'bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
-                      }`}
-                    >
-                      <span className={`w-1.5 h-1.5 rounded-full ${categoryFilter === 'challenge-assumptions' ? 'bg-[#00ED64]' : 'bg-[#D9383A]'}`} />
-                      <span>Opsi Alternatif (<span className="tabular-nums">{challengeCount}</span>)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setCategoryFilter(categoryFilter === 'shortlisted' ? 'all' : 'shortlisted')}
-                      className={`min-h-[32px] px-3.5 py-1 rounded-full text-[11px] font-bold shrink-0 transition-all cursor-pointer active:scale-[0.96] whitespace-nowrap flex items-center gap-1.5 ${
-                        categoryFilter === 'shortlisted'
-                          ? 'bg-[#001E2B] text-[#00ED64] border border-[#00ED64] shadow-2xs'
-                          : 'bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
-                      }`}
-                    >
-                      <Bookmark size={12} className={categoryFilter === 'shortlisted' ? 'fill-[#00ED64] text-[#00ED64]' : 'text-[#00B545] fill-[#00B545]'} />
-                      <span>Area Tersimpan (<span className="tabular-nums">{shortlistedAreas.length}</span>)</span>
-                    </button>
-                  </div>
-
-                  {/* Area Title, Category Tag, Stepper Controls */}
-                  <div className="flex items-start justify-between gap-2 pt-1 border-t border-[#F0F4F6]">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                        <span
-                          className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full border flex items-center gap-1 ${
-                            selectedArea.category === 'strong-fit'
-                              ? 'bg-[#DCEEE7] text-[#004F38] border-[#318266]/30'
-                              : selectedArea.category === 'interesting-tradeoff'
-                              ? 'bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30'
-                              : 'bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30'
-                          }`}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                              selectedArea.category === 'strong-fit'
-                                ? 'bg-[#00B545]'
-                                : selectedArea.category === 'interesting-tradeoff'
-                                ? 'bg-[#D4A017]'
-                                : 'bg-[#D9383A]'
-                            }`}
-                          />
-                          <span>{selectedArea.categoryLabel}</span>
-                        </span>
-                        <span className="text-[11px] text-[#7C8C9A] font-semibold flex items-center gap-0.5">
-                          <MapPin size={10} />
-                          {selectedArea.region}
-                        </span>
-                      </div>
-
-                      <h3 className="text-base font-black text-[#001E2B] leading-tight truncate">
-                        {selectedArea.name}
-                      </h3>
-                    </div>
-
-                    {/* Stepper Navigation (< Prev · Next >) */}
-                    <div className="flex items-center gap-1 shrink-0 bg-[#F4F7F8] p-1 rounded-full border border-[#E1E5E8]">
-                      <button
-                        type="button"
-                        onClick={() => handleStepArea('prev')}
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-[#001E2B] hover:bg-white active:scale-95 transition-all cursor-pointer"
-                        title="Koridor Sebelumnya"
-                      >
-                        <ChevronLeft size={14} />
-                      </button>
-                      <span className="text-[10px] font-bold text-[#5C6C7A] px-1">
-                        {currentAreaIndex + 1}/{filteredAreas.length}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => handleStepArea('next')}
-                        className="w-7 h-7 rounded-full flex items-center justify-center text-[#001E2B] hover:bg-white active:scale-95 transition-all cursor-pointer"
-                        title="Koridor Selanjutnya"
-                      >
-                        <ChevronRight size={14} />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* 3 Quick Metrics Row on Mobile with Vector Icons */}
-                  <div className="grid grid-cols-3 gap-1.5 text-center text-xs">
-                    <div className="bg-[#F4F7F8] p-2 rounded-xl border border-[#E1E5E8]">
-                      <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
-                        <Clock size={10} />
-                        Komuter
-                      </span>
-                      <span className="text-xs font-black text-[#001E2B] mt-0.5 block">{selectedArea.commuteTime}</span>
-                    </div>
-                    <div className="bg-[#F4F7F8] p-2 rounded-xl border border-[#E1E5E8]">
-                      <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
-                        <Coins size={10} />
-                        Harga
-                      </span>
-                      <span className="text-xs font-black text-[#001E2B] mt-0.5 block truncate">{selectedArea.priceRange}</span>
-                    </div>
-                    <div className="bg-[#F4F7F8] p-2 rounded-xl border border-[#E1E5E8]">
-                      <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
-                        <Mountain size={10} />
-                        Elevasi
-                      </span>
-                      <span className="text-xs font-black text-[#00684A] mt-0.5 block">{selectedArea.elevationDpl}</span>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons on Mobile */}
-                  <div className="flex items-center gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => setDrawerArea(selectedArea)}
-                      className="px-3.5 py-2 rounded-full border border-[#D7E1E5] text-xs font-bold text-[#5C6C7A] hover:bg-[#F4F7F6] hover:text-[#001E2B] transition-all cursor-pointer shrink-0"
-                    >
-                      Detail Koridor
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setQuotaModalArea(selectedArea)}
-                      className="flex-1 py-2 px-3.5 rounded-full bg-[#00ED64] hover:bg-[#00B545] text-[#001E2B] font-extrabold text-xs flex items-center justify-center gap-1 shadow-sm transition-all active:scale-95 cursor-pointer"
-                    >
-                      <span>Evaluasi Rumah Ini</span>
-                      <ArrowRight size={13} />
-                    </button>
-                  </div>
+              {/* ── MOBILE & TABLET CORRIDOR CARD CAROUSEL (lg:hidden) ── */}
+              {!isAnyOverlayOpen && (
+                <div className="lg:hidden">
+                  <AreaCardCarousel
+                    areas={filteredAreas}
+                    allAreasCount={areas.length}
+                    selectedAreaId={selectedArea.id}
+                    onSelectArea={handleSelectArea}
+                    onOpenDrawer={(area) => setDrawerArea(area)}
+                    onOpenQuotaModal={(area) => setQuotaModalArea(area)}
+                    onToggleBookmark={handleToggleBookmark}
+                    categoryFilter={categoryFilter}
+                    onCategoryFilterChange={setCategoryFilter}
+                    counts={{
+                      all: areas.length,
+                      strongFit: strongFitCount,
+                      tradeoff: tradeoffCount,
+                      challenge: challengeCount,
+                      shortlisted: shortlistedAreas.length,
+                    }}
+                  />
                 </div>
               )}
             </div>
@@ -1195,7 +1194,7 @@ export default function CuratedAreasMapScreen({
         {/* ========================================================
             VIEW MODE 2: DAFTAR AREA (With Internal Shortlist Sub-tabs)
             ======================================================== */}
-        {viewMode === 'daftar' && (
+        {viewMode === "daftar" && (
           <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 md:p-6 max-w-7xl 2xl:max-w-[1536px] mx-auto w-full">
             {/* Clean Seamless Single-Layer Swipable Selection Chips Filter */}
             <div className="mb-6 w-full overflow-hidden">
@@ -1203,13 +1202,13 @@ export default function CuratedAreasMapScreen({
                 <button
                   type="button"
                   onClick={() => {
-                    setDaftarSubTab('semua')
-                    setCategoryFilter('all')
+                    setDaftarSubTab("semua")
+                    setCategoryFilter("all")
                   }}
                   className={`min-h-[36px] px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all cursor-pointer active:scale-[0.96] whitespace-nowrap ${
-                    daftarSubTab === 'semua' && categoryFilter === 'all'
-                      ? 'bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs'
-                      : 'bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
+                    daftarSubTab === "semua" && categoryFilter === "all"
+                      ? "bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs"
+                      : "bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80"
                   }`}
                 >
                   Semua (<span className="tabular-nums">{areas.length}</span>)
@@ -1218,78 +1217,120 @@ export default function CuratedAreasMapScreen({
                 <button
                   type="button"
                   onClick={() => {
-                    setDaftarSubTab('semua')
-                    setCategoryFilter('strong-fit')
+                    setDaftarSubTab("semua")
+                    setCategoryFilter("strong-fit")
                   }}
                   className={`min-h-[36px] px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all cursor-pointer active:scale-[0.96] whitespace-nowrap flex items-center gap-2 ${
-                    daftarSubTab === 'semua' && categoryFilter === 'strong-fit'
-                      ? 'bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs'
-                      : 'bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
+                    daftarSubTab === "semua" && categoryFilter === "strong-fit"
+                      ? "bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs"
+                      : "bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80"
                   }`}
                 >
-                  <span className={`w-2 h-2 rounded-full ${daftarSubTab === 'semua' && categoryFilter === 'strong-fit' ? 'bg-[#00ED64]' : 'bg-[#00B545]'}`} />
-                  <span>Kesesuaian Kuat (<span className="tabular-nums">{strongFitCount}</span>)</span>
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      daftarSubTab === "semua" &&
+                      categoryFilter === "strong-fit"
+                        ? "bg-[#00ED64]"
+                        : "bg-[#00B545]"
+                    }`}
+                  />
+                  <span>
+                    Kesesuaian Kuat (
+                    <span className="tabular-nums">{strongFitCount}</span>)
+                  </span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => {
-                    setDaftarSubTab('semua')
-                    setCategoryFilter('interesting-tradeoff')
+                    setDaftarSubTab("semua")
+                    setCategoryFilter("interesting-tradeoff")
                   }}
                   className={`min-h-[36px] px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all cursor-pointer active:scale-[0.96] whitespace-nowrap flex items-center gap-2 ${
-                    daftarSubTab === 'semua' && categoryFilter === 'interesting-tradeoff'
-                      ? 'bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs'
-                      : 'bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
+                    daftarSubTab === "semua" &&
+                    categoryFilter === "interesting-tradeoff"
+                      ? "bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs"
+                      : "bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80"
                   }`}
                 >
-                  <span className={`w-2 h-2 rounded-full ${daftarSubTab === 'semua' && categoryFilter === 'interesting-tradeoff' ? 'bg-[#00ED64]' : 'bg-[#D4A017]'}`} />
-                  <span>Kompromi Menarik (<span className="tabular-nums">{tradeoffCount}</span>)</span>
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      daftarSubTab === "semua" &&
+                      categoryFilter === "interesting-tradeoff"
+                        ? "bg-[#00ED64]"
+                        : "bg-[#D4A017]"
+                    }`}
+                  />
+                  <span>
+                    Kompromi Menarik (
+                    <span className="tabular-nums">{tradeoffCount}</span>)
+                  </span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => {
-                    setDaftarSubTab('semua')
-                    setCategoryFilter('challenge-assumptions')
+                    setDaftarSubTab("semua")
+                    setCategoryFilter("challenge-assumptions")
                   }}
                   className={`min-h-[36px] px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all cursor-pointer active:scale-[0.96] whitespace-nowrap flex items-center gap-2 ${
-                    daftarSubTab === 'semua' && categoryFilter === 'challenge-assumptions'
-                      ? 'bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs'
-                      : 'bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
+                    daftarSubTab === "semua" &&
+                    categoryFilter === "challenge-assumptions"
+                      ? "bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs"
+                      : "bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80"
                   }`}
                 >
-                  <span className={`w-2 h-2 rounded-full ${daftarSubTab === 'semua' && categoryFilter === 'challenge-assumptions' ? 'bg-[#00ED64]' : 'bg-[#D9383A]'}`} />
-                  <span>Opsi Alternatif (<span className="tabular-nums">{challengeCount}</span>)</span>
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      daftarSubTab === "semua" &&
+                      categoryFilter === "challenge-assumptions"
+                        ? "bg-[#00ED64]"
+                        : "bg-[#D9383A]"
+                    }`}
+                  />
+                  <span>
+                    Opsi Alternatif (
+                    <span className="tabular-nums">{challengeCount}</span>)
+                  </span>
                 </button>
 
                 {/* Area Tersimpan (Shortlist) Chip in same horizontal layer */}
                 <button
                   type="button"
-                  onClick={() => setDaftarSubTab(daftarSubTab === 'shortlist' ? 'semua' : 'shortlist')}
+                  onClick={() =>
+                    setDaftarSubTab(
+                      daftarSubTab === "shortlist" ? "semua" : "shortlist",
+                    )
+                  }
                   className={`min-h-[36px] px-4 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all flex items-center gap-1.5 cursor-pointer active:scale-[0.96] whitespace-nowrap ${
-                    daftarSubTab === 'shortlist'
-                      ? 'bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs'
-                      : 'bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80'
+                    daftarSubTab === "shortlist"
+                      ? "bg-[#0F2B38] text-white border border-[#0F2B38] shadow-2xs"
+                      : "bg-transparent text-[#3D4F5B] border border-[#C1CCD6] hover:bg-slate-100/80"
                   }`}
                 >
                   <Bookmark
                     size={13}
                     className={
-                      daftarSubTab === 'shortlist'
-                        ? 'text-[#00ED64] fill-[#00ED64]'
+                      daftarSubTab === "shortlist"
+                        ? "text-[#00ED64] fill-[#00ED64]"
                         : shortlistedAreas.length > 0
-                        ? 'text-[#00B545] fill-[#00B545]'
-                        : 'text-[#7C8C9A]'
+                          ? "text-[#00B545] fill-[#00B545]"
+                          : "text-[#7C8C9A]"
                     }
                   />
-                  <span>Area Tersimpan (<span className="tabular-nums">{shortlistedAreas.length}</span>)</span>
+                  <span>
+                    Area Tersimpan (
+                    <span className="tabular-nums">
+                      {shortlistedAreas.length}
+                    </span>
+                    )
+                  </span>
                 </button>
               </div>
             </div>
 
             {/* Sub-tab Content: Semua Area Grid vs Shortlist */}
-            {daftarSubTab === 'semua' ? (
+            {daftarSubTab === "semua" ? (
               <DaftarAksesibelView
                 areas={filteredAreas}
                 onToggleBookmark={handleToggleBookmark}
@@ -1306,8 +1347,8 @@ export default function CuratedAreasMapScreen({
                 onEvaluateArea={(area) => setQuotaModalArea(area)}
                 onOpenComparisonModal={() => setIsComparisonModalOpen(true)}
                 onBackToMap={() => {
-                  setDaftarSubTab('semua')
-                  setViewMode('peta')
+                  setDaftarSubTab("semua")
+                  setViewMode("peta")
                 }}
               />
             )}

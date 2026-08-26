@@ -1,10 +1,11 @@
-import React from 'react'
-import { ArrowRight, Check } from 'lucide-react'
+import React from "react"
+import { ArrowRight, Check } from "lucide-react"
 
 interface MobileStickyFooterProps {
   flowStage: number
   parameterStep: number
   onNext: () => void
+  onSkip?: () => void
   isSubmitting?: boolean
 }
 
@@ -12,9 +13,10 @@ export default function MobileStickyFooter({
   flowStage,
   parameterStep,
   onNext,
+  onSkip,
   isSubmitting = false,
 }: MobileStickyFooterProps) {
-  const isFinalStep = flowStage === 5 && parameterStep === 4
+  const isFinalStep = flowStage === 6 && parameterStep === 4
 
   return (
     <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-lg border-t border-[#D7E1E5] p-4 pb-safe shadow-lg md:hidden">
@@ -31,12 +33,21 @@ export default function MobileStickyFooter({
           </>
         ) : flowStage === 1 ? (
           <>
-            <span>Mulai 3 Skenario Singkat</span>
+            <span>Lanjut ke Pengantar Skenario</span>
             <ArrowRight size={20} className="text-[#001E2B]" />
           </>
-        ) : flowStage >= 2 && flowStage <= 4 ? (
+        ) : flowStage === 2 ? (
           <>
-            <span>{flowStage === 4 ? 'Lanjut ke Detail Profil' : 'Skenario Berikutnya'}</span>
+            <span>Mulai Coba (2 menit)</span>
+            <ArrowRight size={20} className="text-[#001E2B]" />
+          </>
+        ) : flowStage >= 3 && flowStage <= 5 ? (
+          <>
+            <span>
+              {flowStage === 5
+                ? "Lanjut ke Detail Profil"
+                : "Skenario Berikutnya"}
+            </span>
             <ArrowRight size={20} className="text-[#001E2B]" />
           </>
         ) : (
@@ -46,6 +57,16 @@ export default function MobileStickyFooter({
           </>
         )}
       </button>
+
+      {flowStage === 2 && onSkip && (
+        <button
+          type="button"
+          onClick={onSkip}
+          className="mt-2.5 text-xs font-semibold text-[#7C8C9A] hover:text-[#001E2B] transition-colors underline text-center w-full py-1 cursor-pointer"
+        >
+          Lewati langsung ke pengaturan budget
+        </button>
+      )}
     </div>
   )
 }

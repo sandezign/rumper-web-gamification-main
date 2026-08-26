@@ -1,24 +1,28 @@
-import React from 'react'
-import { useWizardState } from '../../store/useWizardStore'
-import DesktopSidebar from './DesktopSidebar'
-import MobileHeader from './MobileHeader'
-import MobileStickyFooter from './MobileStickyFooter'
-import Stage1FrictionDiscovery from './stages/Stage1FrictionDiscovery'
-import Stage2ValueProof from './stages/Stage2ValueProof'
-import Stage3EmpathyStatement from './stages/Stage3EmpathyStatement'
-import Stage4Comparison from './stages/Stage4Comparison'
-import Step1HouseholdWork from './steps/Step1HouseholdWork'
-import Step2LocationAnchors from './steps/Step2LocationAnchors'
-import Step3BudgetRange from './steps/Step3BudgetRange'
-import Step4CorridorSummary from './steps/Step4CorridorSummary'
-import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react'
+import React from "react"
+import { useWizardState } from "../../store/useWizardStore"
+import DesktopSidebar from "./DesktopSidebar"
+import MobileHeader from "./MobileHeader"
+import MobileStickyFooter from "./MobileStickyFooter"
+import Stage1FrictionDiscovery from "./stages/Stage1FrictionDiscovery"
+import Stage1BridgeExplainer from "./stages/Stage1BridgeExplainer"
+import Stage2ValueProof from "./stages/Stage2ValueProof"
+import Stage3EmpathyStatement from "./stages/Stage3EmpathyStatement"
+import Stage4Comparison from "./stages/Stage4Comparison"
+import Step1HouseholdWork from "./steps/Step1HouseholdWork"
+import Step2LocationAnchors from "./steps/Step2LocationAnchors"
+import Step3BudgetRange from "./steps/Step3BudgetRange"
+import Step4CorridorSummary from "./steps/Step4CorridorSummary"
+import { ArrowLeft, ArrowRight, Check, X } from "lucide-react"
 
 interface ResponsiveWizardShellProps {
   onComplete?: () => void
   onCancel?: () => void
 }
 
-export default function ResponsiveWizardShell({ onComplete, onCancel }: ResponsiveWizardShellProps) {
+export default function ResponsiveWizardShell({
+  onComplete,
+  onCancel,
+}: ResponsiveWizardShellProps) {
   const {
     flowStage,
     parameterStep,
@@ -32,16 +36,16 @@ export default function ResponsiveWizardShell({ onComplete, onCancel }: Responsi
     goToParameterStep,
   } = useWizardState()
 
-  // Total display step calculation (1..8 total sub-steps for smooth progress)
-  const currentTotalProgress = flowStage < 5 ? flowStage : 4 + parameterStep
-  const totalDisplaySteps = 8
+  // Total display step calculation (1..9 total sub-steps for smooth progress)
+  const currentTotalProgress = flowStage < 6 ? flowStage : 5 + parameterStep
+  const totalDisplaySteps = 9
 
   const handleNext = () => {
-    if (flowStage === 5 && parameterStep === 4) {
+    if (flowStage === 6 && parameterStep === 4) {
       if (onComplete) {
         onComplete()
       } else {
-        alert('Profil pencarian dan batasan harian Anda berhasil disimpan.')
+        alert("Profil pencarian dan batasan harianmu berhasil disimpan.")
       }
     } else {
       nextStage()
@@ -80,13 +84,16 @@ export default function ResponsiveWizardShell({ onComplete, onCancel }: Responsi
               <div className="flex items-center gap-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#004F38] bg-[#DCEEE7] px-3.5 py-1 rounded-full border border-[#318266]/30">
                   {flowStage === 1
-                    ? 'Babak 1 · Kendala Pencarian'
-                    : flowStage >= 2 && flowStage <= 4
-                    ? `Babak 2 · Uji Prioritas (Skenario ${flowStage - 1} dari 3)`
-                    : `Babak 3 · Detail Profil (Langkah ${parameterStep} dari 4)`}
+                    ? "Langkah 1 · Kendala Utamamu"
+                    : flowStage === 2
+                      ? "Langkah 2 · Uji Prioritas Hunian"
+                      : flowStage >= 3 && flowStage <= 5
+                        ? `Langkah 2 · Uji 3 Skenario Nyata (${flowStage - 2}/3)`
+                        : `Langkah 3 · Profiling & Budget (${parameterStep}/4)`}
                 </span>
                 <span className="text-xs font-semibold text-[#5C6C7A]">
-                  {Math.round((currentTotalProgress / totalDisplaySteps) * 100)}% Selesai
+                  {Math.round((currentTotalProgress / totalDisplaySteps) * 100)}
+                  % Selesai
                 </span>
               </div>
 
@@ -103,7 +110,7 @@ export default function ResponsiveWizardShell({ onComplete, onCancel }: Responsi
               )}
             </div>
 
-            {/* Render 5 Psychological Flow Stages */}
+            {/* Render 6 Psychological Flow Stages */}
             {flowStage === 1 && (
               <Stage1FrictionDiscovery
                 onSelect={(friction) => {
@@ -112,14 +119,20 @@ export default function ResponsiveWizardShell({ onComplete, onCancel }: Responsi
               />
             )}
 
-            {flowStage === 2 && <Stage2ValueProof />}
+            {flowStage === 2 && (
+              <Stage1BridgeExplainer
+                selectedFriction={formData.selectedFriction}
+              />
+            )}
 
-            {flowStage === 3 && <Stage3EmpathyStatement />}
+            {flowStage === 3 && <Stage2ValueProof />}
 
-            {flowStage === 4 && <Stage4Comparison />}
+            {flowStage === 4 && <Stage3EmpathyStatement />}
 
-            {/* Stage 5: Parameter Setup (Steps 1 to 4) */}
-            {flowStage === 5 && (
+            {flowStage === 5 && <Stage4Comparison />}
+
+            {/* Stage 6: Parameter Setup (Steps 1 to 4) */}
+            {flowStage === 6 && (
               <>
                 {parameterStep === 1 && (
                   <Step1HouseholdWork
@@ -158,7 +171,7 @@ export default function ResponsiveWizardShell({ onComplete, onCancel }: Responsi
         </main>
 
         {/* Full-Width Sticky Desktop Action Bar */}
-        <div className="hidden md:block sticky bottom-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#D7E1E5] py-4 px-6 md:px-8 lg:px-12 w-full shadow-sm">
+        <div className="hidden md:block sticky bottom-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#D7E1E5] py-3.5 px-6 md:px-8 lg:px-12 w-full shadow-sm">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <button
               type="button"
@@ -166,41 +179,62 @@ export default function ResponsiveWizardShell({ onComplete, onCancel }: Responsi
               disabled={flowStage === 1}
               className={`min-h-[46px] px-6 rounded-full font-bold text-sm flex items-center gap-2 border transition-all cursor-pointer ${
                 flowStage === 1
-                  ? 'opacity-40 cursor-not-allowed border-[#E1E5E8] text-[#7C8C9A] bg-[#F4F7F6]'
-                  : 'border-[#D7E1E5] text-[#3D4F5B] bg-white hover:bg-[#F4F7F6] hover:border-[#C1CCD6] active:scale-95 shadow-xs'
+                  ? "opacity-40 cursor-not-allowed border-[#E1E5E8] text-[#7C8C9A] bg-[#F4F7F6]"
+                  : "border-[#D7E1E5] text-[#3D4F5B] bg-white hover:bg-[#F4F7F6] hover:border-[#C1CCD6] active:scale-95 shadow-xs"
               }`}
             >
               <ArrowLeft size={16} />
               <span>Kembali</span>
             </button>
 
-            <button
-              type="button"
-              onClick={handleNext}
-              className="min-h-[46px] px-8 rounded-full font-bold text-sm flex items-center gap-2 bg-[#00ED64] hover:bg-[#00B545] text-[#001E2B] shadow-md transition-all active:scale-95 ring-4 ring-[#00ED64]/20 cursor-pointer"
-            >
-              {flowStage === 1 ? (
-                <>
-                  <span>Mulai 3 Skenario Singkat</span>
-                  <ArrowRight size={16} />
-                </>
-              ) : flowStage >= 2 && flowStage <= 4 ? (
-                <>
-                  <span>{flowStage === 4 ? 'Lanjut ke Detail Profil' : 'Skenario Berikutnya'}</span>
-                  <ArrowRight size={16} />
-                </>
-              ) : flowStage === 5 && parameterStep === 4 ? (
-                <>
-                  <Check size={16} className="stroke-[3] text-[#001E2B]" />
-                  <span>Simpan & Mulai Riset Lokasi</span>
-                </>
-              ) : (
-                <>
-                  <span>Langkah Berikutnya</span>
-                  <ArrowRight size={16} />
-                </>
+            <div className="flex flex-col items-end gap-1.5">
+              <button
+                type="button"
+                onClick={handleNext}
+                className="min-h-[46px] px-8 rounded-full font-bold text-sm flex items-center gap-2 bg-[#00ED64] hover:bg-[#00B545] text-[#001E2B] shadow-md transition-all active:scale-95 ring-4 ring-[#00ED64]/20 cursor-pointer"
+              >
+                {flowStage === 1 ? (
+                  <>
+                    <span>Lanjut ke Pengantar Skenario</span>
+                    <ArrowRight size={16} />
+                  </>
+                ) : flowStage === 2 ? (
+                  <>
+                    <span>Mulai Coba (2 menit)</span>
+                    <ArrowRight size={16} />
+                  </>
+                ) : flowStage >= 3 && flowStage <= 5 ? (
+                  <>
+                    <span>
+                      {flowStage === 5
+                        ? "Lanjut ke Detail Profil"
+                        : "Skenario Berikutnya"}
+                    </span>
+                    <ArrowRight size={16} />
+                  </>
+                ) : flowStage === 6 && parameterStep === 4 ? (
+                  <>
+                    <Check size={16} className="stroke-[3] text-[#001E2B]" />
+                    <span>Simpan & Mulai Riset Lokasi</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Langkah Berikutnya</span>
+                    <ArrowRight size={16} />
+                  </>
+                )}
+              </button>
+
+              {flowStage === 2 && (
+                <button
+                  type="button"
+                  onClick={skipToParameterSetup}
+                  className="text-xs font-medium text-[#7C8C9A] hover:text-[#001E2B] transition-colors underline cursor-pointer pr-2"
+                >
+                  Lewati langsung ke pengaturan budget
+                </button>
               )}
-            </button>
+            </div>
           </div>
         </div>
       </div>
@@ -210,6 +244,7 @@ export default function ResponsiveWizardShell({ onComplete, onCancel }: Responsi
         flowStage={flowStage}
         parameterStep={parameterStep}
         onNext={handleNext}
+        onSkip={skipToParameterSetup}
       />
     </div>
   )

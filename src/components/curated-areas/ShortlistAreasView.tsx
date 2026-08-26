@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 import {
   Bookmark,
   Trash2,
@@ -14,8 +14,8 @@ import {
   Clock,
   Coins,
   Mountain,
-} from 'lucide-react'
-import type { CuratedArea } from '../../data/mockCuratedAreas'
+} from "lucide-react"
+import type { CuratedArea } from "../../data/mockCuratedAreas"
 
 interface ShortlistAreasViewProps {
   shortlistedAreas: CuratedArea[]
@@ -38,8 +38,12 @@ export default function ShortlistAreasView({
   onOpenComparisonModal,
   onBackToMap,
 }: ShortlistAreasViewProps) {
-  const strongFitCount = shortlistedAreas.filter((a) => a.category === 'strong-fit').length
-  const tradeoffCount = shortlistedAreas.filter((a) => a.category === 'interesting-tradeoff').length
+  const strongFitCount = shortlistedAreas.filter(
+    (a) => a.category === "strong-fit",
+  ).length
+  const tradeoffCount = shortlistedAreas.filter(
+    (a) => a.category === "interesting-tradeoff",
+  ).length
 
   if (shortlistedAreas.length === 0) {
     return (
@@ -48,9 +52,12 @@ export default function ShortlistAreasView({
           <Bookmark size={24} />
         </div>
         <div className="space-y-1">
-          <h3 className="text-lg font-black text-[#001E2B] tracking-tight">Daftar Pilihan Masih Kosong</h3>
+          <h3 className="text-lg font-black text-[#001E2B] tracking-tight">
+            Daftar Pilihanmu Masih Kosong
+          </h3>
           <p className="text-xs text-[#5C6C7A] leading-relaxed">
-            Simpan koridor pilihan Anda dari peta atau daftar kartu dengan mengklik ikon bookmark untuk membandingkan kompromi nyata.
+            Simpan koridor incaranmu dari peta atau daftar kartu dengan klik
+            ikon bookmark biar gampang bandingin trade-off nyatanya.
           </p>
         </div>
         <button
@@ -70,7 +77,7 @@ export default function ShortlistAreasView({
       <div className="bg-white rounded-3xl p-6 border border-[#E1E5E8] shadow-xs space-y-2.5">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <h2 className="text-xl font-black text-[#001E2B] tracking-tight">
-            Daftar Area Pilihan (Shortlist)
+            Daftar Area Pilihanmu (Shortlist)
           </h2>
           <div className="flex items-center gap-2 text-xs font-bold bg-[#F4F7F8] px-3.5 py-1.5 rounded-full border border-[#E1E5E8]">
             <span className="text-[#00684A] flex items-center gap-1.5">
@@ -85,7 +92,8 @@ export default function ShortlistAreasView({
           </div>
         </div>
         <p className="text-xs text-[#5C6C7A] leading-relaxed">
-          Koleksi area yang Anda simpan untuk membandingkan kompromi hidup nyata, merencanakan survei fisik lapangan, atau menambahkan kandidat rumah spesifik.
+          Koleksi area yang kamu simpan buat bandingin kompromi nyata, rencanain
+          survei lapangan, atau mulai cek unit rumah incaranmu.
         </p>
       </div>
 
@@ -93,17 +101,21 @@ export default function ShortlistAreasView({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         {shortlistedAreas.map((area) => {
           const isSelected = selectedForComparison.includes(area.id)
-          const isStrongFit = area.category === 'strong-fit'
-          const isTradeoff = area.category === 'interesting-tradeoff'
-          const dotColor = isStrongFit ? 'bg-[#00B545]' : isTradeoff ? 'bg-[#D4A017]' : 'bg-[#D9383A]'
+          const isStrongFit = area.category === "strong-fit"
+          const isTradeoff = area.category === "interesting-tradeoff"
+          const dotColor = isStrongFit
+            ? "bg-[#00B545]"
+            : isTradeoff
+              ? "bg-[#D4A017]"
+              : "bg-[#D9383A]"
 
           return (
             <div
               key={area.id}
               className={`bg-white rounded-3xl p-6 border-2 transition-all duration-200 shadow-xs space-y-4 ${
                 isSelected
-                  ? 'border-[#001E2B] ring-2 ring-[#001E2B]/5 shadow-md bg-[#FBFDFC]'
-                  : 'border-[#E1E5E8] hover:border-[#A8B8C6]'
+                  ? "border-[#001E2B] ring-2 ring-[#001E2B]/5 shadow-md bg-[#FBFDFC]"
+                  : "border-[#E1E5E8] hover:border-[#A8B8C6]"
               }`}
             >
               {/* Row 1: Category Tag + Top Actions (Compare, Trash, Detail) */}
@@ -112,13 +124,15 @@ export default function ShortlistAreasView({
                   <span
                     className={`text-[10px] font-extrabold px-3 py-1 rounded-full border flex items-center gap-1.5 ${
                       isStrongFit
-                        ? 'bg-[#DCEEE7] text-[#004F38] border-[#318266]/30'
+                        ? "bg-[#DCEEE7] text-[#004F38] border-[#318266]/30"
                         : isTradeoff
-                        ? 'bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30'
-                        : 'bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30'
+                          ? "bg-[#FFF3D6] text-[#6E4E00] border-[#D4A017]/30"
+                          : "bg-[#FFE2E0] text-[#7A1D1A] border-[#D9383A]/30"
                     }`}
                   >
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`} />
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`}
+                    />
                     <span>{area.categoryLabel}</span>
                   </span>
                   <span className="text-xs text-[#5C6C7A] font-semibold hidden sm:inline-flex items-center gap-1">
@@ -134,8 +148,8 @@ export default function ShortlistAreasView({
                     onClick={() => onToggleComparison(area.id)}
                     className={`px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 border transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#001E2B] text-white border-[#001E2B] shadow-xs'
-                        : 'bg-[#F4F7F8] text-[#5C6C7A] border-[#E1E5E8] hover:bg-[#EAEFEF]'
+                        ? "bg-[#001E2B] text-white border-[#001E2B] shadow-xs"
+                        : "bg-[#F4F7F8] text-[#5C6C7A] border-[#E1E5E8] hover:bg-[#EAEFEF]"
                     }`}
                   >
                     {isSelected ? (
@@ -163,7 +177,9 @@ export default function ShortlistAreasView({
                 <h3 className="text-lg md:text-xl font-black text-[#001E2B] tracking-tight">
                   {area.name}
                 </h3>
-                <p className="text-xs text-[#5C6C7A] mt-1 leading-relaxed">{area.summaryNarrative}</p>
+                <p className="text-xs text-[#5C6C7A] mt-1 leading-relaxed">
+                  {area.summaryNarrative}
+                </p>
               </div>
 
               {/* 3 Metric Cards */}
@@ -203,7 +219,9 @@ export default function ShortlistAreasView({
                   <Scale size={13} className="text-[#B37400]" />
                   <span>Kompromi Nyata:</span>
                 </div>
-                <p className="text-[#523A00] font-medium leading-relaxed pl-4">{area.tradeoffReason}</p>
+                <p className="text-[#523A00] font-medium leading-relaxed pl-4">
+                  {area.tradeoffReason}
+                </p>
               </div>
 
               {/* Bottom Actions */}

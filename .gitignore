@@ -15,5 +15,7 @@ logs/
 # Git Worktrees
 .worktrees/
 worktrees/
+.superpowers/
 .vercel
 .DS_Store
+
