@@ -82,7 +82,7 @@ export default function ResponsiveWizardShell({
             {/* Top Canvas Bar for Desktop */}
             <div className="hidden md:flex items-center justify-between mb-8 pb-4 border-b border-[#D7E1E5]">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#004F38] bg-[#DCEEE7] px-3.5 py-1 rounded-full border border-[#318266]/30">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#004F38] bg-[#DCEEE7] px-3.5 py-1 rounded-full border border-[#318266]/30 tabular-nums">
                   {flowStage === 1
                     ? "Langkah 1 · Kendala Utamamu"
                     : flowStage === 2
@@ -91,7 +91,7 @@ export default function ResponsiveWizardShell({
                         ? `Langkah 2 · Uji 3 Skenario Nyata (${flowStage - 2}/3)`
                         : `Langkah 3 · Profiling & Budget (${parameterStep}/4)`}
                 </span>
-                <span className="text-xs font-semibold text-[#5C6C7A]">
+                <span className="text-xs font-semibold text-[#5C6C7A] tabular-nums">
                   {Math.round((currentTotalProgress / totalDisplaySteps) * 100)}
                   % Selesai
                 </span>
@@ -179,11 +179,11 @@ export default function ResponsiveWizardShell({
               disabled={flowStage === 1}
               className={`min-h-[46px] px-6 rounded-full font-bold text-sm flex items-center gap-2 border transition-all cursor-pointer ${
                 flowStage === 1
-                  ? "opacity-40 cursor-not-allowed border-[#E1E5E8] text-[#7C8C9A] bg-[#F4F7F6]"
+                  ? "opacity-40 cursor-not-allowed border-[#E1E5E8] text-[#5C6C7A] bg-[#F4F7F6]"
                   : "border-[#D7E1E5] text-[#3D4F5B] bg-white hover:bg-[#F4F7F6] hover:border-[#C1CCD6] active:scale-95 shadow-xs"
               }`}
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft size={16} aria-hidden="true" />
               <span>Kembali</span>
             </button>
 
@@ -196,12 +196,12 @@ export default function ResponsiveWizardShell({
                 {flowStage === 1 ? (
                   <>
                     <span>Lanjut ke Pengantar Skenario</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={16} aria-hidden="true" />
                   </>
                 ) : flowStage === 2 ? (
                   <>
                     <span>Mulai Coba (2 menit)</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={16} aria-hidden="true" />
                   </>
                 ) : flowStage >= 3 && flowStage <= 5 ? (
                   <>
@@ -210,17 +210,17 @@ export default function ResponsiveWizardShell({
                         ? "Lanjut ke Detail Profil"
                         : "Skenario Berikutnya"}
                     </span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={16} aria-hidden="true" />
                   </>
                 ) : flowStage === 6 && parameterStep === 4 ? (
                   <>
-                    <Check size={16} className="stroke-[3] text-[#001E2B]" />
+                    <Check size={16} className="stroke-[3] text-[#001E2B]" aria-hidden="true" />
                     <span>Simpan & Mulai Riset Lokasi</span>
                   </>
                 ) : (
                   <>
                     <span>Langkah Berikutnya</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={16} aria-hidden="true" />
                   </>
                 )}
               </button>
@@ -229,7 +229,7 @@ export default function ResponsiveWizardShell({
                 <button
                   type="button"
                   onClick={skipToParameterSetup}
-                  className="text-xs font-medium text-[#7C8C9A] hover:text-[#001E2B] transition-colors underline cursor-pointer pr-2"
+                  className="text-xs font-medium text-[#5C6C7A] hover:text-[#001E2B] transition-colors underline cursor-pointer pr-2"
                 >
                   Lewati langsung ke pengaturan budget
                 </button>

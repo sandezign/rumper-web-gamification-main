@@ -369,7 +369,7 @@ export default function AreaCardCarousel({
                     {/* 3 Metrics Box Grid (Concentric rounded-2xl inside rounded-3xl card) */}
                     <div className="grid grid-cols-3 gap-1.5 text-center text-xs">
                       {/* Metric 1: Komuter */}
-                      <div className="bg-[#F4F7F8] p-2 rounded-2xl border border-[#E1E5E8]">
+                      <div className="bg-[#F4F7F8] p-2 sm:p-2.5 rounded-2xl border border-[#E1E5E8] flex flex-col justify-center">
                         <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
                           <Clock size={10} />
                           Komuter
@@ -380,18 +380,21 @@ export default function AreaCardCarousel({
                       </div>
 
                       {/* Metric 2: Harga */}
-                      <div className="bg-[#F4F7F8] p-2 rounded-2xl border border-[#E1E5E8]">
+                      <div className="bg-[#F4F7F8] p-2 sm:p-2.5 rounded-2xl border border-[#E1E5E8] flex flex-col justify-center">
                         <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
                           <Coins size={10} />
                           Harga
                         </span>
-                        <span className="text-xs font-black text-[#001E2B] mt-0.5 block truncate tabular-nums">
+                        <span
+                          className="text-[11px] sm:text-xs font-black text-[#001E2B] mt-0.5 block tabular-nums tracking-tight whitespace-nowrap overflow-hidden text-ellipsis"
+                          title={area.priceRange}
+                        >
                           {area.priceRange}
                         </span>
                       </div>
 
                       {/* Metric 3: Elevasi */}
-                      <div className="bg-[#F4F7F8] p-2 rounded-2xl border border-[#E1E5E8]">
+                      <div className="bg-[#F4F7F8] p-2 sm:p-2.5 rounded-2xl border border-[#E1E5E8] flex flex-col justify-center">
                         <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
                           <Mountain size={10} />
                           Elevasi

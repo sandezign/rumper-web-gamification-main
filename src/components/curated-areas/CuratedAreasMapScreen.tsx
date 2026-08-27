@@ -28,6 +28,7 @@ import {
   AlertTriangle,
   Scale,
   Mountain,
+  X,
 } from "lucide-react"
 import {
   MapContainer,
@@ -314,8 +315,35 @@ export default function CuratedAreasMapScreen({
   const [daftarSubTab, setDaftarSubTab] = useState<DaftarSubTab>("semua")
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all")
   const [searchQuery, setSearchQuery] = useState<string>("")
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const [areas, setAreas] = useState<CuratedArea[]>(initialCuratedAreas)
   const [selectedAreaId, setSelectedAreaId] = useState<string>("area-bintaro")
+
+  // Keyboard shortcut (Cmd+K / Ctrl+K / /) to focus search input
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        (e.key === "k" && (e.metaKey || e.ctrlKey)) ||
+        (e.key === "/" &&
+          document.activeElement?.tagName !== "INPUT" &&
+          document.activeElement?.tagName !== "TEXTAREA")
+      ) {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+      } else if (
+        e.key === "Escape" &&
+        document.activeElement === searchInputRef.current
+      ) {
+        if (searchQuery) {
+          setSearchQuery("")
+        } else {
+          searchInputRef.current?.blur()
+        }
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [searchQuery])
 
   // GIS Map Layer Toggles
   const [showTransitRoutes, setShowTransitRoutes] = useState<boolean>(true)
@@ -815,6 +843,17 @@ export default function CuratedAreasMapScreen({
                   )
                 })}
               </div>
+
+              {/* Sidebar Verified Synthesis Footer */}
+              <div className="shrink-0 px-4 py-2.5 bg-[#F9FBFA] border-t border-[#E1E5E8] flex items-center justify-between text-[11px] text-[#5C6C7A]">
+                <div className="flex items-center gap-1.5 font-semibold text-[#001E2B]">
+                  <span className="w-2 h-2 rounded-full bg-[#00ED64] animate-pulse shrink-0" />
+                  <span>Sintesis BNPB & BIG 2024</span>
+                </div>
+                <span className="text-[10px] font-extrabold px-2 py-0.5 bg-[#E9F5EF] text-[#004F38] rounded-full border border-[#318266]/20">
+                  8 Koridor Terverifikasi
+                </span>
+              </div>
             </aside>
 
             {/* FULL MAP VIEWPORT (Occupies 100% on Mobile, 2/3 on Desktop) */}
@@ -942,81 +981,136 @@ export default function CuratedAreasMapScreen({
               </MapContainer>
 
               {/* Floating Top Map Search & Layer Controls Overlay */}
-              <div className="absolute top-3 left-3 right-3 sm:right-auto sm:left-4 z-10 flex items-center gap-1.5 sm:gap-2 flex-wrap pointer-events-auto">
-                <div className="bg-white/95 backdrop-blur-md rounded-full border border-[#E1E5E8] px-3 py-1.5 sm:px-3.5 sm:py-2 shadow-md flex items-center gap-2 flex-1 sm:flex-initial">
-                  <Search size={13} className="text-[#7C8C9A]" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Cari koridor..."
-                    className="text-xs bg-transparent border-none outline-none text-[#001E2B] placeholder:text-[#A8B3BC] w-full sm:w-44 font-medium"
-                  />
+              <div className="absolute top-3 left-3 right-3 sm:left-4 sm:right-4 z-10 flex items-center justify-between gap-2 pointer-events-none">
+                {/* Left: Search & Layer Filter Pills */}
+                <div className="flex items-center gap-2 flex-wrap pointer-events-auto">
+                  {/* Enhanced Search Bar Component */}
+                  <div className="group relative flex items-center h-[38px] bg-white/95 backdrop-blur-md rounded-full border border-[#E1E5E8] px-3 shadow-sm hover:border-[#CBD5E1] focus-within:border-[#001E2B] focus-within:ring-2 focus-within:ring-[#001E2B]/10 focus-within:shadow-md transition-all">
+                    <Search
+                      size={14}
+                      className="text-[#7C8C9A] group-focus-within:text-[#001E2B] transition-colors shrink-0 mr-2"
+                      aria-hidden="true"
+                    />
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Cari koridor..."
+                      className="text-xs font-semibold text-[#001E2B] placeholder:text-[#8E9CA8] placeholder:font-normal outline-none bg-transparent w-28 xs:w-36 sm:w-44 transition-all"
+                      aria-label="Cari nama koridor atau wilayah"
+                    />
+                    {searchQuery ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery("")
+                          searchInputRef.current?.focus()
+                        }}
+                        className="ml-1.5 size-5 rounded-full bg-[#F4F7F8] hover:bg-[#E1E5E8] text-[#5C6C7A] hover:text-[#001E2B] flex items-center justify-center transition-all cursor-pointer active:scale-90 shrink-0"
+                        title="Hapus pencarian (Esc)"
+                        aria-label="Hapus pencarian"
+                      >
+                        <X size={11} />
+                      </button>
+                    ) : (
+                      <kbd className="ml-1.5 hidden sm:inline-flex items-center px-1.5 py-0.5 rounded bg-[#F4F7F8] border border-[#E1E5E8] text-[9.5px] font-bold text-[#8E9CA8] select-none pointer-events-none">
+                        ⌘K
+                      </kbd>
+                    )}
+                  </div>
+
+                  {/* Map Layer Filter Component (Core Workspace Parity) */}
+                  <div className="flex items-center gap-2 h-[38px] bg-white/95 backdrop-blur-md rounded-full border border-[#E1E5E8] px-3.5 shadow-sm hover:border-[#CBD5E1] transition-all shrink-0">
+                    {/* Label — left */}
+                    <div className="flex items-center gap-1.5 shrink-0 pr-0.5">
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                        <path
+                          d="M1.5 4.5l5.5 2 5.5-2M1.5 9.5l5.5 2 5.5-2M7 2.5l5.5 2-5.5 2-5.5-2L7 2.5z"
+                          stroke="#3d4f5b"
+                          strokeWidth="1.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <span className="text-xs font-semibold text-[#3D4F5B] hidden xs:inline">
+                        Map Layers
+                      </span>
+                    </div>
+
+                    {/* Filter pills — right */}
+                    <div className="flex items-center gap-1.5">
+                      {/* Banjir Layer Pill */}
+                      <button
+                        type="button"
+                        onClick={() => setShowFloodZones((prev) => !prev)}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer active:scale-95"
+                        style={{
+                          backgroundColor: showFloodZones ? "#e3fcef" : "#f4f7f6",
+                          color: showFloodZones ? "#00684a" : "#7c8c9a",
+                          border: `1px solid ${showFloodZones ? "#00ed64" : "#e1e5e8"}`,
+                        }}
+                        title="Toggle Layer Riwayat Genangan / Banjir BNPB"
+                      >
+                        <span
+                          className="w-1.5 h-1.5 rounded-full shrink-0"
+                          style={{
+                            backgroundColor: showFloodZones ? "#00D972" : "#c1ccd6",
+                          }}
+                        />
+                        Banjir
+                      </button>
+
+                      {/* Transit Layer Pill */}
+                      <button
+                        type="button"
+                        onClick={() => setShowTransitRoutes((prev) => !prev)}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer active:scale-95"
+                        style={{
+                          backgroundColor: showTransitRoutes ? "#e3fcef" : "#f4f7f6",
+                          color: showTransitRoutes ? "#00684a" : "#7c8c9a",
+                          border: `1px solid ${showTransitRoutes ? "#00ed64" : "#e1e5e8"}`,
+                        }}
+                        title="Toggle Jalur Rute Transit KRL & Tol"
+                      >
+                        <span
+                          className="w-1.5 h-1.5 rounded-full shrink-0"
+                          style={{
+                            backgroundColor: showTransitRoutes ? "#00D972" : "#c1ccd6",
+                          }}
+                        />
+                        Transit
+                      </button>
+
+                      {/* Radius Layer Pill */}
+                      <button
+                        type="button"
+                        onClick={() => setShowRadiusCircles((prev) => !prev)}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap cursor-pointer active:scale-95"
+                        style={{
+                          backgroundColor: showRadiusCircles ? "#e3fcef" : "#f4f7f6",
+                          color: showRadiusCircles ? "#00684a" : "#7c8c9a",
+                          border: `1px solid ${showRadiusCircles ? "#00ed64" : "#e1e5e8"}`,
+                        }}
+                        title="Toggle Radius Jarak 10-35km dari Sudirman"
+                      >
+                        <span
+                          className="w-1.5 h-1.5 rounded-full shrink-0"
+                          style={{
+                            backgroundColor: showRadiusCircles ? "#00D972" : "#c1ccd6",
+                          }}
+                        />
+                        Radius
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Map Layer Filter Pills */}
-                <div className="flex items-center gap-1 bg-white/90 backdrop-blur-md p-1 rounded-full border border-[#E1E5E8] shadow-md shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setShowTransitRoutes((prev) => !prev)}
-                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                      showTransitRoutes
-                        ? "bg-[#001E2B] text-white shadow-xs"
-                        : "text-[#5C6C7A] hover:text-[#001E2B]"
-                    }`}
-                    title="Toggle Jalur Rute Transit KRL & Tol"
-                  >
-                    <Zap
-                      size={11}
-                      className={showTransitRoutes ? "text-[#00ED64]" : ""}
-                    />
-                    <span className="hidden xs:inline">Transit</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowRadiusCircles((prev) => !prev)}
-                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                      showRadiusCircles
-                        ? "bg-[#001E2B] text-white shadow-xs"
-                        : "text-[#5C6C7A] hover:text-[#001E2B]"
-                    }`}
-                    title="Toggle Radius Jarak 10-35km dari Sudirman"
-                  >
-                    <Compass
-                      size={11}
-                      className={showRadiusCircles ? "text-[#00ED64]" : ""}
-                    />
-                    <span className="hidden xs:inline">Radius</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowFloodZones((prev) => !prev)}
-                    className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                      showFloodZones
-                        ? "bg-[#DC2626] text-white shadow-xs"
-                        : "text-[#5C6C7A] hover:text-[#DC2626]"
-                    }`}
-                    title="Toggle Layer Riwayat Genangan / Banjir BNPB"
-                  >
-                    <AlertTriangle
-                      size={11}
-                      className={
-                        showFloodZones ? "text-white" : "text-[#DC2626]"
-                      }
-                    />
-                    <span className="hidden xs:inline">Banjir</span>
-                  </button>
+                {/* Right: Floating Provenance Pill on Desktop (Never collides with bottom card) */}
+                <div className="hidden xl:flex items-center gap-2 bg-[#001E2B]/90 backdrop-blur-md text-white px-3.5 py-1.5 rounded-full border border-white/15 text-xs font-semibold shadow-md pointer-events-auto shrink-0">
+                  <span className="w-2 h-2 rounded-full bg-[#00ED64] animate-pulse" />
+                  <span>Sintesis Spasial BNPB & BIG 2024 · 8 Koridor</span>
                 </div>
-              </div>
-
-              {/* Floating Sticky Bottom Telemetry Pill (Desktop only) */}
-              <div className="hidden lg:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-10 items-center gap-2 bg-[#001E2B]/90 backdrop-blur-md text-white px-4 py-1.5 rounded-full border border-white/15 text-xs font-semibold shadow-lg pointer-events-none">
-                <span className="w-2 h-2 rounded-full bg-[#00ED64] animate-pulse" />
-                <span>
-                  Sintesis Spasial BNPB & BIG 2024 · 8 Koridor Terverifikasi
-                </span>
               </div>
 
               {/* DESKTOP Floating Selected Area Detail Pop-up Card (lg:block, bottom-4 left-4) */}
@@ -1088,7 +1182,7 @@ export default function CuratedAreasMapScreen({
 
                   {/* 3 Metrics Box Grid */}
                   <div className="grid grid-cols-3 gap-1.5 text-center text-xs">
-                    <div className="bg-[#F4F7F8] p-2.5 rounded-2xl border border-[#E1E5E8]">
+                    <div className="bg-[#F4F7F8] p-2 sm:p-2.5 rounded-2xl border border-[#E1E5E8] flex flex-col justify-center">
                       <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
                         <Clock size={10} />
                         Komuter
@@ -1097,16 +1191,19 @@ export default function CuratedAreasMapScreen({
                         {selectedArea.commuteTime}
                       </span>
                     </div>
-                    <div className="bg-[#F4F7F8] p-2.5 rounded-2xl border border-[#E1E5E8]">
+                    <div className="bg-[#F4F7F8] p-2 sm:p-2.5 rounded-2xl border border-[#E1E5E8] flex flex-col justify-center">
                       <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
                         <Coins size={10} />
                         Harga
                       </span>
-                      <span className="text-xs font-black text-[#001E2B] mt-0.5 block truncate tabular-nums">
+                      <span
+                        className="text-[11px] sm:text-xs font-black text-[#001E2B] mt-0.5 block tabular-nums tracking-tight whitespace-nowrap overflow-hidden text-ellipsis"
+                        title={selectedArea.priceRange}
+                      >
                         {selectedArea.priceRange}
                       </span>
                     </div>
-                    <div className="bg-[#F4F7F8] p-2.5 rounded-2xl border border-[#E1E5E8]">
+                    <div className="bg-[#F4F7F8] p-2 sm:p-2.5 rounded-2xl border border-[#E1E5E8] flex flex-col justify-center">
                       <span className="text-[9px] font-bold uppercase text-[#7C8C9A] flex items-center justify-center gap-1">
                         <Mountain size={10} />
                         Elevasi

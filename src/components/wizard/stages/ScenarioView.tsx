@@ -95,17 +95,20 @@ export default function ScenarioView({
           <div className="flex items-center justify-between flex-wrap gap-2">
             {/* Weather Tag Pill */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-[#F4F7F6] text-[#001E2B] border border-[#D7E1E5]">
-              <WeatherIcon size={14} className="text-[#00684A]" />
+              <WeatherIcon size={14} className="text-[#00684A]" aria-hidden="true" />
               <span>{data.weatherTag}</span>
             </div>
 
             {/* Why it matters button */}
             <button
               type="button"
+              id="desktop-why-it-matters-toggle"
+              aria-expanded={showWhyModal}
+              aria-controls="desktop-why-it-matters-content"
               onClick={() => setShowWhyModal(!showWhyModal)}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#5C6C7A] hover:text-[#00684A] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#5C6C7A] hover:text-[#00684A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00684A] rounded-md px-1.5 py-0.5 transition-colors cursor-pointer"
             >
-              <HelpCircle size={14} />
+              <HelpCircle size={14} aria-hidden="true" />
               <span>Kenapa ini penting?</span>
             </button>
           </div>
@@ -118,7 +121,7 @@ export default function ScenarioView({
             <p className="text-xs md:text-sm text-[#3D4F5B] leading-relaxed font-medium">
               &ldquo;{data.narrative}&rdquo;
             </p>
-            <p className="text-[11px] text-[#7C8C9A] font-medium pt-0.5">
+            <p className="text-xs text-[#5C6C7A] font-medium pt-0.5">
               Bayangkan kamu lagi ngalamin situasi ini sehari-hari bareng
               keluarga.
             </p>
@@ -126,9 +129,14 @@ export default function ScenarioView({
 
           {/* Expandable Why It Matters Drawer */}
           {showWhyModal && (
-            <div className="p-3.5 rounded-2xl bg-[#E9F5EF] border border-[#318266]/30 text-xs text-[#004F38] font-medium space-y-1 animate-fadeIn">
+            <div
+              id="desktop-why-it-matters-content"
+              role="region"
+              aria-labelledby="desktop-why-it-matters-toggle"
+              className="p-3.5 rounded-2xl bg-[#E9F5EF] border border-[#318266]/30 text-xs text-[#004F38] font-medium space-y-1 animate-fadeIn"
+            >
               <div className="font-bold flex items-center gap-1.5">
-                <Sparkles size={14} className="text-[#00684A]" />
+                <Sparkles size={14} className="text-[#00684A]" aria-hidden="true" />
                 <span>Realita Lapangan Jabodetabek:</span>
               </div>
               <p className="leading-relaxed">{data.whyItMatters}</p>
@@ -138,7 +146,7 @@ export default function ScenarioView({
 
         {/* Trade-off Principle Banner */}
         <div className="flex items-center gap-2.5 px-4 py-2.5 bg-[#F4F7F6] rounded-2xl border border-[#D7E1E5] text-xs font-medium text-[#3D4F5B]">
-          <Info size={15} className="text-[#00684A] shrink-0" />
+          <Info size={15} className="text-[#00684A] shrink-0" aria-hidden="true" />
           <span>
             <strong>Tips Rumper:</strong> Gak ada pilihan yang mutlak salah.
             Pilih opsi yang paling masuk akal buat rutinitas dan kenyamanan
@@ -150,8 +158,18 @@ export default function ScenarioView({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* House Option A */}
           <div
+            role="button"
+            tabIndex={0}
+            aria-pressed={selectedChoice === "A"}
+            aria-label={`Pilih ${data.optionA.title}, harga ${data.optionA.price}`}
             onClick={() => onSelectChoice("A")}
-            className={`bg-white rounded-3xl p-5 md:p-6 border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-4 relative select-none ${
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault()
+                onSelectChoice("A")
+              }
+            }}
+            className={`bg-white rounded-3xl p-5 md:p-6 border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-4 relative select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#001E2B] focus-visible:ring-offset-2 ${
               selectedChoice === "A"
                 ? "border-[#001E2B] shadow-md bg-[#F9FBFA]"
                 : "border-[#D7E1E5] hover:border-[#A8B8C6] shadow-xs hover:shadow-md"
@@ -173,7 +191,7 @@ export default function ScenarioView({
                   PILIHAN A
                 </span>
               </div>
-              <span className="text-xs font-extrabold text-[#001E2B] bg-[#F4F7F6] px-3 py-1 rounded-full border border-[#D7E1E5]">
+              <span className="text-xs font-extrabold text-[#001E2B] bg-[#F4F7F6] px-3 py-1 rounded-full border border-[#D7E1E5] tabular-nums">
                 {data.optionA.price}
               </span>
             </div>
@@ -215,10 +233,10 @@ export default function ScenarioView({
                   key={idx}
                   className="bg-[#F4F7F6] rounded-xl p-2.5 border border-[#E1E5E8]"
                 >
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#7C8C9A]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#5C6C7A]">
                     {m.label}
                   </div>
-                  <div className="text-xs md:text-sm font-extrabold text-[#001E2B] mt-0.5">
+                  <div className="text-xs md:text-sm font-extrabold text-[#001E2B] mt-0.5 tabular-nums">
                     {m.value}
                   </div>
                   {m.subValue && (
@@ -253,7 +271,7 @@ export default function ScenarioView({
             {/* Active Select Indicator */}
             {selectedChoice === "A" ? (
               <div className="flex items-center gap-1.5 text-xs font-bold text-white bg-[#001E2B] py-2 px-3 rounded-full justify-center shadow-xs animate-fadeIn">
-                <Check size={14} className="stroke-[3] text-[#00ED64]" />
+                <Check size={14} className="stroke-[3] text-[#00ED64]" aria-hidden="true" />
                 <span>Pilihanmu (Rumah A Terpilih)</span>
               </div>
             ) : (
@@ -265,8 +283,18 @@ export default function ScenarioView({
 
           {/* House Option B */}
           <div
+            role="button"
+            tabIndex={0}
+            aria-pressed={selectedChoice === "B"}
+            aria-label={`Pilih ${data.optionB.title}, harga ${data.optionB.price}`}
             onClick={() => onSelectChoice("B")}
-            className={`bg-white rounded-3xl p-5 md:p-6 border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-4 relative select-none ${
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault()
+                onSelectChoice("B")
+              }
+            }}
+            className={`bg-white rounded-3xl p-5 md:p-6 border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-4 relative select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#001E2B] focus-visible:ring-offset-2 ${
               selectedChoice === "B"
                 ? "border-[#001E2B] shadow-md bg-[#F9FBFA]"
                 : "border-[#D7E1E5] hover:border-[#A8B8C6] shadow-xs hover:shadow-md"
@@ -288,7 +316,7 @@ export default function ScenarioView({
                   PILIHAN B
                 </span>
               </div>
-              <span className="text-xs font-extrabold text-[#001E2B] bg-[#F4F7F6] px-3 py-1 rounded-full border border-[#D7E1E5]">
+              <span className="text-xs font-extrabold text-[#001E2B] bg-[#F4F7F6] px-3 py-1 rounded-full border border-[#D7E1E5] tabular-nums">
                 {data.optionB.price}
               </span>
             </div>
@@ -330,10 +358,10 @@ export default function ScenarioView({
                   key={idx}
                   className="bg-[#F4F7F6] rounded-xl p-2.5 border border-[#E1E5E8]"
                 >
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#7C8C9A]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#5C6C7A]">
                     {m.label}
                   </div>
-                  <div className="text-xs md:text-sm font-extrabold text-[#001E2B] mt-0.5">
+                  <div className="text-xs md:text-sm font-extrabold text-[#001E2B] mt-0.5 tabular-nums">
                     {m.value}
                   </div>
                   {m.subValue && (
@@ -368,7 +396,7 @@ export default function ScenarioView({
             {/* Active Select Indicator */}
             {selectedChoice === "B" ? (
               <div className="flex items-center gap-1.5 text-xs font-bold text-white bg-[#001E2B] py-2 px-3 rounded-full justify-center shadow-xs animate-fadeIn">
-                <Check size={14} className="stroke-[3] text-[#00ED64]" />
+                <Check size={14} className="stroke-[3] text-[#00ED64]" aria-hidden="true" />
                 <span>Pilihanmu (Rumah B Terpilih)</span>
               </div>
             ) : (
@@ -379,59 +407,72 @@ export default function ScenarioView({
           </div>
         </div>
 
-        {/* Decision Toolbar Component - Dynamic 3-Option Layout & Dark Blue Outline Selection */}
+        {/* Decision Toolbar Component - Stable 4-Option Grid */}
         <div className="bg-white rounded-3xl p-5 md:p-6 border border-[#D7E1E5] shadow-sm space-y-3.5">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-extrabold uppercase tracking-wider text-[#5C6C7A]">
+            <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#5C6C7A]">
               Kompromi yang Paling Masuk Akal Buat Kamu:
-            </label>
+            </h3>
           </div>
 
-          {/* Dynamic 3-Slot Option Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 items-stretch">
-            {/* Slot 1: Dynamic Selected House (A / B) or Dual Quick Pick */}
-            {selectedChoice === "A" ? (
-              <button
-                type="button"
-                onClick={() => onSelectChoice("A")}
-                className="min-h-[48px] px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer select-none"
-              >
-                <Check size={16} className="text-[#00684A] stroke-[3]" />
-                <span className="truncate">Pilihan: Rumah A (Kompak KRL)</span>
-              </button>
-            ) : selectedChoice === "B" ? (
-              <button
-                type="button"
-                onClick={() => onSelectChoice("B")}
-                className="min-h-[48px] px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer select-none"
-              >
-                <Check size={16} className="text-[#00684A] stroke-[3]" />
-                <span className="truncate">Pilihan: Rumah B (Lapang)</span>
-              </button>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => onSelectChoice("A")}
-                  className="min-h-[48px] px-2 py-2 rounded-2xl text-xs font-bold border border-[#D7E1E5] bg-white text-[#001E2B] hover:border-[#001E2B] hover:bg-[#F4F7F6] transition-all cursor-pointer"
-                >
-                  Pilih Rumah A
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onSelectChoice("B")}
-                  className="min-h-[48px] px-2 py-2 rounded-2xl text-xs font-bold border border-[#D7E1E5] bg-white text-[#001E2B] hover:border-[#001E2B] hover:bg-[#F4F7F6] transition-all cursor-pointer"
-                >
-                  Pilih Rumah B
-                </button>
-              </div>
-            )}
+          {/* Stable 4-Column Option Grid (2 Columns on mobile, 4 Columns on desktop) */}
+          <div
+            className="grid grid-cols-2 md:grid-cols-4 gap-2.5 items-stretch"
+            role="group"
+            aria-label="Pilihan Kompromi"
+          >
+            {/* Option 1: Pilih Rumah A */}
+            <button
+              type="button"
+              onClick={() => onSelectChoice("A")}
+              aria-pressed={selectedChoice === "A"}
+              className={`min-h-[48px] px-3.5 py-2.5 rounded-2xl text-xs md:text-sm font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 select-none active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#001E2B] focus-visible:ring-offset-2 ${
+                selectedChoice === "A"
+                  ? "border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs"
+                  : "border border-[#D7E1E5] bg-white text-[#001E2B] hover:border-[#001E2B] hover:bg-[#F4F7F6]"
+              }`}
+            >
+              <Check
+                size={16}
+                aria-hidden="true"
+                className={
+                  selectedChoice === "A"
+                    ? "text-[#00684A] stroke-[3]"
+                    : "text-[#5C6C7A]"
+                }
+              />
+              <span className="truncate">Pilih Rumah A</span>
+            </button>
 
-            {/* Slot 2: Fixed Option - Kompromi Moderat (Keduanya Kurang Cocok) */}
+            {/* Option 2: Pilih Rumah B */}
+            <button
+              type="button"
+              onClick={() => onSelectChoice("B")}
+              aria-pressed={selectedChoice === "B"}
+              className={`min-h-[48px] px-3.5 py-2.5 rounded-2xl text-xs md:text-sm font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 select-none active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#001E2B] focus-visible:ring-offset-2 ${
+                selectedChoice === "B"
+                  ? "border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs"
+                  : "border border-[#D7E1E5] bg-white text-[#001E2B] hover:border-[#001E2B] hover:bg-[#F4F7F6]"
+              }`}
+            >
+              <Check
+                size={16}
+                aria-hidden="true"
+                className={
+                  selectedChoice === "B"
+                    ? "text-[#00684A] stroke-[3]"
+                    : "text-[#5C6C7A]"
+                }
+              />
+              <span className="truncate">Pilih Rumah B</span>
+            </button>
+
+            {/* Option 3: Kompromi Moderat */}
             <button
               type="button"
               onClick={() => onSelectChoice("neither")}
-              className={`min-h-[48px] px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 select-none active:scale-[0.98] ${
+              aria-pressed={selectedChoice === "neither"}
+              className={`min-h-[48px] px-3.5 py-2.5 rounded-2xl text-xs md:text-sm font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 select-none active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#001E2B] focus-visible:ring-offset-2 ${
                 selectedChoice === "neither"
                   ? "border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs"
                   : "border border-[#D7E1E5] bg-white text-[#5C6C7A] hover:border-[#C1CCD6] hover:bg-[#F4F7F6]"
@@ -439,34 +480,36 @@ export default function ScenarioView({
             >
               <XCircle
                 size={16}
+                aria-hidden="true"
                 className={
                   selectedChoice === "neither"
                     ? "text-[#001E2B]"
-                    : "text-[#7C8C9A]"
+                    : "text-[#5C6C7A]"
                 }
               />
               <span className="truncate">Kompromi Moderat</span>
             </button>
 
-            {/* Slot 3: Fixed Option - Hard No (Tolak Skenario) */}
+            {/* Option 4: Hard No (Tolak Skenario) */}
             <button
               type="button"
               onClick={() => onSelectChoice("reject")}
-              className={`min-h-[48px] px-4 py-2.5 rounded-2xl text-xs md:text-sm font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 select-none active:scale-[0.98] ${
+              aria-pressed={selectedChoice === "reject"}
+              className={`min-h-[48px] px-3.5 py-2.5 rounded-2xl text-xs md:text-sm font-bold border transition-all cursor-pointer flex items-center justify-center gap-2 select-none active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C95746] focus-visible:ring-offset-2 ${
                 selectedChoice === "reject"
                   ? "border-2 border-[#C95746] bg-[#FFF5F5] text-[#C95746] ring-2 ring-[#C95746]/10 shadow-xs"
                   : "border border-[#F4DED9] bg-white text-[#C95746] hover:border-[#C95746] hover:bg-[#FFF5F5]"
               }`}
             >
-              <AlertTriangle size={16} />
+              <AlertTriangle size={16} aria-hidden="true" />
               <span className="truncate">Hard No (Tolak)</span>
             </button>
           </div>
 
           {/* Dynamic Outline Feedback Banner */}
           {selectedChoice && data.feedbackMap[selectedChoice] && (
-            <div className="pt-2 flex items-center gap-2 text-xs font-semibold text-[#004F38] bg-[#E9F5EF] px-4 py-2.5 rounded-xl border border-[#318266]/30 animate-fadeIn">
-              <Check size={14} className="stroke-[3] text-[#00684A] shrink-0" />
+            <div role="status" aria-live="polite" className="pt-2 flex items-center gap-2 text-xs font-semibold text-[#004F38] bg-[#E9F5EF] px-4 py-2.5 rounded-xl border border-[#318266]/30 animate-fadeIn">
+              <Check size={14} className="stroke-[3] text-[#00684A] shrink-0" aria-hidden="true" />
               <span>{data.feedbackMap[selectedChoice]}</span>
             </div>
           )}

@@ -29,7 +29,7 @@ export default function MobileSwipeDeck({
   onSkip,
 }: MobileSwipeDeckProps) {
   const [activeTab, setActiveTab] = useState<"A" | "B">("A")
-  const [dragOffset, setDragOffset] = useState<{ x: number y: number }>({
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>({
     x: 0,
     y: 0,
   })
@@ -37,7 +37,7 @@ export default function MobileSwipeDeck({
   const [showWhyModal, setShowWhyModal] = useState<boolean>(false)
   const [swipeHintVisible, setSwipeHintVisible] = useState<boolean>(true)
 
-  const dragStartRef = useRef<{ x: number y: number }>({ x: 0, y: 0 })
+  const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
   const cardRef = useRef<HTMLDivElement>(null)
   const WeatherIcon = data.weatherIcon
 
@@ -112,7 +112,7 @@ export default function MobileSwipeDeck({
     <div className="space-y-4 text-[#001E2B] select-none">
       {/* Mobile Top Header: Eyebrow & Skip */}
       <div className="flex items-center justify-between px-1">
-        <div className="text-xs font-bold uppercase tracking-wider text-[#00684A] flex items-center gap-1.5">
+        <div className="text-xs font-bold uppercase tracking-wider text-[#00684A] flex items-center gap-1.5 tabular-nums">
           <span>
             Skenario 0{data.stepNumber} dari 0{data.totalScenarios}
           </span>
@@ -146,16 +146,19 @@ export default function MobileSwipeDeck({
       <div className="bg-white rounded-2xl p-4 border border-[#D7E1E5] shadow-xs space-y-2 relative">
         <div className="flex items-center justify-between gap-2">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#F4F7F6] text-[#001E2B] border border-[#D7E1E5]">
-            <WeatherIcon size={12} className="text-[#00684A]" />
+            <WeatherIcon size={12} className="text-[#00684A]" aria-hidden="true" />
             <span>{data.weatherTag}</span>
           </div>
 
           <button
             type="button"
+            id="mobile-why-it-matters-toggle"
+            aria-expanded={showWhyModal}
+            aria-controls="mobile-why-it-matters-content"
             onClick={() => setShowWhyModal(!showWhyModal)}
-            className="inline-flex items-center gap-1 text-[11px] font-bold text-[#5C6C7A] hover:text-[#00684A] cursor-pointer"
+            className="inline-flex items-center gap-1 text-[11px] font-bold text-[#5C6C7A] hover:text-[#00684A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00684A] rounded-md px-1 py-0.5 cursor-pointer transition-colors"
           >
-            <HelpCircle size={13} />
+            <HelpCircle size={13} aria-hidden="true" />
             <span>Kenapa penting?</span>
           </button>
         </div>
@@ -171,9 +174,14 @@ export default function MobileSwipeDeck({
 
         {/* Why it matters modal */}
         {showWhyModal && (
-          <div className="p-3 rounded-xl bg-[#E9F5EF] border border-[#318266]/30 text-xs text-[#004F38] font-medium space-y-1 animate-fadeIn">
+          <div
+            id="mobile-why-it-matters-content"
+            role="region"
+            aria-labelledby="mobile-why-it-matters-toggle"
+            className="p-3 rounded-xl bg-[#E9F5EF] border border-[#318266]/30 text-xs text-[#004F38] font-medium space-y-1 animate-fadeIn"
+          >
             <div className="font-bold flex items-center gap-1.5">
-              <Sparkles size={13} className="text-[#00684A]" />
+              <Sparkles size={13} className="text-[#00684A]" aria-hidden="true" />
               <span>Realita Jabodetabek:</span>
             </div>
             <p className="text-[11px] leading-relaxed">{data.whyItMatters}</p>
@@ -183,13 +191,20 @@ export default function MobileSwipeDeck({
 
       {/* Segmented Peek Tab Switcher */}
       <div className="flex items-center justify-center">
-        <div className="bg-[#E9F0EC] p-1 rounded-2xl border border-[#D7E1E5] inline-flex items-center gap-1 shadow-inner">
+        <div
+          role="tablist"
+          aria-label="Pilihan Perbandingan Rumah"
+          className="bg-[#E9F0EC] p-1 rounded-2xl border border-[#D7E1E5] inline-flex items-center gap-1 shadow-inner"
+        >
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "A"}
+            aria-controls="mobile-card-deck"
             onClick={() => {
               setActiveTab("A")
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#001E2B] ${
               activeTab === "A"
                 ? "bg-[#001E2B] text-white shadow-xs"
                 : "text-[#5C6C7A] hover:text-[#001E2B]"
@@ -201,10 +216,13 @@ export default function MobileSwipeDeck({
 
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "B"}
+            aria-controls="mobile-card-deck"
             onClick={() => {
               setActiveTab("B")
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#001E2B] ${
               activeTab === "B"
                 ? "bg-[#001E2B] text-white shadow-xs"
                 : "text-[#5C6C7A] hover:text-[#001E2B]"
@@ -240,6 +258,9 @@ export default function MobileSwipeDeck({
 
         {/* Foreground Interactive Card (Draggable / Swipable) */}
         <div
+          id="mobile-card-deck"
+          role="tabpanel"
+          aria-label={`Detail ${activeHouse.title}`}
           ref={cardRef}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -253,7 +274,7 @@ export default function MobileSwipeDeck({
             transform: `translate3d(${dragOffset.x}px, ${dragOffset.y}px, 0) rotate(${rotation}deg)`,
             transition: isDragging
               ? "none"
-              : "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+              : "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
             touchAction: "pan-y",
           }}
         >
@@ -263,7 +284,7 @@ export default function MobileSwipeDeck({
               className="absolute top-4 left-4 z-30 bg-[#001E2B] text-[#00ED64] border-2 border-[#00ED64] px-3.5 py-1.5 rounded-2xl font-black text-xs uppercase tracking-wider shadow-lg rotate-[-8deg] flex items-center gap-1.5 pointer-events-none"
               style={{ opacity: stampOpacityA }}
             >
-              <Check size={16} className="stroke-[3]" />
+              <Check size={16} className="stroke-[3]" aria-hidden="true" />
               <span>PILIH RUMAH A</span>
             </div>
           )}
@@ -274,7 +295,7 @@ export default function MobileSwipeDeck({
               className="absolute top-4 right-4 z-30 bg-[#001E2B] text-[#00ED64] border-2 border-[#00ED64] px-3.5 py-1.5 rounded-2xl font-black text-xs uppercase tracking-wider shadow-lg rotate-[8deg] flex items-center gap-1.5 pointer-events-none"
               style={{ opacity: stampOpacityB }}
             >
-              <Check size={16} className="stroke-[3]" />
+              <Check size={16} className="stroke-[3]" aria-hidden="true" />
               <span>PILIH RUMAH B</span>
             </div>
           )}
@@ -285,7 +306,7 @@ export default function MobileSwipeDeck({
               className="absolute bottom-6 inset-x-8 z-30 bg-[#001E2B] text-white border-2 border-[#D7E1E5] py-2 rounded-2xl font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-1.5 pointer-events-none"
               style={{ opacity: stampOpacityDown }}
             >
-              <XCircle size={15} />
+              <XCircle size={15} aria-hidden="true" />
               <span>KOMPROMI MODERAT</span>
             </div>
           )}
@@ -306,7 +327,7 @@ export default function MobileSwipeDeck({
                 {activeHouse.badgeLabel}
               </span>
             </div>
-            <span className="text-xs font-extrabold text-[#001E2B] bg-[#F4F7F6] px-3 py-1 rounded-full border border-[#D7E1E5]">
+            <span className="text-xs font-extrabold text-[#001E2B] bg-[#F4F7F6] px-3 py-1 rounded-full border border-[#D7E1E5] tabular-nums">
               {activeHouse.price}
             </span>
           </div>
@@ -348,10 +369,10 @@ export default function MobileSwipeDeck({
                 key={idx}
                 className="bg-[#F4F7F6] rounded-xl p-2 border border-[#E1E5E8]"
               >
-                <div className="text-[9px] font-bold uppercase tracking-wider text-[#7C8C9A]">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[#5C6C7A]">
                   {m.label}
                 </div>
-                <div className="text-xs font-extrabold text-[#001E2B] mt-0.5">
+                <div className="text-xs font-extrabold text-[#001E2B] mt-0.5 tabular-nums">
                   {m.value}
                 </div>
                 {m.subValue && (
@@ -386,7 +407,7 @@ export default function MobileSwipeDeck({
           {/* Active Choice Confirmation Badge */}
           {selectedChoice === activeHouse.key && (
             <div className="mt-3 py-1.5 px-3 rounded-full bg-[#001E2B] text-white text-xs font-bold flex items-center justify-center gap-1.5 animate-fadeIn">
-              <Check size={14} className="stroke-[3] text-[#00ED64]" />
+              <Check size={14} className="stroke-[3] text-[#00ED64]" aria-hidden="true" />
               <span>Pilihanmu ({activeHouse.badgeLabel} Terpilih)</span>
             </div>
           )}
@@ -396,7 +417,7 @@ export default function MobileSwipeDeck({
       {/* Swipe Hint Animation */}
       {swipeHintVisible && !selectedChoice && (
         <div className="flex items-center justify-center gap-2 text-xs font-semibold text-[#5C6C7A] animate-pulse">
-          <HandMetal size={14} className="text-[#00684A]" />
+          <HandMetal size={14} className="text-[#00684A]" aria-hidden="true" />
           <span>Geser kiri untuk Rumah A, geser kanan untuk Rumah B</span>
         </div>
       )}
@@ -407,7 +428,7 @@ export default function MobileSwipeDeck({
           Atau Tap Langsung dengan Satu Jempol:
         </div>
 
-        <div className="grid grid-cols-4 gap-1.5">
+        <div className="grid grid-cols-2 min-[380px]:grid-cols-4 gap-2" role="group" aria-label="Pilihan Kompromi Cepat">
           {/* Pilih Rumah A */}
           <button
             type="button"
@@ -415,7 +436,8 @@ export default function MobileSwipeDeck({
               onSelectChoice("A")
               setActiveTab("A")
             }}
-            className={`py-2.5 px-1 rounded-xl text-xs font-bold border transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 active:scale-95 ${
+            aria-pressed={selectedChoice === "A"}
+            className={`min-h-[46px] py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center min-[380px]:flex-col justify-center gap-1.5 min-[380px]:gap-0.5 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#001E2B] select-none ${
               selectedChoice === "A"
                 ? "border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs"
                 : "border-[#D7E1E5] bg-white text-[#001E2B] hover:bg-[#F4F7F6]"
@@ -423,10 +445,11 @@ export default function MobileSwipeDeck({
           >
             <Check
               size={14}
+              aria-hidden="true"
               className={
                 selectedChoice === "A"
                   ? "text-[#00684A] stroke-[3]"
-                  : "text-[#7C8C9A]"
+                  : "text-[#5C6C7A]"
               }
             />
             <span className="truncate text-[11px]">Rumah A</span>
@@ -439,7 +462,8 @@ export default function MobileSwipeDeck({
               onSelectChoice("B")
               setActiveTab("B")
             }}
-            className={`py-2.5 px-1 rounded-xl text-xs font-bold border transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 active:scale-95 ${
+            aria-pressed={selectedChoice === "B"}
+            className={`min-h-[46px] py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center min-[380px]:flex-col justify-center gap-1.5 min-[380px]:gap-0.5 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#001E2B] select-none ${
               selectedChoice === "B"
                 ? "border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs"
                 : "border-[#D7E1E5] bg-white text-[#001E2B] hover:bg-[#F4F7F6]"
@@ -447,10 +471,11 @@ export default function MobileSwipeDeck({
           >
             <Check
               size={14}
+              aria-hidden="true"
               className={
                 selectedChoice === "B"
                   ? "text-[#00684A] stroke-[3]"
-                  : "text-[#7C8C9A]"
+                  : "text-[#5C6C7A]"
               }
             />
             <span className="truncate text-[11px]">Rumah B</span>
@@ -460,7 +485,8 @@ export default function MobileSwipeDeck({
           <button
             type="button"
             onClick={() => onSelectChoice("neither")}
-            className={`py-2.5 px-1 rounded-xl text-xs font-bold border transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 active:scale-95 ${
+            aria-pressed={selectedChoice === "neither"}
+            className={`min-h-[46px] py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center min-[380px]:flex-col justify-center gap-1.5 min-[380px]:gap-0.5 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#001E2B] select-none ${
               selectedChoice === "neither"
                 ? "border-2 border-[#001E2B] bg-[#001E2B]/5 text-[#001E2B] ring-2 ring-[#001E2B]/10 shadow-xs"
                 : "border-[#D7E1E5] bg-white text-[#5C6C7A] hover:bg-[#F4F7F6]"
@@ -468,10 +494,11 @@ export default function MobileSwipeDeck({
           >
             <XCircle
               size={14}
+              aria-hidden="true"
               className={
                 selectedChoice === "neither"
                   ? "text-[#001E2B]"
-                  : "text-[#7C8C9A]"
+                  : "text-[#5C6C7A]"
               }
             />
             <span className="truncate text-[11px]">Moderat</span>
@@ -481,29 +508,30 @@ export default function MobileSwipeDeck({
           <button
             type="button"
             onClick={() => onSelectChoice("reject")}
-            className={`py-2.5 px-1 rounded-xl text-xs font-bold border transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 active:scale-95 ${
+            aria-pressed={selectedChoice === "reject"}
+            className={`min-h-[46px] py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center min-[380px]:flex-col justify-center gap-1.5 min-[380px]:gap-0.5 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C95746] select-none ${
               selectedChoice === "reject"
                 ? "border-2 border-[#C95746] bg-[#FFF5F5] text-[#C95746] ring-2 ring-[#C95746]/10 shadow-xs"
                 : "border-[#F4DED9] bg-white text-[#C95746] hover:bg-[#FFF5F5]"
             }`}
           >
-            <AlertTriangle size={14} />
+            <AlertTriangle size={14} aria-hidden="true" />
             <span className="truncate text-[11px]">Hard No</span>
           </button>
         </div>
 
         {/* Undo Action if choice made */}
         {selectedChoice && (
-          <div className="flex items-center justify-between pt-1 border-t border-[#E1E5E8] text-[11px]">
+          <div role="status" aria-live="polite" className="flex items-center justify-between pt-1 border-t border-[#E1E5E8] text-[11px]">
             <span className="font-semibold text-[#00684A] truncate">
               {data.feedbackMap[selectedChoice]}
             </span>
             <button
               type="button"
               onClick={() => onSelectChoice("neither")}
-              className="text-[#7C8C9A] hover:text-[#001E2B] flex items-center gap-1 font-bold shrink-0 ml-2 cursor-pointer"
+              className="text-[#5C6C7A] hover:text-[#001E2B] flex items-center gap-1 font-bold shrink-0 ml-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#001E2B] rounded-md px-1"
             >
-              <RotateCcw size={11} />
+              <RotateCcw size={11} aria-hidden="true" />
               <span>Ubah</span>
             </button>
           </div>

@@ -103,10 +103,10 @@ export default function Stage1FrictionDiscovery({ onSelect }: Stage1Props) {
           return (
             <label
               key={opt.id}
-              className={`relative w-full p-4 md:p-4.5 rounded-2xl border cursor-pointer transition-[border-color,background-color,box-shadow] duration-200 flex items-center justify-between min-h-[72px] select-none text-left has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-deep-teal ${
+              className={`group relative w-full p-4 md:p-4.5 rounded-2xl border cursor-pointer transition-all duration-200 flex items-center justify-between min-h-[72px] select-none text-left has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-deep-teal ${
                 isSelected
-                  ? "border-deep-teal bg-canvas-white shadow-sm ring-2 ring-deep-teal/5 text-deep-teal"
-                  : "border-subtle-border bg-canvas-white text-secondary-ink hover:border-strong-border hover:bg-reading-surface"
+                  ? "border-deep-teal bg-canvas-white shadow-sm ring-2 ring-deep-teal/5 text-deep-teal -translate-y-0.5"
+                  : "border-subtle-border bg-canvas-white text-secondary-ink hover:border-strong-border hover:bg-reading-surface hover:-translate-y-0.5"
               }`}
             >
               <input
@@ -119,15 +119,15 @@ export default function Stage1FrictionDiscovery({ onSelect }: Stage1Props) {
               />
               <div className="flex items-center gap-3.5 pr-2">
                 <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-colors duration-200 ${
-                    isSelected ? "bg-soft-green" : "bg-feature-mint"
+                  className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${
+                    isSelected ? "bg-soft-green scale-105" : "bg-feature-mint group-hover:scale-105"
                   }`}
                 >
                   <img
                     src={opt.icon}
                     alt=""
                     aria-hidden="true"
-                    className="h-8 w-8 object-contain"
+                    className="h-8 w-8 object-contain transition-transform duration-200"
                   />
                 </div>
                 <span className="text-sm font-semibold leading-snug">
@@ -138,7 +138,7 @@ export default function Stage1FrictionDiscovery({ onSelect }: Stage1Props) {
               {isSelected && (
                 <div
                   aria-hidden="true"
-                  className="w-6 h-6 rounded-full bg-rumper-green text-deep-teal flex items-center justify-center shrink-0 shadow-xs"
+                  className="w-6 h-6 rounded-full bg-rumper-green text-deep-teal flex items-center justify-center shrink-0 shadow-xs animate-check-pop"
                 >
                   <Check size={14} className="stroke-[3]" />
                 </div>
