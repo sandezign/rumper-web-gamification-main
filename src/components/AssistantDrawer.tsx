@@ -1,25 +1,92 @@
-import { useState, useEffect, type FormEvent } from "react"
-import { MapPin, Plus, Send, X } from "lucide-react"
-import svgPaths from "../imports/Sidebar/svg-yz7dulupdq"
+import { useState, useEffect, useRef, type FormEvent } from "react"
+import {
+  MapPin,
+  Plus,
+  Send,
+  X,
+  RotateCcw,
+  Sparkles,
+  ArrowRightLeft,
+  CheckCircle2,
+} from "lucide-react"
+import {
+  type AssistantContextPayload,
+  type AssistantMessage,
+  type AssistantActionChip,
+  DOMAIN_PROMPT_LIBRARIES,
+  generateAssistantResponse,
+} from "../data/aiAssistantKnowledge"
 
 interface AssistantDrawerProps {
   open: boolean
   onClose: () => void
+  context: AssistantContextPayload
+  onHighlightMap?: (layerId?: string, coords?: [number, number]) => void
+  onAddChecklistItem?: (item: {
+    title: string
+    category: "banjir" | "perjalanan" | "akses" | "fasilitas" | "lingkungan"
+    priority: "high" | "medium" | "low"
+    tip: string
+  }) => void
+  onNavigateTab?: (tabId: string) => void
 }
 
-const QUICK_PROMPTS = [
-  "Apakah commute ke SCBD realistis?",
-  "Apa risiko banjir utamanya?",
-]
-
-/** Full page Rumper advisor screen. Imported sidebar assets remain untouched. */
 export default function AssistantDrawer({
   open,
   onClose,
+  context,
+  onHighlightMap,
+  onAddChecklistItem,
+  onNavigateTab,
 }: AssistantDrawerProps) {
   const [message, setMessage] = useState("")
-  const [messages, setMessages] = useState<string[]>([])
+  const [messages, setMessages] = useState<AssistantMessage[]>([])
+  const [isTyping, setIsTyping] = useState(false)
+  const [addedChipIds, setAddedChipIds] = useState<Record<string, boolean>>({})
+  const chatScrollRef = useRef<HTMLDivElement>(null)
+  const streamingTimerRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Current domain config based on context
+  const currentDomain =
+    DOMAIN_PROMPT_LIBRARIES[context.activeCategory] ||
+    DOMAIN_PROMPT_LIBRARIES.overview
+
+  // Initialize or update conversation seed when drawer opens or context changes
+  useEffect(() => {
+    if (!open) {
+      if (streamingTimerRef.current) {
+        clearInterval(streamingTimerRef.current)
+      }
+      return
+    }
+
+    const instantSummary = currentDomain.instantSummary(context)
+    const initialPrompts = currentDomain.prompts
+
+    const initialMessages: AssistantMessage[] = [
+      {
+        id: `seed-intro-${context.activeCategory}`,
+        sender: "assistant",
+        text: `Halo! Aku **Rumper Advisor** untuk **${context.propertyName}** (${context.subdistrict}).\n\n${instantSummary}\n\nPilih pertanyaan cepat di bawah atau ketik langsung hal yang ingin kamu tanyakan sebelum survei lokasi.`,
+        timestamp: "Baru saja",
+        contextCategory: context.activeCategory,
+        actionChips:
+          initialPrompts[0]?.response(context).actionChips.slice(0, 1) || [],
+      },
+    ]
+
+    setMessages(initialMessages)
+    setIsTyping(false)
+  }, [open, context.activeCategory, context.propertyName])
+
+  // Scroll to bottom on message update
+  useEffect(() => {
+    if (chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight
+    }
+  }, [messages, isTyping])
+
+  // Handle ESC key
   useEffect(() => {
     if (!open) return
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -31,147 +98,350 @@ export default function AssistantDrawer({
 
   if (!open) return null
 
-  const sendMessage = (event: FormEvent) => {
+  // Function to simulate streaming token typewriter
+  const simulateStreaming = (
+    fullText: string,
+    actionChips: AssistantActionChip[],
+    category = context.activeCategory
+  ) => {
+    setIsTyping(true)
+    const messageId = `asst-${Date.now()}`
+
+    // Insert placeholder empty message
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: messageId,
+        sender: "assistant",
+        text: "",
+        timestamp: "Baru saja",
+        contextCategory: category,
+        actionChips: [],
+        isStreaming: true,
+      },
+    ])
+
+    let currentIndex = 0
+    const chunkSize = 3
+    const intervalMs = 25
+
+    if (streamingTimerRef.current) {
+      clearInterval(streamingTimerRef.current)
+    }
+
+    streamingTimerRef.current = setInterval(() => {
+      currentIndex += chunkSize
+      if (currentIndex >= fullText.length) {
+        if (streamingTimerRef.current) {
+          clearInterval(streamingTimerRef.current)
+        }
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageId
+              ? {
+                  ...msg,
+                  text: fullText,
+                  actionChips,
+                  isStreaming: false,
+                }
+              : msg
+          )
+        )
+        setIsTyping(false)
+      } else {
+        const partialText = fullText.slice(0, currentIndex)
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageId ? { ...msg, text: partialText } : msg
+          )
+        )
+      }
+    }, intervalMs)
+  }
+
+  // Handle Quick Prompt Click
+  const handleQuickPrompt = (promptItem: {
+    question: string
+    response: (ctx: AssistantContextPayload) => {
+      text: string
+      actionChips: AssistantActionChip[]
+    }
+  }) => {
+    if (isTyping) return
+
+    const userMsg: AssistantMessage = {
+      id: `user-${Date.now()}`,
+      sender: "user",
+      text: promptItem.question,
+      timestamp: "Baru saja",
+    }
+    setMessages((prev) => [...prev, userMsg])
+
+    const res = promptItem.response(context)
+    setTimeout(() => {
+      simulateStreaming(res.text, res.actionChips)
+    }, 200)
+  }
+
+  // Handle Form Submit
+  const handleSendMessage = (event: FormEvent) => {
     event.preventDefault()
-    const nextMessage = message.trim()
-    if (!nextMessage) return
-    setMessages((current) => [...current, nextMessage])
+    const trimmed = message.trim()
+    if (!trimmed || isTyping) return
+
+    const userMsg: AssistantMessage = {
+      id: `user-${Date.now()}`,
+      sender: "user",
+      text: trimmed,
+      timestamp: "Baru saja",
+    }
+    setMessages((prev) => [...prev, userMsg])
     setMessage("")
+
+    const res = generateAssistantResponse(trimmed, context)
+    setTimeout(() => {
+      simulateStreaming(res.text, res.actionChips)
+    }, 250)
+  }
+
+  // Reset conversation
+  const handleReset = () => {
+    if (streamingTimerRef.current) {
+      clearInterval(streamingTimerRef.current)
+    }
+    const instantSummary = currentDomain.instantSummary(context)
+    setMessages([
+      {
+        id: `seed-intro-reset-${Date.now()}`,
+        sender: "assistant",
+        text: `Percakapan dimulai ulang untuk **${context.propertyName}**.\n\n${instantSummary}`,
+        timestamp: "Baru saja",
+        contextCategory: context.activeCategory,
+        actionChips: [],
+      },
+    ])
+    setIsTyping(false)
+  }
+
+  // Handle Action Chip Click
+  const handleActionClick = (chip: AssistantActionChip) => {
+    if (chip.actionType === "HIGHLIGHT_MAP") {
+      onHighlightMap?.(chip.payload.mapLayerId, chip.payload.coordinates)
+      setAddedChipIds((prev) => ({ ...prev, [chip.id]: true }))
+    } else if (chip.actionType === "ADD_CHECKLIST" && chip.payload.checklistItem) {
+      onAddChecklistItem?.(chip.payload.checklistItem)
+      setAddedChipIds((prev) => ({ ...prev, [chip.id]: true }))
+    } else if (chip.actionType === "NAVIGATE_TAB" && chip.payload.targetTab) {
+      onNavigateTab?.(chip.payload.targetTab)
+      onClose()
+    }
   }
 
   return (
     <div
-      className="fixed inset-0 z-[1200] flex flex-col bg-[#F9FBFA] h-dvh w-full overflow-hidden"
+      className="fixed inset-0 z-[1200] flex justify-end bg-black/40 backdrop-blur-xs transition-opacity duration-200"
       role="dialog"
       aria-modal="true"
       aria-label="Rumper Advisor"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
     >
-      {/* Top Header */}
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#E1E5E8] bg-white px-4 py-3 sm:px-6 shadow-2xs">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <span
-            className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#001E2B]"
-            aria-hidden="true"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path
-                d={svgPaths.p15ab3e60}
-                stroke="#00ED64"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1.33333"
-              />
-              <path
-                d={svgPaths.p22966600}
-                stroke="#00ED64"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1.33333"
-              />
-            </svg>
-          </span>
-          <div className="min-w-0">
-            <h2 className="truncate text-base font-bold text-[#001E2B]">
-              Rumper Advisor
-            </h2>
-            <p className="truncate text-xs text-[#5C6C7A]">
-              Teman diskusi risiko lokasimu — berbasis bukti spasial,
-              anti-halusinasi
-            </p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex size-9 shrink-0 items-center justify-center rounded-full text-[#3D4F5B] transition-colors hover:bg-[#F4F7F6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00A65A]"
-          aria-label="Tutup asisten"
-        >
-          <X size={20} />
-        </button>
-      </header>
-
-      {/* Main Chat Stream Container (Max Width centered for desktop, 100% on mobile) */}
-      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-6 sm:px-6">
-        <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
-          <section className="rounded-2xl rounded-tl-sm border border-[#E1E5E8] bg-white p-4 text-sm leading-6 text-[#3D4F5B] shadow-[0_1px_2px_rgba(0,30,43,0.04)]">
-            Halo! Aku advisor lokasi Rumper buat properti ini. Indikasi utama di
-            sini adalah paparan banjir dekat anak Kali Bekasi. Tanyakan apa pun
-            seputar komut dan lingkungan, atau pakai contekan di bawah buat
-            investigasi langsung pas kamu survei ke lokasi.
-          </section>
-
-          <section className="self-end max-w-[88%] sm:max-w-[80%] rounded-2xl rounded-br-sm bg-[#003D4F] px-4 py-3 text-sm leading-6 text-white shadow-[0_4px_12px_rgba(0,30,43,0.12)]">
-            Apa yang perlu ditanyakan kepada developer tentang riwayat banjir?
-          </section>
-
-          <section className="rounded-2xl rounded-tl-sm border border-[#E1E5E8] bg-white p-4 text-sm leading-6 text-[#3D4F5B] shadow-[0_1px_2px_rgba(0,30,43,0.04)]">
-            <p>
-              Tanyakan langsung ke sales/warga: “Berdasarkan data InaRISK BNPB
-              2024, blok ini sekitar 100 m dari anak Kali Bekasi dengan riwayat
-              genangan 30–60 cm. Sistem drainase dan pompa apa yang sudah
-              dipasang sejak 2024, dan berapa elevasi jalan Blok R?”
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-800">
-                <MapPin size={13} />{" "}
-                <span className="truncate">Drainase Anak Kali Bekasi</span>
-              </span>
-              <button
-                type="button"
-                className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-[#00ED64] px-3 py-2 text-xs font-bold text-[#001E2B] transition-colors hover:bg-[#00D972] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00A65A]"
-              >
-                <Plus size={14} /> Tambah ke checklist investigasi
-              </button>
+      {/* Drawer Shell */}
+      <div className="flex h-dvh w-full max-w-[480px] flex-col bg-[#F9FBFA] shadow-2xl transition-transform duration-300 ease-out animate-in slide-in-from-right">
+        {/* Top Header Bar */}
+        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#E1E5E8] bg-white px-4 py-3 sm:px-5 shadow-2xs">
+          <div className="flex min-w-0 items-center gap-3">
+            <span
+              className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#001E2B] text-[#00ED64] shadow-xs"
+              aria-hidden="true"
+            >
+              <Sparkles size={18} />
+            </span>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h2 className="truncate text-base font-bold text-[#001E2B]">
+                  Rumper Advisor
+                </h2>
+                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 border border-emerald-200">
+                  Spatial AI
+                </span>
+              </div>
+              <p className="truncate text-xs text-[#5C6C7A]">
+                Teman diskusi risiko spasial & panduan survei fisik
+              </p>
             </div>
-          </section>
-
-          {messages.map((item, index) => (
-            <p
-              key={`${item}-${index}`}
-              className="self-end max-w-[88%] sm:max-w-[80%] rounded-2xl rounded-br-sm bg-[#003D4F] px-4 py-3 text-sm leading-6 text-white shadow-[0_2px_8px_rgba(0,30,43,0.1)]"
-            >
-              {item}
-            </p>
-          ))}
-        </div>
-      </main>
-
-      {/* Fixed Bottom Input Area */}
-      <div className="border-t border-[#E1E5E8] bg-white px-4 py-3 sm:px-6 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        <div className="mx-auto flex w-full max-w-3xl flex-col gap-2.5">
-          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-            {QUICK_PROMPTS.map((prompt) => (
-              <button
-                key={prompt}
-                type="button"
-                onClick={() => setMessage(prompt)}
-                className="shrink-0 rounded-full border border-[#C1CCD6] bg-white px-3.5 py-2 text-xs font-medium text-[#3D4F5B] transition-colors hover:bg-[#F4F7F6] hover:border-[#94A3B8]"
-              >
-                {prompt}
-              </button>
-            ))}
           </div>
-          <form onSubmit={sendMessage} className="flex items-center gap-2">
-            <label className="sr-only" htmlFor="assistant-message">
-              Tanyakan tentang lokasi ini
-            </label>
-            <input
-              id="assistant-message"
-              value={message}
-              onChange={(event) => setMessage(event.target.value)}
-              placeholder="Tanyakan tentang lokasi ini…"
-              className="min-h-11 min-w-0 flex-1 rounded-full border border-[#C1CCD6] bg-[#F9FBFA] px-4 text-sm text-[#001E2B] placeholder:text-[#7C8C9A] outline-none transition-shadow focus:border-[#00A65A] focus:ring-2 focus:ring-[#00ED64]/30"
-            />
+
+          <div className="flex items-center gap-1">
             <button
-              type="submit"
-              disabled={!message.trim()}
-              className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#00ED64] text-[#001E2B] transition-colors hover:bg-[#00D972] disabled:cursor-not-allowed disabled:bg-[#C3F0D2] disabled:text-[#5C6C7A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00A65A]"
-              aria-label="Kirim pesan"
+              type="button"
+              onClick={handleReset}
+              title="Mulai ulang percakapan"
+              className="flex size-8 shrink-0 items-center justify-center rounded-full text-[#5C6C7A] hover:bg-[#F4F7F6] hover:text-[#001E2B] transition-colors"
+              aria-label="Mulai ulang percakapan"
             >
-              <Send size={17} />
+              <RotateCcw size={16} />
             </button>
-          </form>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex size-8 shrink-0 items-center justify-center rounded-full text-[#3D4F5B] hover:bg-[#F4F7F6] hover:text-[#001E2B] transition-colors"
+              aria-label="Tutup asisten"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </header>
+
+        {/* Dynamic Context Telemetry Badge Banner */}
+        <div className="border-b border-[#E1E5E8] bg-[#F1F5F9] px-4 py-2 text-xs flex items-center justify-between">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <MapPin size={13} className="text-[#00A65A] shrink-0" />
+            <span className="font-semibold text-[#001E2B] truncate">
+              {context.propertyName}
+            </span>
+            <span className="text-[#94A3B8]">•</span>
+            <span className="text-[#5C6C7A] truncate text-[11px]">
+              {context.subdistrict}
+            </span>
+          </div>
+          <span
+            className={`shrink-0 rounded-md px-2 py-0.5 text-[11px] font-semibold border ${currentDomain.badgeColor}`}
+          >
+            {currentDomain.title}
+            {context.categoryScore ? `: ${context.categoryScore}/100` : ""}
+          </span>
         </div>
+
+        {/* Main Chat Feed */}
+        <main
+          ref={chatScrollRef}
+          className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-5 sm:px-5 space-y-4"
+        >
+          {messages.map((msg) => {
+            const isUser = msg.sender === "user"
+
+            return (
+              <div
+                key={msg.id}
+                className={`flex flex-col ${isUser ? "items-end" : "items-start"}`}
+              >
+                <div
+                  className={`max-w-[90%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-2xs ${
+                    isUser
+                      ? "rounded-br-xs bg-[#003D4F] text-white"
+                      : "rounded-tl-xs border border-[#E1E5E8] bg-white text-[#1E293B]"
+                  }`}
+                >
+                  {/* Message Text with simple bold/markdown formatting */}
+                  <div className="whitespace-pre-wrap space-y-2">
+                    {msg.text.split("\n\n").map((para, pIdx) => (
+                      <p key={pIdx}>
+                        {para.split("**").map((chunk, cIdx) =>
+                          cIdx % 2 === 1 ? (
+                            <strong key={cIdx} className="font-bold text-[#001E2B]">
+                              {chunk}
+                            </strong>
+                          ) : (
+                            chunk
+                          )
+                        )}
+                      </p>
+                    ))}
+                  </div>
+
+                  {/* Typing cursor when streaming */}
+                  {msg.isStreaming && (
+                    <span className="inline-block size-2 ml-1 animate-pulse rounded-full bg-[#00A65A]" />
+                  )}
+                </div>
+
+                {/* Interactive Action Chips embedded in Assistant responses */}
+                {!isUser && msg.actionChips && msg.actionChips.length > 0 && (
+                  <div className="mt-2.5 flex flex-wrap gap-2 max-w-[90%]">
+                    {msg.actionChips.map((chip) => {
+                      const isAdded = addedChipIds[chip.id]
+
+                      return (
+                        <button
+                          key={chip.id}
+                          type="button"
+                          disabled={isAdded}
+                          onClick={() => handleActionClick(chip)}
+                          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all shadow-2xs ${
+                            isAdded
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-300 cursor-default"
+                              : chip.actionType === "ADD_CHECKLIST"
+                              ? "bg-[#00ED64] text-[#001E2B] hover:bg-[#00D972] border border-[#00C962]"
+                              : chip.actionType === "HIGHLIGHT_MAP"
+                              ? "bg-sky-50 text-sky-800 hover:bg-sky-100 border border-sky-200"
+                              : "bg-purple-50 text-purple-800 hover:bg-purple-100 border border-purple-200"
+                          }`}
+                        >
+                          {isAdded ? (
+                            <CheckCircle2 size={13} className="text-emerald-700" />
+                          ) : chip.icon === "map-pin" ? (
+                            <MapPin size={13} />
+                          ) : chip.icon === "plus-checklist" ? (
+                            <Plus size={13} />
+                          ) : (
+                            <ArrowRightLeft size={13} />
+                          )}
+                          <span>{isAdded ? "Sudah Ditambahkan" : chip.label}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </main>
+
+        {/* Fixed Bottom Input Area & Quick Prompts */}
+        <footer className="border-t border-[#E1E5E8] bg-white px-4 py-3 sm:px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="flex flex-col gap-2.5">
+            {/* Quick Prompt Chips (Category Filtered) */}
+            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+              {currentDomain.prompts.map((prompt) => (
+                <button
+                  key={prompt.label}
+                  type="button"
+                  disabled={isTyping}
+                  onClick={() => handleQuickPrompt(prompt)}
+                  className="shrink-0 rounded-full border border-[#CBD5E1] bg-[#F8FAFC] px-3.5 py-1.5 text-xs font-medium text-[#334155] transition-colors hover:bg-white hover:border-[#00A65A] hover:text-[#001E2B] disabled:opacity-50"
+                >
+                  {prompt.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Input Form */}
+            <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+              <label className="sr-only" htmlFor="assistant-input">
+                Tanyakan tentang lokasi ini
+              </label>
+              <input
+                id="assistant-input"
+                type="text"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder={`Tanyakan seputar ${currentDomain.title.toLowerCase()}…`}
+                disabled={isTyping}
+                className="min-h-11 min-w-0 flex-1 rounded-full border border-[#CBD5E1] bg-[#F8FAFC] px-4 text-sm text-[#001E2B] placeholder:text-[#94A3B8] outline-none transition-shadow focus:border-[#00A65A] focus:bg-white focus:ring-2 focus:ring-[#00ED64]/30 disabled:bg-[#F1F5F9]"
+              />
+              <button
+                type="submit"
+                disabled={!message.trim() || isTyping}
+                className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#00ED64] text-[#001E2B] transition-colors hover:bg-[#00D972] disabled:cursor-not-allowed disabled:bg-[#E2E8F0] disabled:text-[#94A3B8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#00A65A]"
+                aria-label="Kirim pertanyaan"
+              >
+                <Send size={17} />
+              </button>
+            </form>
+          </div>
+        </footer>
       </div>
     </div>
   )

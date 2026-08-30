@@ -9,6 +9,11 @@ import FactorRisksCard from "./components/FactorRisksCard"
 import UpgradeBanner from "./components/UpgradeBanner"
 import MapPanel from "./components/MapPanel"
 import UpgradeDrawer from "./components/UpgradeDrawer"
+import InAppCheckoutModal, { type PricingTierKey } from "./components/InAppCheckoutModal"
+import ZeroQuotaModal from "./components/ZeroQuotaModal"
+import AccountSettingsScreen from "./components/account/AccountSettingsScreen"
+import AuthModal, { type UserProfile } from "./components/auth/AuthModal"
+import PDFDueDiligencePreviewModal from "./components/export/PDFDueDiligencePreviewModal"
 import AssistantDrawer from "./components/AssistantDrawer"
 import PropertyModal from "./components/PropertyModal"
 import ResponsiveWizardShell from "./components/wizard/ResponsiveWizardShell"
@@ -19,9 +24,13 @@ import DeepDiveEvidenceWorkspace from "./components/DeepDiveEvidenceWorkspace"
 import CommuteWorkspace from "./components/CommuteWorkspace"
 import ChecklistWorkspace from "./components/ChecklistWorkspace"
 import FasilitasWorkspace from "./components/FasilitasWorkspace"
-import type { FacilityCategoryKey } from "./components/FasilitasWorkspace"
 import { initialProperties, PropertyLocation } from "./data/mockProperties"
-import { Lock } from "lucide-react"
+import { Lock, CheckCircle2 } from "lucide-react"
+import {
+  type AssistantContextPayload,
+  type AssistantDomainCategory,
+} from "./data/aiAssistantKnowledge"
+import { type ChecklistItemData } from "./components/ChecklistWorkspace"
 
 // ── Step / nav types ──────────────────────────────────────────────────────────
 
@@ -102,22 +111,65 @@ export default function App() {
   const [assistantOpen, setAssistantOpen] = useState(false)
   const [propertyModalOpen, setPropertyModalOpen] = useState(false)
   const [appFlowState, setAppFlowState] =
-    useState<"wizard" | "loading" | "curated-areas" | "workspace">("wizard")
+    useState<"wizard" | "loading" | "curated-areas" | "workspace" | "account">("wizard")
+  const [wizardInitialStage, setWizardInitialStage] =
+    useState<number | undefined>(undefined)
+  const [wizardInitialStep, setWizardInitialStep] =
+    useState<number | undefined>(undefined)
+
+  const handleLoadingComplete = useCallback(() => {
+    setAppFlowState("curated-areas")
+  }, [])
 
   // Property locations state
   const [propertiesList, setPropertiesList] =
     useState<PropertyLocation[]>(initialProperties)
-  const [activePropertyId, setActivePropertyId] = useState<string>("prop-1")
-  const totalQuota = 5
+  const [activePropertyId, setActivePropertyId] = useState<string>(
+    initialProperties[0]?.id || "prop-bintaro"
+  )
+  const [totalQuota, setTotalQuota] = useState<number>(5)
   const remainingQuota = Math.max(0, totalQuota - propertiesList.length)
   const activeProperty =
     propertiesList.find((p) => p.id === activePropertyId) || propertiesList[0]
 
+  const [checkoutOpen, setCheckoutOpen] = useState(false)
+  const [zeroQuotaOpen, setZeroQuotaOpen] = useState(false)
+  const [authModalOpen, setAuthModalOpen] = useState(false)
+  const [pdfPreviewOpen, setPdfPreviewOpen] = useState(false)
+  const [currentUser, setCurrentUser] = useState<UserProfile>({
+    name: "Andi Wijaya",
+    email: "andi.wijaya@gmail.com",
+    phone: "+62 812-3456-7890",
+    avatarInitials: "AW",
+    isAuthenticated: true,
+  })
+  const [selectedTier, setSelectedTier] = useState<PricingTierKey>("bundle")
+  const [unlockedPropertyIds, setUnlockedPropertyIds] = useState<string[]>([])
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const showToast = useCallback((msg: string) => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current)
+    setToastMessage(msg)
+    toastTimeoutRef.current = setTimeout(() => {
+      setToastMessage(null)
+    }, 2800)
+  }, [])
+
   const handleSelectProperty = (id: string) => {
     setActivePropertyId(id)
+    const targetProp = propertiesList.find((p) => p.id === id)
+    if (targetProp) {
+      showToast(`Beralih ke ${targetProp.name} · Data risiko BNPB & komut dimuat`)
+    }
   }
 
   const handleAddProperty = (name: string, location: string) => {
+    if (remainingQuota <= 0) {
+      setPropertyModalOpen(false)
+      setZeroQuotaOpen(true)
+      return
+    }
     const newProp: PropertyLocation = {
       id: `prop-${Date.now()}`,
       name,
@@ -129,9 +181,13 @@ export default function App() {
       riskSummary: "Perlu analisis faktor risiko awal lokasi baru",
       evidenceCount: 2,
       gapCount: 1,
+      latLng: [-6.25, 106.8],
+      elevationDpl: "25 mdpl",
+      commuteMinutes: 40,
     }
     setPropertiesList((prev) => [newProp, ...prev])
     setActivePropertyId(newProp.id)
+    showToast(`Properti ${newProp.name} berhasil ditambahkan ke workspace`)
   }
 
   const [mapFullscreen, setMapFullscreen] = useState(false)
@@ -157,10 +213,104 @@ export default function App() {
     } else if (tab === "map-panel") {
       setMobileView("map-panel")
     } else if (tab === "ai-assistant") {
-      setAssistantOpen(true)
+      handleOpenAssistant("overview")
     } else if (tab === "profile") {
-      // Profile tab action
+      setAppFlowState("account")
     }
+  }, [])
+
+  // ── AI Assistant Context & Dynamic Checklist State ───────────────────────────
+  const [assistantContext, setAssistantContext] =
+    useState<AssistantContextPayload>({
+      propertyName: activeProperty?.name || "Grand Galaxy City Block R",
+      subdistrict: activeProperty?.subdistrict || "Jaka Setia, Bekasi Selatan",
+      overallScore: activeProperty?.score || 68,
+      activeCategory: "overview",
+      categoryScore: activeProperty?.score || 68,
+      coordinates: [-6.2681, 106.9742],
+    })
+
+  const [dynamicChecklistItems, setDynamicChecklistItems] = useState<
+    ChecklistItemData[]
+  >([])
+
+  useEffect(() => {
+    if (activeProperty) {
+      setAssistantContext((prev) => ({
+        ...prev,
+        propertyName: activeProperty.name,
+        subdistrict: activeProperty.subdistrict,
+        overallScore: activeProperty.score,
+        categoryScore:
+          prev.activeCategory === "overview"
+            ? activeProperty.score
+            : prev.categoryScore,
+      }))
+    }
+  }, [activeProperty])
+
+  const handleOpenAssistant = useCallback(
+    (
+      category: AssistantDomainCategory = "overview",
+      score?: number | null,
+      summary?: string
+    ) => {
+      setAssistantContext({
+        propertyName: activeProperty?.name || "Grand Galaxy City Block R",
+        subdistrict: activeProperty?.subdistrict || "Jaka Setia, Bekasi Selatan",
+        overallScore: activeProperty?.score || 68,
+        activeCategory: category,
+        categoryScore: score !== undefined ? score : activeProperty?.score,
+        evidenceSummary: summary,
+        coordinates: [-6.2681, 106.9742],
+      })
+      setAssistantOpen(true)
+    },
+    [activeProperty]
+  )
+
+  const handleAddChecklistItem = useCallback(
+    (item: {
+      title: string
+      category: "banjir" | "perjalanan" | "akses" | "fasilitas" | "lingkungan"
+      priority: "high" | "medium" | "low"
+      tip: string
+    }) => {
+      const newItem: ChecklistItemData = {
+        id: `dyn-chk-${Date.now()}`,
+        text: item.title,
+        category: item.category,
+        priority: item.priority,
+        tip: item.tip,
+        defaultChecked: false,
+      }
+      setDynamicChecklistItems((prev) => [newItem, ...prev])
+      setToastMessage(`Tersimpan ke checklist: "${item.title.slice(0, 36)}..."`)
+      setTimeout(() => setToastMessage(null), 3500)
+    },
+    []
+  )
+
+  const handleHighlightMap = useCallback((layerId?: string) => {
+    if (layerId === "poi-kesehatan") {
+      setFacilityVisible((prev) => ({ ...prev, kesehatan: true }))
+    } else if (layerId === "poi-pendidikan") {
+      setFacilityVisible((prev) => ({ ...prev, pendidikan: true }))
+    }
+    setToastMessage("Menyorot layer spasial pada panel peta.")
+    setTimeout(() => setToastMessage(null), 3000)
+  }, [])
+
+  // Global Cmd+K / Ctrl+K keyboard shortcut
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault()
+        setAssistantOpen((prev) => !prev)
+      }
+    }
+    window.addEventListener("keydown", handleGlobalKeyDown)
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown)
   }, [])
 
   // Refs for section tops (used by VerticalTimeline + scroll navigation)
@@ -363,11 +513,23 @@ export default function App() {
     return () => observer.disconnect()
   }, [isPremium, mobileView])
 
-  // ── Upgrade ────────────────────────────────────────────────────────────────
+  // ── Upgrade & Checkout Handlers ───────────────────────────────────────────
 
-  function handleUpgradeConfirm() {
-    setIsPremium(true)
+  const handleProceedToCheckout = (tier: PricingTierKey) => {
+    setSelectedTier(tier)
     setUpgradeOpen(false)
+    setCheckoutOpen(true)
+  }
+
+  const handlePaymentSuccess = (tier: PricingTierKey) => {
+    setIsPremium(true)
+    if (tier === "bundle" || tier === "consultation") {
+      setTotalQuota((prev) => Math.max(prev, 8))
+    }
+    setUnlockedPropertyIds((prev) =>
+      prev.includes(activePropertyId) ? prev : [...prev, activePropertyId]
+    )
+    showToast("Upgrade Berhasil! Seluruh tahap & fitur analisis telah terbuka.")
     navigateToStep("faktor-risiko")
   }
 
@@ -405,34 +567,235 @@ export default function App() {
   if (appFlowState === "wizard") {
     return (
       <ResponsiveWizardShell
-        onComplete={() => setAppFlowState("loading")}
-        onCancel={() => setAppFlowState("curated-areas")}
+        initialStage={wizardInitialStage}
+        initialStep={wizardInitialStep}
+        onComplete={() => {
+          setWizardInitialStage(undefined)
+          setWizardInitialStep(undefined)
+          setAppFlowState("loading")
+        }}
+        onCancel={() => {
+          setWizardInitialStage(undefined)
+          setWizardInitialStep(undefined)
+          setAppFlowState("curated-areas")
+        }}
       />
     )
   }
 
   if (appFlowState === "loading") {
-    return (
-      <LocationDataLoadingScreen
-        onComplete={() => setAppFlowState("curated-areas")}
-      />
-    )
+    return <LocationDataLoadingScreen onComplete={handleLoadingComplete} />
   }
 
   if (appFlowState === "curated-areas") {
     return (
-      <CuratedAreasMapScreen
-        userRemainingQuota={remainingQuota}
-        isPremium={isPremium}
-        onUnlockArea={(area: CuratedArea) => {
-          handleAddProperty(
-            `Kandidat ${area.name.split("&")[0].trim()}`,
-            area.region,
-          )
-          setAppFlowState("workspace")
+      <div className="h-screen w-full relative">
+        <CuratedAreasMapScreen
+          userRemainingQuota={remainingQuota}
+          isPremium={isPremium}
+          onEditPreferences={(step = 1, stage = 6) => {
+            setWizardInitialStep(step)
+            setWizardInitialStage(stage)
+            setAppFlowState("wizard")
+          }}
+          onUnlockArea={(area: CuratedArea) => {
+            const existingProp = propertiesList.find(
+              (p) => p.areaId === area.id || p.name.includes(area.name.split("&")[0].trim()),
+            )
+
+            if (existingProp) {
+              setActivePropertyId(existingProp.id)
+              setAppFlowState("workspace")
+              showToast(`Membuka workspace untuk ${existingProp.name}`)
+              return
+            }
+
+            if (remainingQuota <= 0) {
+              setZeroQuotaOpen(true)
+              return
+            }
+
+            const areaSubdistrict = area.name.includes("&")
+              ? area.name.split("&")[1].trim()
+              : area.name
+            const baseScore =
+              area.category === "strong-fit"
+                ? 84
+                : area.category === "interesting-tradeoff"
+                  ? 74
+                  : 66
+            const newProp: PropertyLocation = {
+              id: `prop-${area.id}-${Date.now()}`,
+              name: `Kandidat ${area.name.split("&")[0].trim()}`,
+              subdistrict: areaSubdistrict,
+              city: area.region,
+              status:
+                area.category === "strong-fit" ? "LANJUTKAN" : "INVESTIGASI",
+              statusBadge: area.category === "strong-fit" ? "success" : "warning",
+              score: baseScore,
+              riskSummary: `Kesesuaian: ${area.categoryLabel} • Elevasi ${area.elevationDpl} (${area.elevationScore}) • Commute ${area.commuteTime}`,
+              evidenceCount: 6,
+              gapCount: 1,
+              active: true,
+              latLng: area.latLng,
+              elevationDpl: area.elevationDpl,
+              areaId: area.id,
+              commuteMinutes: area.commuteMinutes,
+              priceRange: area.priceRange,
+            }
+            setPropertiesList((prev) => [newProp, ...prev])
+            setActivePropertyId(newProp.id)
+            setAppFlowState("workspace")
+            showToast(`Lokasi ${newProp.name} berhasil ditambahkan ke workspace!`)
+          }}
+          onCancel={() => setAppFlowState("workspace")}
+        />
+
+        <ZeroQuotaModal
+          isOpen={zeroQuotaOpen}
+          onClose={() => setZeroQuotaOpen(false)}
+          onSelectTier={(tier) => {
+            setSelectedTier(tier)
+            setCheckoutOpen(true)
+          }}
+          onOpenArchive={() => {
+            setZeroQuotaOpen(false)
+            setAppFlowState("account")
+          }}
+          auditedCount={propertiesList.length}
+        />
+
+        <UpgradeDrawer
+          open={upgradeOpen}
+          onClose={() => setUpgradeOpen(false)}
+          onProceedToCheckout={handleProceedToCheckout}
+          propertyName={activeProperty?.name}
+          initialTier={selectedTier}
+        />
+
+        <InAppCheckoutModal
+          isOpen={checkoutOpen}
+          onClose={() => setCheckoutOpen(false)}
+          onPaymentSuccess={handlePaymentSuccess}
+          tier={selectedTier}
+          propertyName={activeProperty?.name}
+        />
+      </div>
+    )
+  }
+
+  if (appFlowState === "account") {
+    return (
+      <div
+        className="min-h-screen antialiased flex flex-col"
+        style={{
+          backgroundColor: "#F4F7F8",
+          fontFamily: "'DM Sans', ui-sans-serif, system-ui, sans-serif",
+          WebkitFontSmoothing: "antialiased",
         }}
-        onCancel={() => setAppFlowState("workspace")}
-      />
+      >
+        <AppHeader
+          userName={currentUser?.name || "Andi Wijaya"}
+          activePropertyName={activeProperty.name}
+          activePropertySubdistrict={activeProperty.subdistrict}
+          onOpenPropertyModal={() => setPropertyModalOpen(true)}
+          onOpenAccount={() => setAppFlowState("account")}
+          onOpenWizard={() => {
+            setWizardInitialStage(1)
+            setWizardInitialStep(1)
+            setAppFlowState("wizard")
+          }}
+        />
+
+        <AccountSettingsScreen
+          onBack={() => setAppFlowState("workspace")}
+          propertiesList={propertiesList}
+          activePropertyId={activePropertyId}
+          onSelectProperty={handleSelectProperty}
+          remainingQuota={remainingQuota}
+          totalQuota={totalQuota}
+          isPremium={isPremium}
+          onOpenUpgrade={(tier) => {
+            if (tier) setSelectedTier(tier)
+            setUpgradeOpen(true)
+          }}
+          onOpenPdfPreview={() => setPdfPreviewOpen(true)}
+        />
+
+        <UpgradeDrawer
+          open={upgradeOpen}
+          onClose={() => setUpgradeOpen(false)}
+          onProceedToCheckout={handleProceedToCheckout}
+          propertyName={activeProperty?.name}
+          initialTier={selectedTier}
+        />
+
+        <InAppCheckoutModal
+          isOpen={checkoutOpen}
+          onClose={() => setCheckoutOpen(false)}
+          onPaymentSuccess={handlePaymentSuccess}
+          tier={selectedTier}
+          propertyName={activeProperty?.name}
+        />
+
+        <ZeroQuotaModal
+          isOpen={zeroQuotaOpen}
+          onClose={() => setZeroQuotaOpen(false)}
+          onSelectTier={(tier) => {
+            setSelectedTier(tier)
+            setCheckoutOpen(true)
+          }}
+          onOpenArchive={() => {
+            setZeroQuotaOpen(false)
+            setPropertyModalOpen(true)
+          }}
+          auditedCount={propertiesList.length}
+        />
+
+        <PropertyModal
+          isOpen={propertyModalOpen}
+          onClose={() => setPropertyModalOpen(false)}
+          properties={propertiesList}
+          activePropertyId={activePropertyId}
+          onSelectProperty={handleSelectProperty}
+          onAddProperty={handleAddProperty}
+          totalQuota={totalQuota}
+          remainingQuota={remainingQuota}
+          onOpenUpgrade={() => setUpgradeOpen(true)}
+          onOpenZeroQuotaModal={() => setZeroQuotaOpen(true)}
+          onOpenCuratedAreas={() => {
+            setPropertyModalOpen(false)
+            setAppFlowState("curated-areas")
+          }}
+        />
+
+        <AuthModal
+          isOpen={authModalOpen}
+          onClose={() => setAuthModalOpen(false)}
+          onLoginSuccess={(user) => {
+            setCurrentUser(user)
+            showToast(`Berhasil masuk sebagai ${user.name}`)
+          }}
+        />
+
+        <PDFDueDiligencePreviewModal
+          isOpen={pdfPreviewOpen}
+          onClose={() => setPdfPreviewOpen(false)}
+          propertyName={activeProperty?.name}
+          subdistrict={activeProperty?.subdistrict}
+          city={activeProperty?.city}
+          score={activeProperty?.score}
+        />
+
+        {toastMessage && (
+          <div className="fixed bottom-6 inset-x-0 z-[4000] flex justify-center px-4 pointer-events-none animate-in fade-in slide-in-from-bottom-4 duration-200">
+            <div className="bg-[#001E2B] text-white text-xs sm:text-sm font-bold px-4 py-3 rounded-2xl shadow-xl border border-white/10 flex items-center gap-2.5 max-w-md pointer-events-auto">
+              <span className="w-2 h-2 rounded-full bg-[#00ED64] animate-pulse shrink-0" />
+              <span className="truncate">{toastMessage}</span>
+            </div>
+          </div>
+        )}
+      </div>
     )
   }
 
@@ -446,14 +809,16 @@ export default function App() {
       }}
     >
       <AppHeader
-        isPremium={isPremium}
-        onUpgrade={() => setUpgradeOpen(true)}
+        userName={currentUser?.name || "Andi Wijaya"}
         activePropertyName={activeProperty.name}
         activePropertySubdistrict={activeProperty.subdistrict}
-        remainingQuota={remainingQuota}
-        totalQuota={totalQuota}
         onOpenPropertyModal={() => setPropertyModalOpen(true)}
-        onOpenWizard={() => setAppFlowState("curated-areas")}
+        onOpenAccount={() => setAppFlowState("account")}
+        onOpenWizard={() => {
+          setWizardInitialStage(1)
+          setWizardInitialStep(1)
+          setAppFlowState("wizard")
+        }}
       />
 
       {/* ── Mobile Layout (<lg) ── */}
@@ -509,9 +874,13 @@ export default function App() {
                       : "Layak dengan catatan"
                 }
                 description={`${activeProperty.name} (${activeProperty.subdistrict}) — ${activeProperty.riskSummary}.`}
+                onOpenAssistant={handleOpenAssistant}
               />
               <div className="mt-4">
-                <FactorRisksCard onSelectFactor={handleSelectFactor} />
+                <FactorRisksCard
+                  onSelectFactor={handleSelectFactor}
+                  onOpenAssistant={handleOpenAssistant}
+                />
               </div>
               <div className="mt-4 w-full rounded-2xl overflow-hidden shadow-sm border border-slate-200 bg-white relative">
                 <div className="h-[240px] relative">
@@ -545,6 +914,7 @@ export default function App() {
                   activeCategory={selectedFactorId}
                   onSelectCategory={setSelectedFactorId}
                   onSwitchToChecklist={() => navigateToStep("checklist")}
+                  onOpenAssistant={handleOpenAssistant}
                 />
               </div>
             ) : (
@@ -576,6 +946,7 @@ export default function App() {
               >
                 <CommuteWorkspace
                   onSwitchToChecklist={() => navigateToStep("checklist")}
+                  onOpenAssistant={handleOpenAssistant}
                 />
               </div>
             )}
@@ -590,6 +961,8 @@ export default function App() {
                 <ChecklistWorkspace
                   activeCategory={selectedFactorId}
                   onSelectCategory={setSelectedFactorId}
+                  dynamicItems={dynamicChecklistItems}
+                  onOpenAssistant={handleOpenAssistant}
                 />
               </div>
             )}
@@ -609,6 +982,7 @@ export default function App() {
                       [key]: !prev[key],
                     }))
                   }
+                  onOpenAssistant={handleOpenAssistant}
                 />
               </div>
             )}
@@ -669,9 +1043,13 @@ export default function App() {
                         : "Layak dengan catatan"
                   }
                   description={`${activeProperty.name} (${activeProperty.subdistrict}) — ${activeProperty.riskSummary}.`}
+                  onOpenAssistant={handleOpenAssistant}
                 />
                 <div className="mt-4">
-                  <FactorRisksCard onSelectFactor={handleSelectFactor} />
+                  <FactorRisksCard
+                    onSelectFactor={handleSelectFactor}
+                    onOpenAssistant={handleOpenAssistant}
+                  />
                 </div>
               </div>
 
@@ -682,6 +1060,7 @@ export default function App() {
                     activeCategory={selectedFactorId}
                     onSelectCategory={setSelectedFactorId}
                     onSwitchToChecklist={() => navigateToStep("checklist")}
+                    onOpenAssistant={handleOpenAssistant}
                   />
                 </div>
               ) : (
@@ -695,6 +1074,7 @@ export default function App() {
                 <div ref={bs3Ref} data-section="perjalanan">
                   <CommuteWorkspace
                     onSwitchToChecklist={() => navigateToStep("checklist")}
+                    onOpenAssistant={handleOpenAssistant}
                   />
                 </div>
               )}
@@ -705,6 +1085,8 @@ export default function App() {
                   <ChecklistWorkspace
                     activeCategory={selectedFactorId}
                     onSelectCategory={setSelectedFactorId}
+                    dynamicItems={dynamicChecklistItems}
+                    onOpenAssistant={handleOpenAssistant}
                   />
                 </div>
               )}
@@ -724,6 +1106,7 @@ export default function App() {
                         [key]: !prev[key],
                       }))
                     }
+                    onOpenAssistant={handleOpenAssistant}
                   />
                 </div>
               )}
@@ -755,7 +1138,7 @@ export default function App() {
                   navigateToStep(TAB_TO_STEP[tab] ?? "ringkasan")
                 }
                 onUpgrade={() => setUpgradeOpen(true)}
-                onAssistant={() => setAssistantOpen(true)}
+                onAssistant={() => handleOpenAssistant("overview")}
               />
             </div>
           )}
@@ -778,9 +1161,13 @@ export default function App() {
                         : "Layak dengan catatan"
                   }
                   description={`${activeProperty.name} (${activeProperty.subdistrict}) — ${activeProperty.riskSummary}.`}
+                  onOpenAssistant={handleOpenAssistant}
                 />
                 <div className="mt-4">
-                  <FactorRisksCard onSelectFactor={handleSelectFactor} />
+                  <FactorRisksCard
+                    onSelectFactor={handleSelectFactor}
+                    onOpenAssistant={handleOpenAssistant}
+                  />
                 </div>
               </div>
 
@@ -795,6 +1182,7 @@ export default function App() {
                     activeCategory={selectedFactorId}
                     onSelectCategory={setSelectedFactorId}
                     onSwitchToChecklist={() => navigateToStep("checklist")}
+                    onOpenAssistant={handleOpenAssistant}
                   />
                 </div>
               ) : (
@@ -822,6 +1210,7 @@ export default function App() {
                 >
                   <CommuteWorkspace
                     onSwitchToChecklist={() => navigateToStep("checklist")}
+                    onOpenAssistant={handleOpenAssistant}
                   />
                 </div>
               )}
@@ -836,6 +1225,8 @@ export default function App() {
                   <ChecklistWorkspace
                     activeCategory={selectedFactorId}
                     onSelectCategory={setSelectedFactorId}
+                    dynamicItems={dynamicChecklistItems}
+                    onOpenAssistant={handleOpenAssistant}
                   />
                 </div>
               )}
@@ -855,6 +1246,7 @@ export default function App() {
                         [key]: !prev[key],
                       }))
                     }
+                    onOpenAssistant={handleOpenAssistant}
                   />
                 </div>
               )}
@@ -885,12 +1277,48 @@ export default function App() {
       <AssistantDrawer
         open={assistantOpen}
         onClose={() => setAssistantOpen(false)}
+        context={assistantContext}
+        onHighlightMap={handleHighlightMap}
+        onAddChecklistItem={handleAddChecklistItem}
+        onNavigateTab={(tab) => navigateToStep(tab as WorkspaceStep)}
       />
+
+      {/* ── Toast Notification ── */}
+      {toastMessage && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[1300] flex items-center gap-2 rounded-full bg-[#001E2B] px-4 py-2.5 text-xs font-semibold text-white shadow-xl animate-in fade-in slide-in-from-bottom-3 border border-[#00ED64]/40">
+          <CheckCircle2 size={15} className="text-[#00ED64]" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
 
       <UpgradeDrawer
         open={upgradeOpen}
         onClose={() => setUpgradeOpen(false)}
-        onUpgradeConfirm={handleUpgradeConfirm}
+        onProceedToCheckout={handleProceedToCheckout}
+        propertyName={activeProperty?.name}
+        initialTier={selectedTier}
+      />
+
+      <InAppCheckoutModal
+        isOpen={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        onPaymentSuccess={handlePaymentSuccess}
+        tier={selectedTier}
+        propertyName={activeProperty?.name}
+      />
+
+      <ZeroQuotaModal
+        isOpen={zeroQuotaOpen}
+        onClose={() => setZeroQuotaOpen(false)}
+        onSelectTier={(tier) => {
+          setSelectedTier(tier)
+          setCheckoutOpen(true)
+        }}
+        onOpenArchive={() => {
+          setZeroQuotaOpen(false)
+          setPropertyModalOpen(true)
+        }}
+        auditedCount={propertiesList.length}
       />
 
       <PropertyModal
@@ -903,7 +1331,39 @@ export default function App() {
         totalQuota={totalQuota}
         remainingQuota={remainingQuota}
         onOpenUpgrade={() => setUpgradeOpen(true)}
+        onOpenZeroQuotaModal={() => setZeroQuotaOpen(true)}
+        onOpenCuratedAreas={() => {
+          setPropertyModalOpen(false)
+          setAppFlowState("curated-areas")
+        }}
       />
+
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        onLoginSuccess={(user) => {
+          setCurrentUser(user)
+          showToast(`Berhasil masuk sebagai ${user.name}`)
+        }}
+      />
+
+      <PDFDueDiligencePreviewModal
+        isOpen={pdfPreviewOpen}
+        onClose={() => setPdfPreviewOpen(false)}
+        propertyName={activeProperty?.name}
+        subdistrict={activeProperty?.subdistrict}
+        city={activeProperty?.city}
+        score={activeProperty?.score}
+      />
+
+      {toastMessage && (
+        <div className="fixed bottom-6 inset-x-0 z-[4000] flex justify-center px-4 pointer-events-none animate-in fade-in slide-in-from-bottom-4 duration-200">
+          <div className="bg-[#001E2B] text-white text-xs sm:text-sm font-bold px-4 py-3 rounded-2xl shadow-xl border border-white/10 flex items-center gap-2.5 max-w-md pointer-events-auto">
+            <span className="w-2 h-2 rounded-full bg-[#00ED64] animate-pulse shrink-0" />
+            <span className="truncate">{toastMessage}</span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

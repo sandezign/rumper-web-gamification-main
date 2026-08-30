@@ -56,13 +56,12 @@ The **App Header & Navigation System** establishes the primary navigation frame 
 
 | FR-ID | Category | Requirement Description | Priority |
 |---|---|---|---|
-| **FR-101** | Header Bar | Render top header bar with solid dark background `#061E28` and smooth scroll auto-hide behavior. | Must Have |
-| **FR-102** | Brand Mark | Render Rumper shield mark (`#001E2B` background with `#00ED64` green stroke shield SVG). | Must Have |
-| **FR-103** | Plan Badge | Display `"Free Trial"` green badge when `isPremium` is false; open `UpgradeDrawer` on click. | Must Have |
-| **FR-104** | Location Picker| Display active property name & subdistrict; open `PropertyModal` on click. | Must Have |
-| **FR-105** | Quota Pill | Display remaining search quota (`Math.max(0, totalQuota - propertiesList.length)`). | Must Have |
-| **FR-106** | Sub-Header Tabs| Render 5 step tabs; highlight active step; render lock icons on steps 2–5 for Free Trial users. | Must Have |
-| **FR-107** | AI Trigger | Render `"Tanya Asisten"` blue pill button (`#EBF3FF`, `#1A60F5`); open `AssistantDrawer` on click. | Must Have |
+| **FR-101** | Header Bar | Render top header bar with solid dark background `#001E2B` and smooth scroll auto-hide behavior. | Must Have |
+| **FR-102** | Brand Mark | Render Rumper shield mark (`#001E2B` background with `#00ED64` green stroke shield SVG) and bold brand name. | Must Have |
+| **FR-103** | Location Picker| Display active property name & subdistrict; open `PropertyModal` on click. | Must Have |
+| **FR-104** | Account Button | Display user front name (e.g. `Andi`) with user avatar icon inside interactive rounded pill; open `AccountSettingsScreen` on click. | Must Have |
+| **FR-105** | Sub-Header Tabs| Render 5 step tabs in workspace; highlight active step; render lock icons on steps 2–5 for Free Trial users. | Must Have |
+| **FR-106** | AI Trigger | Render `"Tanya Asisten"` blue pill button (`#EBF3FF`, `#1A60F5`); open `AssistantDrawer` on click. | Must Have |
 
 ---
 

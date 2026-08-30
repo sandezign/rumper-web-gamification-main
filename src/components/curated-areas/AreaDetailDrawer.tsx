@@ -96,6 +96,27 @@ export default function AreaDetailDrawer({
 
         {/* Drawer Scrollable Body Content */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 space-y-5">
+          {/* Visual Area Photo Banner */}
+          {area.imageUrl && (
+            <div className="relative w-full h-[180px] sm:h-[200px] rounded-2xl overflow-hidden shadow-sm border border-[#E1E5E8] bg-[#001E2B]">
+              <img
+                src={area.imageUrl}
+                alt={`Visual kawasan perumahan ${area.name}`}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs font-semibold">
+                <span className="bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20 inline-flex items-center gap-1">
+                  <MapPin size={11} className="text-emerald-400 shrink-0" aria-hidden="true" />
+                  <span>{area.region}</span>
+                </span>
+                <span className="bg-[#001E2B]/80 backdrop-blur-md px-2.5 py-1 rounded-full text-[#00ED64] border border-[#00ED64]/30">
+                  {area.registeredPropertiesCount} Listing Aktif
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Quick Metrics Strip */}
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
             <div className="bg-[#F4F7F8] p-3 rounded-2xl border border-[#E1E5E8] text-center flex flex-col justify-center">
@@ -138,12 +159,12 @@ export default function AreaDetailDrawer({
             </div>
           </div>
 
-          {/* Callout Boxes: Mengapa Selaras & Kompromi Nyata */}
+          {/* Callout Boxes: Kelebihan & Pertimbangan */}
           <div className="space-y-3">
             <div className="p-3.5 sm:p-4 rounded-2xl bg-[#E9F5EF] border border-[#318266]/30 space-y-1">
               <div className="flex items-center gap-2 text-xs font-bold text-[#004F38]">
                 <Sparkles size={14} className="text-[#00684A] shrink-0" />
-                <span>Mengapa Selaras:</span>
+                <span>Kelebihan:</span>
               </div>
               <p className="text-xs text-[#003D2E] leading-relaxed font-medium pl-5">
                 {area.cocokReason}
@@ -153,7 +174,7 @@ export default function AreaDetailDrawer({
             <div className="p-3.5 sm:p-4 rounded-2xl bg-[#FFF9E6] border border-[#D4A017]/30 space-y-1">
               <div className="flex items-center gap-2 text-xs font-bold text-[#6E4E00]">
                 <Scale size={14} className="text-[#B37400] shrink-0" />
-                <span>Kompromi Nyata:</span>
+                <span>Pertimbangan:</span>
               </div>
               <p className="text-xs text-[#523A00] leading-relaxed font-medium pl-5">
                 {area.tradeoffReason}
@@ -260,7 +281,7 @@ export default function AreaDetailDrawer({
             }}
             className="min-h-[44px] flex-1 py-2.5 px-4 sm:px-5 rounded-full bg-[#00ED64] hover:bg-[#00B545] text-[#001E2B] font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md transition-all active:scale-95 cursor-pointer"
           >
-            <span>Evaluasi Rumah di Koridor Ini</span>
+            <span>Evaluasi Rumah di Area Ini</span>
             <ArrowRight size={15} />
           </button>
         </div>

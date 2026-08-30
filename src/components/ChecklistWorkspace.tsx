@@ -33,6 +33,12 @@ export interface ChecklistItemData {
 interface ChecklistWorkspaceProps {
   activeCategory?: string
   onSelectCategory?: (category: string) => void
+  dynamicItems?: ChecklistItemData[]
+  onOpenAssistant?: (
+    category: "checklist",
+    score?: number,
+    summary?: string
+  ) => void
 }
 
 // ── Data (Indonesian Localized & Rumper Risk Aligned) ──────────────────────
@@ -249,7 +255,13 @@ function ChecklistRow({
 export default function ChecklistWorkspace({
   activeCategory = "all",
   onSelectCategory,
+  dynamicItems = [],
+  onOpenAssistant,
 }: ChecklistWorkspaceProps) {
+  const allItems = useMemo(() => {
+    return [...dynamicItems, ...CHECKLIST_ITEMS]
+  }, [dynamicItems])
+
   const [checked, setChecked] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(
       CHECKLIST_ITEMS.map((i) => [i.id, i.defaultChecked ?? false]),
@@ -282,16 +294,16 @@ export default function ChecklistWorkspace({
     setChecked((prev) => ({ ...prev, [id]: !prev[id] }))
 
   const filteredItems = useMemo(() => {
-    return CHECKLIST_ITEMS.filter((item) => {
+    return allItems.filter((item) => {
       if (currentCategory !== "all" && item.category !== currentCategory)
         return false
       if (hideCompleted && checked[item.id]) return false
       return true
     })
-  }, [currentCategory, hideCompleted, checked])
+  }, [allItems, currentCategory, hideCompleted, checked])
 
-  const total = CHECKLIST_ITEMS.length
-  const done = CHECKLIST_ITEMS.filter((i) => checked[i.id]).length
+  const total = allItems.length
+  const done = allItems.filter((i) => checked[i.id]).length
   const pct = Math.round((done / total) * 100)
   const remaining = total - done
 
@@ -308,17 +320,35 @@ export default function ChecklistWorkspace({
     >
       {/* ── Grouped Section Header & Progress Overview ── */}
       <div className="p-4 sm:p-5 flex flex-col gap-3 border-b border-slate-100 bg-white">
-        <SectionHeader
-          stepNumber={4}
-          stepLabel="TAHAP"
-          icon={<ClipboardCheck size={12} className="text-emerald-400" />}
-          title="Contekan Investigasi Lapangan"
-          subtitle={
-            remaining > 0
-              ? `${remaining} hal wajib kamu cek ke warga/satpam sebelum bayar booking fee atau DP.`
-              : "🎉 Keren! Semua checklist investigasi lapangan udah kamu selesaikan."
-          }
-        />
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <SectionHeader
+            stepNumber={4}
+            stepLabel="TAHAP"
+            icon={<ClipboardCheck size={12} className="text-emerald-400" />}
+            title="Contekan Investigasi Lapangan"
+            subtitle={
+              remaining > 0
+                ? `${remaining} hal wajib kamu cek ke warga/satpam sebelum bayar booking fee atau DP.`
+                : "Lengkap! Semua checklist investigasi lapangan telah selesai diverifikasi."
+            }
+          />
+          {onOpenAssistant && (
+            <button
+              type="button"
+              onClick={() =>
+                onOpenAssistant(
+                  "checklist",
+                  undefined,
+                  "Panduan pertanyaan survei fisik & wawancara warga"
+                )
+              }
+              className="inline-flex items-center gap-1.5 rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-800 border border-purple-200 hover:bg-purple-100 transition-colors shadow-2xs"
+            >
+              <span className="size-1.5 rounded-full bg-purple-600 animate-pulse" />
+              Tanya AI Ide Survei
+            </button>
+          )}
+        </div>
 
         <div className="flex items-center justify-between gap-3 pt-0.5">
           <div className="flex items-baseline gap-1.5">

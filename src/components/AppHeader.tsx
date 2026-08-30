@@ -2,14 +2,18 @@ import { useState, useEffect } from "react"
 import svgPaths from "../imports/Header/svg-n4hssipkeg"
 
 interface AppHeaderProps {
-  isPremium: boolean
-  onUpgrade: () => void
+  isPremium?: boolean
+  onUpgrade?: () => void
   activePropertyName: string
   activePropertySubdistrict: string
-  remainingQuota: number
-  totalQuota: number
+  remainingQuota?: number
+  totalQuota?: number
   onOpenPropertyModal: () => void
   onOpenWizard?: () => void
+  onOpenCuratedAreas?: () => void
+  onOpenAccount?: () => void
+  userName?: string
+  variant?: "default" | "minimal"
 }
 
 function RumperMark() {
@@ -81,17 +85,15 @@ function ProfileIcon() {
 }
 
 export default function AppHeader({
-  isPremium,
-  onUpgrade,
   activePropertyName,
   activePropertySubdistrict,
-  remainingQuota,
-  totalQuota,
   onOpenPropertyModal,
   onOpenWizard,
+  onOpenAccount,
+  userName = "Andi Wijaya",
 }: AppHeaderProps) {
-  const planLabel = isPremium ? "Premium" : "Free Trial"
   const fullLocationLabel = `${activePropertyName}, ${activePropertySubdistrict}`
+  const frontName = userName ? userName.trim().split(" ")[0] : "Andi"
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
@@ -105,11 +107,20 @@ export default function AppHeader({
   }, [])
 
   return (
-    <div className="sticky top-0 z-50 flex flex-col w-full">
-      {/* Primary Header Bar */}
-      <header className="flex min-h-[52px] shrink-0 items-center justify-between border-b border-white/20 bg-[#001E2B] px-4 sm:px-5 py-2">
-        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-          <div className="flex items-center gap-2">
+    <div className="sticky top-0 z-50 bg-[#001E2B] transition-all duration-200">
+      <header className="flex h-14 w-full items-center justify-between px-4 sm:px-6">
+        {/* Left: Brand Logo & Title */}
+        <div className="flex items-center gap-3">
+          <div
+            className="flex items-center gap-2.5 cursor-pointer select-none"
+            onClick={onOpenWizard}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") onOpenWizard?.()
+            }}
+            aria-label="Kembali ke pengaturan awal"
+          >
             <RumperMark />
             <span
               className="whitespace-nowrap text-lg font-bold leading-tight text-white"
@@ -118,16 +129,9 @@ export default function AppHeader({
               Rumper
             </span>
           </div>
-          <button
-            type="button"
-            onClick={isPremium ? undefined : onUpgrade}
-            className="flex h-8 items-center rounded-full border border-[rgba(1,237,100,0.5)] bg-[rgba(1,237,100,0.1)] px-3 text-xs font-semibold leading-none text-[#00ED64] transition-colors hover:bg-[rgba(1,237,100,0.18)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#00ED64] cursor-pointer shrink-0"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            {planLabel}
-          </button>
         </div>
 
+        {/* Right: Location Pill + Account Button with Front Name */}
         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           {/* Location Selector Pill Button */}
           <button
@@ -161,36 +165,20 @@ export default function AppHeader({
             </svg>
           </button>
 
-          {/* Onboarding Wizard Setup Button */}
-          {onOpenWizard && (
-            <button
-              type="button"
-              onClick={onOpenWizard}
-              className="flex h-8 items-center justify-center gap-1.5 rounded-full border border-[#00E599]/40 bg-[#00E599]/10 px-3 hover:bg-[#00E599]/20 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#00E599] cursor-pointer active:scale-[0.98] text-[#00E599] text-xs font-bold shrink-0"
-              aria-label="Buka Profil Pencarian"
-            >
-              <span>Profil Kamu</span>
-            </button>
-          )}
-
-          {/* Quota Badge ("1 lokasi tersisa") */}
-          <span
-            className="hidden h-8 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 text-xs font-semibold leading-none text-[#00ED64] lg:inline-flex items-center gap-1.5 shrink-0"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#00ED64] animate-pulse shrink-0" />
-            {remainingQuota > 0
-              ? `${remainingQuota} lokasi tersisa`
-              : `Kuota penuh (${totalQuota}/${totalQuota})`}
-          </span>
-
-          {/* Profile Icon (Hidden on mobile <sm to eliminate redundancy with bottom navigation bar) */}
+          {/* Account Settings Button with Front Name */}
           <button
             type="button"
-            className="hidden sm:flex size-8 shrink-0 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white cursor-pointer"
-            aria-label="Profil"
+            onClick={onOpenAccount}
+            className="flex h-8 items-center gap-1.5 sm:gap-2 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 px-2.5 sm:px-3 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white cursor-pointer active:scale-95 shrink-0 text-white"
+            aria-label={`Pengaturan Akun: ${frontName}`}
           >
             <ProfileIcon />
+            <span
+              className="text-xs font-bold text-white max-w-[100px] sm:max-w-[140px] truncate"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              {frontName}
+            </span>
           </button>
         </div>
       </header>

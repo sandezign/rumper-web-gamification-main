@@ -14,6 +14,11 @@ interface DeepDiveEvidenceWorkspaceProps {
   activeCategory?: string
   onSelectCategory?: (catId: string) => void
   onSwitchToChecklist: () => void
+  onOpenAssistant?: (
+    category: "banjir" | "perjalanan" | "fasilitas" | "checklist" | "negosiasi",
+    score?: number,
+    summary?: string
+  ) => void
 }
 
 interface CategoryConfig {
@@ -328,6 +333,7 @@ export default function DeepDiveEvidenceWorkspace({
   activeCategory = "banjir",
   onSelectCategory,
   onSwitchToChecklist,
+  onOpenAssistant,
 }: DeepDiveEvidenceWorkspaceProps) {
   const [selectedCat, setSelectedCat] = useState<string>(activeCategory)
   const [reviewState, setReviewState] = useState<Record<string, boolean>>({})
@@ -437,14 +443,32 @@ export default function DeepDiveEvidenceWorkspace({
       </div>
 
       {/* ── Active Category Subheader ── */}
-      <div className="flex items-center gap-2 my-0.5">
-        <h3 className="text-base sm:text-lg font-bold text-slate-900">
-          {cat.label}
-        </h3>
-        {cat.tag && (
-          <span className="bg-rose-100 text-rose-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-            {cat.tag}
-          </span>
+      <div className="flex items-center justify-between gap-2 my-0.5 flex-wrap">
+        <div className="flex items-center gap-2">
+          <h3 className="text-base sm:text-lg font-bold text-slate-900">
+            {cat.label}
+          </h3>
+          {cat.tag && (
+            <span className="bg-rose-100 text-rose-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+              {cat.tag}
+            </span>
+          )}
+        </div>
+        {onOpenAssistant && (
+          <button
+            type="button"
+            onClick={() =>
+              onOpenAssistant(
+                (selectedCat as any) || "banjir",
+                cat.score ?? 42,
+                `Analisis bukti spasial kategori ${cat.label}`
+              )
+            }
+            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors shadow-2xs"
+          >
+            <span className="size-1.5 rounded-full bg-[#00A65A] animate-pulse" />
+            Tanya AI tentang {cat.label}
+          </button>
         )}
       </div>
 

@@ -1,9 +1,9 @@
 import React from "react"
 import { CloudRain } from "lucide-react"
 import ScenarioView, { type ScenarioData } from "./ScenarioView"
-import {
-  useWizardState,
-  type ScenarioChoice,
+import type {
+  ScenarioChoice,
+  WizardFormData,
 } from "../../../store/useWizardStore"
 
 const SCENARIO_1_DATA: ScenarioData = {
@@ -21,11 +21,11 @@ const SCENARIO_1_DATA: ScenarioData = {
     key: "A",
     badgeLabel: "PILIHAN A",
     title: "Rumah Kompak Dekat Stasiun KRL",
-    corridor: "Koridor Transit Oriented (e.g. Jurangmangu / Rawa Buntu)",
+    corridor: "Wilayah Transit Oriented (e.g. Jurangmangu / Rawa Buntu)",
     price: "Rp 950 Juta",
     imageUrl:
       "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
-    imageTag: "📍 600m ke Stasiun · 7 Min Jalan Kaki",
+    imageTag: "600m ke Stasiun · 7 Min Jalan Kaki",
     metrics: [
       {
         label: "WAKTU KOMUTER",
@@ -38,29 +38,31 @@ const SCENARIO_1_DATA: ScenarioData = {
         subValue: "Kompak 2 Lantai efisien",
       },
       {
-        label: "HARGA PENAWARAN",
-        value: "Rp 950 Jt",
-        subValue: "Cicilan ~Rp 6.8 Jt/bln",
+        label: "ESTIMASI ONGKOS PP",
+        value: "±Rp 15.000 / hari",
+        subValue: "Tiket KRL PP + jalan kaki",
       },
       {
-        label: "AKSES HARIAN",
-        value: "600m ke Stasiun",
-        subValue: "Jalan kaki santai",
+        label: "TOTAL KOMUTER HARIAN",
+        value: "1.2 Jam / hari",
+        subValue: "Lebih banyak di rumah",
       },
     ],
-    akses: "Jalan lingkungan row 6 meter, 600m jalan kaki ke stasiun",
+    akses: "Jalan lingkungan row 6 meter, 600m jalan kaki santai ke stasiun",
     fasilitas: "Minimarket, apotek, dan kedai kopi bisa jalan kaki",
+    kelebihan:
+      "Akses jalan 6m, hanya 600m jalan kaki ke stasiun KRL. Minimarket, apotek, dan kedai kopi dapat dicapai jalan kaki santai.",
     kompromiNyata: "Ukuran kamar tidur kompak, tidak ada sisa tanah belakang.",
   },
   optionB: {
     key: "B",
     badgeLabel: "PILIHAN B",
     title: "Rumah Lapang Sub-Urban",
-    corridor: "Koridor Hijau Luar (e.g. Parung Panjang / Sawangan Barat)",
+    corridor: "Wilayah Hijau Luar (e.g. Parung Panjang / Sawangan Barat)",
     price: "Rp 920 Juta",
     imageUrl:
       "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80",
-    imageTag: "🏡 Kavling 90m² · 5.2 km ke Kota",
+    imageTag: "Kavling 90m² · 5.2 km ke Stasiun",
     metrics: [
       {
         label: "WAKTU KOMUTER",
@@ -73,38 +75,48 @@ const SCENARIO_1_DATA: ScenarioData = {
         subValue: "Halaman belakang lega",
       },
       {
-        label: "HARGA PENAWARAN",
-        value: "Rp 920 Jt",
-        subValue: "Cicilan ~Rp 6.5 Jt/bln",
+        label: "ESTIMASI ONGKOS PP",
+        value: "±Rp 55.000 / hari",
+        subValue: "Bensin + Tol / Ojol",
       },
       {
-        label: "AKSES HARIAN",
-        value: "5.2 km ke Stasiun",
-        subValue: "Wajib motor / mobil",
+        label: "TOTAL KOMUTER HARIAN",
+        value: "2.8 Jam / hari",
+        subValue: "Siap stamina di jalan",
       },
     ],
     akses: "Cluster satu gerbang asri, 5 km ke stasiun / pintu tol",
     fasilitas: "Taman cluster lapang, pusat kuliner butuh 10 menit motor",
+    kelebihan:
+      "Cluster satu gerbang asri dengan kavling 90m² lapang, halaman belakang luas untuk ruang terbuka keluarga dan sirkulasi udara optimal.",
     kompromiNyata:
       "Waktu perjalanan harian 2.5 – 3 jam pulang-pergi (siap capek di jalan).",
   },
   feedbackMap: {
-    A: "✓ Prioritas dicatat: Anti boncos waktu komut (Siap dengan ruang kompak).",
-    B: "✓ Prioritas dicatat: Ruang lega & nyaman (Siap komut lebih panjang).",
+    A: "Prioritas dicatat: Anti boncos waktu komut (Siap dengan ruang kompak).",
+    B: "Prioritas dicatat: Ruang lega & nyaman (Siap komut lebih panjang).",
     neither:
-      "✓ Preferensi: Mau jalan tengah antara luas dan waktu tempuh moderat.",
+      "Preferensi dicatat: Jalan tengah antara luas dan waktu tempuh moderat.",
     reject:
-      "⚠️ Toleransi komut: Ketat (Akan memfilter perumahan dengan akses komuter buruk).",
+      "Toleransi komut ketat: Memfilter perumahan dengan akses komuter buruk.",
   },
 }
 
-export default function Stage2ValueProof() {
-  const { formData, setScenarioResponse, skipToParameterSetup } =
-    useWizardState()
-  const currentChoice = formData.scenarioResponses["transit-vs-space"]
+interface Stage2ValueProofProps {
+  formData: WizardFormData
+  onSelectChoice: (choice: ScenarioChoice) => void
+  onSkip?: () => void
+}
+
+export default function Stage2ValueProof({
+  formData,
+  onSelectChoice,
+  onSkip,
+}: Stage2ValueProofProps) {
+  const currentChoice = formData.scenarioResponses?.["transit-vs-space"]
 
   const handleSelect = (choice: ScenarioChoice) => {
-    setScenarioResponse("transit-vs-space", choice)
+    onSelectChoice(choice)
   }
 
   return (
@@ -113,7 +125,7 @@ export default function Stage2ValueProof() {
       selectedChoice={currentChoice}
       selectedFriction={formData.selectedFriction}
       onSelectChoice={handleSelect}
-      onSkip={skipToParameterSetup}
+      onSkip={onSkip}
     />
   )
 }

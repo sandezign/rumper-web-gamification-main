@@ -1,4 +1,4 @@
-import { Layers, ShieldCheck } from "lucide-react"
+import { Layers, ShieldCheck, Info } from "lucide-react"
 import Card from "./ui/Card"
 import Badge from "./ui/Badge"
 import SectionHeader from "./ui/SectionHeader"
@@ -8,6 +8,7 @@ interface ScoreCardProps {
   statusText?: string
   description?: string
   verifiedSourcesCount?: number
+  onOpenAssistant?: (category: "overview", score?: number, summary?: string) => void
 }
 
 export default function ScoreCard({
@@ -15,6 +16,7 @@ export default function ScoreCard({
   statusText = "Layak dengan catatan",
   description = "Grand Galaxy City Block R (Bekasi Selatan) — Risiko banjir sedang & waktu tempuh komut 45 min.",
   verifiedSourcesCount = 6,
+  onOpenAssistant,
 }: ScoreCardProps) {
   const radius = 30
   const circumference = 2 * Math.PI * radius
@@ -27,12 +29,24 @@ export default function ScoreCard({
       className="p-4 sm:p-6 flex flex-col gap-4 sm:gap-5 bg-white"
     >
       {/* ── Section Header ── */}
-      <SectionHeader
-        stepNumber={1}
-        stepLabel="TAHAP"
-        icon={<Layers size={12} className="text-emerald-400" />}
-        title="Ringkasan & Indeks Risiko Lokasi"
-      />
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <SectionHeader
+          stepNumber={1}
+          stepLabel="TAHAP"
+          icon={<Layers size={12} className="text-emerald-400" />}
+          title="Ringkasan & Indeks Risiko Lokasi"
+        />
+        {onOpenAssistant && (
+          <button
+            type="button"
+            onClick={() => onOpenAssistant("overview", score, description)}
+            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors shadow-2xs"
+          >
+            <span className="size-1.5 rounded-full bg-[#00A65A] animate-pulse" />
+            Tanya AI tentang Skor
+          </button>
+        )}
+      </div>
 
       {/* ── Hero Score Banner (Side-by-Side Flex Row on both Mobile & Desktop) ── */}
       <div className="bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200/70 flex items-center justify-between gap-3 shadow-xs">
@@ -130,10 +144,13 @@ export default function ScoreCard({
             sumber data spasial resmi
           </span>
         </div>
-        <p className="text-[11px] text-slate-500 leading-normal bg-slate-50 p-2.5 rounded-xl border border-slate-200/60">
-          💡 <strong>Tips Rumper:</strong> Mini Check awal berbasis data spasial
-          & publik — bukan sertifikat final. Wajib cek fisik langsung sebelum
-          kamu transfer booking fee atau DP.
+        <p className="text-[11px] text-slate-500 leading-normal bg-slate-50 p-2.5 rounded-xl border border-slate-200/60 flex items-start gap-1.5">
+          <Info size={13} className="text-amber-500 shrink-0 mt-0.5" aria-hidden="true" />
+          <span>
+            <strong>Tips Rumper:</strong> Mini Check awal berbasis data spasial
+            & publik — bukan sertifikat final. Wajib cek fisik langsung sebelum
+            kamu transfer booking fee atau DP.
+          </span>
         </p>
       </div>
     </Card>

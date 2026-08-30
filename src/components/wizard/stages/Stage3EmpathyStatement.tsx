@@ -1,9 +1,9 @@
 import React from "react"
 import { ShieldCheck } from "lucide-react"
 import ScenarioView, { type ScenarioData } from "./ScenarioView"
-import {
-  useWizardState,
-  type ScenarioChoice,
+import type {
+  ScenarioChoice,
+  WizardFormData,
 } from "../../../store/useWizardStore"
 
 const SCENARIO_2_DATA: ScenarioData = {
@@ -25,7 +25,7 @@ const SCENARIO_2_DATA: ScenarioData = {
     price: "Rp 980 Juta",
     imageUrl:
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
-    imageTag: "⛰️ Elevasi +48m dpl · Drainase Gravitasi",
+    imageTag: "Elevasi +48m dpl · Drainase Gravitasi",
     metrics: [
       {
         label: "RISIKO GENANGAN",
@@ -50,6 +50,8 @@ const SCENARIO_2_DATA: ScenarioData = {
     ],
     akses: "Elevasi 48m dpl, kontur tanah berbukit, jalan bebas genangan",
     fasilitas: "Drainase gravitasi alami mengalir lancar ke lembah",
+    kelebihan:
+      "Elevasi tinggi +48m dpl di area perbukitan dengan drainase gravitasi alami. Jalan akses lingkungan 100% bebas genangan saat curah hujan ekstrem.",
     kompromiNyata:
       "Fasad standar bawaan developer, ada kontur tanjakan menuju rumah.",
   },
@@ -61,7 +63,7 @@ const SCENARIO_2_DATA: ScenarioData = {
     price: "Rp 1.05 Miliar",
     imageUrl:
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
-    imageTag: "✨ High Ceiling Estetik · Dataran Polder",
+    imageTag: "High Ceiling Estetik · Dataran Polder",
     metrics: [
       {
         label: "RISIKO GENANGAN",
@@ -86,25 +88,35 @@ const SCENARIO_2_DATA: ScenarioData = {
     ],
     akses: "Tanggul polder & pompa internal developer dalam cluster",
     fasilitas: "Clubhouse megah, kolam renang, finishing material premium",
+    kelebihan:
+      "Desain tropis modern high-ceiling estetik siap huni, fasilitas clubhouse lengkap dengan kolam renang serta finishing material berkelas.",
     kompromiNyata:
       "Jalan akses utama di luar gerbang cluster rawan tergenang pas hujan ekstrem.",
   },
   feedbackMap: {
-    A: "✓ Prioritas dicatat: Keamanan topografi & anti-banjir alami (Siap fasad standar).",
-    B: "✓ Prioritas dicatat: Estetika bangunan & fasilitas mewah (Siap risiko tanggul/akses).",
-    neither: "✓ Preferensi: Mau hunian di elevasi aman dengan desain modern.",
-    reject:
-      "⚠️ Toleransi banjir: Nol mutlak (Blacklist seluruh zona cekungan air).",
+    A: "Prioritas dicatat: Keamanan topografi & anti-banjir alami (Siap fasad standar).",
+    B: "Prioritas dicatat: Estetika bangunan & fasilitas mewah (Siap risiko tanggul/akses).",
+    neither:
+      "Preferensi dicatat: Mau hunian di elevasi aman dengan desain modern.",
+    reject: "Toleransi banjir nol mutlak: Memfilter seluruh zona cekungan air.",
   },
 }
 
-export default function Stage3EmpathyStatement() {
-  const { formData, setScenarioResponse, skipToParameterSetup } =
-    useWizardState()
-  const currentChoice = formData.scenarioResponses["flood-vs-aesthetic"]
+interface Stage3EmpathyStatementProps {
+  formData: WizardFormData
+  onSelectChoice: (choice: ScenarioChoice) => void
+  onSkip?: () => void
+}
+
+export default function Stage3EmpathyStatement({
+  formData,
+  onSelectChoice,
+  onSkip,
+}: Stage3EmpathyStatementProps) {
+  const currentChoice = formData.scenarioResponses?.["flood-vs-aesthetic"]
 
   const handleSelect = (choice: ScenarioChoice) => {
-    setScenarioResponse("flood-vs-aesthetic", choice)
+    onSelectChoice(choice)
   }
 
   return (
@@ -113,7 +125,7 @@ export default function Stage3EmpathyStatement() {
       selectedChoice={currentChoice}
       selectedFriction={formData.selectedFriction}
       onSelectChoice={handleSelect}
-      onSkip={skipToParameterSetup}
+      onSkip={onSkip}
     />
   )
 }

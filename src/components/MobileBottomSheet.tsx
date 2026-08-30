@@ -12,7 +12,7 @@ const SNAP_HEIGHTS: Record<SnapPoint, number> = {
 
 function snapPx(snap: SnapPoint): number {
   if (snap === "peek") return SNAP_HEIGHTS.peek
-  return Math.round(window.innerHeight * SNAP_HEIGHTS[snap] as number)
+  return Math.round((window.innerHeight * SNAP_HEIGHTS[snap]) as number)
 }
 
 const ALL_TABS = [

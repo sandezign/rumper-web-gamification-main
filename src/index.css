@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=DM+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 @import 'leaflet/dist/leaflet.css';
 @import '../default_shadcn_theme.css';
@@ -21,14 +20,6 @@
   transition: background-color 0.2s ease;
 }
 
-*:hover::-webkit-scrollbar-thumb {
-  background: rgba(0, 30, 43, 0.15);
-}
-
-*:hover::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 30, 43, 0.35);
-}
-
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
@@ -39,19 +30,10 @@
   scrollbar-color: transparent transparent;
 }
 
-*:hover {
-  scrollbar-color: rgba(0, 30, 43, 0.15) transparent;
-}
-
 .custom-scrollbar,
 .subtle-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
-}
-
-.custom-scrollbar:hover,
-.subtle-scrollbar:hover {
-  scrollbar-color: rgba(0, 30, 43, 0.2) transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar,
@@ -71,18 +53,37 @@
   border-radius: 9999px;
 }
 
-.custom-scrollbar:hover::-webkit-scrollbar-thumb,
-.subtle-scrollbar:hover::-webkit-scrollbar-thumb {
-  background: rgba(0, 30, 43, 0.18);
-}
+@media (hover: hover) and (pointer: fine) {
+  *:hover::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-primary-ink) 15%, transparent);
+  }
 
-.custom-scrollbar:hover::-webkit-scrollbar-thumb:hover,
-.subtle-scrollbar:hover::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 30, 43, 0.35);
+  *:hover::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--color-primary-ink) 35%, transparent);
+  }
+
+  *:hover {
+    scrollbar-color: color-mix(in srgb, var(--color-primary-ink) 15%, transparent) transparent;
+  }
+
+  .custom-scrollbar:hover,
+  .subtle-scrollbar:hover {
+    scrollbar-color: color-mix(in srgb, var(--color-primary-ink) 20%, transparent) transparent;
+  }
+
+  .custom-scrollbar:hover::-webkit-scrollbar-thumb,
+  .subtle-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-primary-ink) 18%, transparent);
+  }
+
+  .custom-scrollbar:hover::-webkit-scrollbar-thumb:hover,
+  .subtle-scrollbar:hover::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--color-primary-ink) 35%, transparent);
+  }
 }
 
 body {
-  font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  font-family: ui-sans-serif, system-ui, sans-serif;
   background-color: var(--background);
   color: var(--foreground);
 }
@@ -91,6 +92,7 @@ body {
   --color-rumper-green: #00ed64;
   --color-rumper-green-hover: #00b545;
   --color-rumper-green-dark: #00684a;
+  --color-rumper-green-deep: #004f38;
   --color-deep-teal: #001e2b;
   --color-supporting-teal: #003d4f;
   --color-feature-mint: #e3fcef;
@@ -108,10 +110,15 @@ body {
   --color-strong-border: #c1ccd6;
   --color-evidence-positive: #318266;
   --color-evidence-positive-bg: #dceee7;
+  --color-evidence-positive-subtle: #e9f5ef;
+  --color-evidence-positive-muted: #e9f0ec;
   --color-evidence-warning: #d79a2b;
   --color-evidence-warning-bg: #fff8e0;
+  --color-evidence-warning-ink: #8a5b00;
+  --color-evidence-warning-copy: #5a4000;
   --color-evidence-danger: #c95746;
   --color-evidence-danger-bg: #f4ded9;
+  --color-evidence-danger-subtle: #fff5f5;
 }
 
 @keyframes checkPop {
@@ -278,7 +285,7 @@ body {
 @keyframes orbitPopIn {
   0% {
     opacity: 0;
-    transform: scale(0.4) translateY(10px);
+    transform: scale(0.92) translateY(10px);
   }
   70% {
     transform: scale(1.08) translateY(-2px);
@@ -292,7 +299,7 @@ body {
 @keyframes cardPopIn {
   0% {
     opacity: 0;
-    transform: scale(0.6) translateY(20px) rotate(0deg);
+    transform: scale(0.92) translateY(20px) rotate(0deg);
   }
   70% {
     transform: scale(1.04) translateY(-3px) rotate(-4deg);
@@ -341,7 +348,7 @@ body {
 }
 
 .animate-pulse-glow {
-  animation: pulseGlow 4s infinite ease-in-out;
+  animation: pulseGlow 4s infinite linear;
 }
 
 .animate-orbit-spin {
@@ -349,27 +356,27 @@ body {
 }
 
 .animate-orbit-ripple {
-  animation: orbitPulseRipple 4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  animation: orbitPulseRipple 4s linear infinite;
 }
 
 .animate-float-1 {
-  animation: floatBob1 4.5s ease-in-out infinite;
+  animation: floatBob1 4.5s linear infinite;
 }
 
 .animate-float-2 {
-  animation: floatBob2 5.0s ease-in-out infinite 0.4s;
+  animation: floatBob2 5.0s linear infinite 0.4s;
 }
 
 .animate-float-3 {
-  animation: floatBob3 4.8s ease-in-out infinite 0.8s;
+  animation: floatBob3 4.8s linear infinite 0.8s;
 }
 
 .animate-float-4 {
-  animation: floatBob4 5.2s ease-in-out infinite 1.2s;
+  animation: floatBob4 5.2s linear infinite 1.2s;
 }
 
 .animate-float-5 {
-  animation: floatBob5 4.6s ease-in-out infinite 1.6s;
+  animation: floatBob5 4.6s linear infinite 1.6s;
 }
 
 .animate-scale-card {
@@ -401,11 +408,11 @@ body {
 }
 
 .animate-sparkle-spin {
-  animation: sparkleSpin 4s ease-in-out infinite;
+  animation: sparkleSpin 4s linear infinite;
 }
 
 .animate-badge-shimmer {
-  animation: badgeShimmer 2.4s ease-in-out infinite;
+  animation: badgeShimmer 2.4s linear infinite;
 }
 
 @keyframes slideUp {
@@ -448,11 +455,79 @@ body {
   transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
+/* Leaflet Custom Marker Reset for Apple-Style Map Pills */
+.leaflet-custom-marker {
+  background: transparent !important;
+  border: none !important;
+  overflow: visible !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Apple Style Leaflet Popups */
+.leaflet-popup.leaflet-apple-popup .leaflet-popup-content-wrapper,
+.leaflet-popup.leaflet-custom-popup .leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.96) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16), 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.leaflet-popup.leaflet-apple-popup .leaflet-popup-content,
+.leaflet-popup.leaflet-custom-popup .leaflet-popup-content {
+  margin: 0 !important;
+  line-height: normal !important;
+}
+
+.leaflet-popup.leaflet-apple-popup .leaflet-popup-content p,
+.leaflet-popup.leaflet-apple-popup .leaflet-popup-content h4,
+.leaflet-popup.leaflet-apple-popup .leaflet-popup-content div,
+.leaflet-popup.leaflet-custom-popup .leaflet-popup-content p,
+.leaflet-popup.leaflet-custom-popup .leaflet-popup-content h4,
+.leaflet-popup.leaflet-custom-popup .leaflet-popup-content div {
+  margin: 0 !important;
+}
+
+.leaflet-popup.leaflet-apple-popup .leaflet-popup-tip,
+.leaflet-popup.leaflet-custom-popup .leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+.leaflet-popup.leaflet-apple-popup .leaflet-popup-close-button,
+.leaflet-popup.leaflet-custom-popup .leaflet-popup-close-button {
+  top: 10px !important;
+  right: 10px !important;
+  color: #8E8E93 !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 9999px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(120, 120, 128, 0.12) !important;
+  text-decoration: none !important;
+  transition: all 0.15s ease !important;
+}
+
+.leaflet-popup.leaflet-apple-popup .leaflet-popup-close-button:hover,
+.leaflet-popup.leaflet-custom-popup .leaflet-popup-close-button:hover {
+  background: rgba(120, 120, 128, 0.22) !important;
+  color: #1C1C1E !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-check-pop,
   .animate-lock-wiggle,
   .animate-pulse-glow,
   .animate-orbit-spin,
+  .animate-orbit-ripple,
   .animate-float-1,
   .animate-float-2,
   .animate-float-3,
@@ -461,12 +536,19 @@ body {
   .animate-scale-card,
   .animate-back-card,
   .animate-scale-sway,
+  .animate-pill-float,
   .animate-orbit-pop,
   .animate-card-pop,
   .animate-pill-slide,
   .animate-sparkle-spin,
   .animate-badge-shimmer {
     animation: none !important;
+  }
+
+  .animate-slideUp,
+  .animate-fadeIn {
+    animation-duration: 0.001s !important;
+    animation-iteration-count: 1 !important;
   }
 
   *, ::before, ::after {

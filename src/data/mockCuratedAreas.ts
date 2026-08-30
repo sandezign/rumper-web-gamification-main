@@ -14,6 +14,7 @@ export interface CuratedArea {
   priceMax: number // 2800
   elevationDpl: string // e.g. '28 mdpl'
   elevationScore: "Aman" | "Waspada" | "Tinggi"
+  imageUrl?: string // High-res neighborhood & architectural image
   isShortlisted?: boolean
   latLng: [number, number] // Real GIS Latitude & Longitude
   latLngRoute: [number, number][] // Geographic Transit Waypoints to Sudirman
@@ -54,7 +55,7 @@ export const initialCuratedAreas: CuratedArea[] = [
     name: "Bintaro & Pondok Aren",
     region: "Tangerang Selatan",
     category: "interesting-tradeoff",
-    categoryLabel: "Kompromi Menarik",
+    categoryLabel: "Moderate",
     commuteTime: "~38 Menit",
     commuteMinutes: 38,
     commuteMode: "KRL Lin Rangkasbitung ke Tanah Abang / Sudirman",
@@ -63,6 +64,8 @@ export const initialCuratedAreas: CuratedArea[] = [
     priceMax: 2800,
     elevationDpl: "28 mdpl",
     elevationScore: "Aman",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
     isShortlisted: true,
     latLng: [-6.288, 106.726],
     latLngRoute: [
@@ -82,7 +85,7 @@ export const initialCuratedAreas: CuratedArea[] = [
     cocokReason:
       "Akses KRL langsung ke Stasiun Sudirman / Tanah Abang dalam 38 menit, dekat Stasiun Jurang Mangu dan Gerbang Tol Pondok Aren (JORR).",
     tradeoffReason:
-      "Dengan budget yang sama, ukuran tanah 20–30% lebih padat (compact) dibandingkan koridor Sawangan atau Cisauk.",
+      "Dengan budget yang sama, ukuran tanah 20–30% lebih padat (compact) dibandingkan wilayah Sawangan atau Cisauk.",
     registeredPropertiesCount: 3,
     checkpointsCount: 3,
     transitOptions: [
@@ -111,7 +114,7 @@ export const initialCuratedAreas: CuratedArea[] = [
     name: "Serpong & BSD Fringe",
     region: "Kab. Tangerang / Tangsel Border",
     category: "interesting-tradeoff",
-    categoryLabel: "Kompromi Menarik",
+    categoryLabel: "Moderate",
     commuteTime: "~48 Menit",
     commuteMinutes: 48,
     commuteMode: "KRL Intermoda Cisauk / Rawa Buntu",
@@ -120,6 +123,8 @@ export const initialCuratedAreas: CuratedArea[] = [
     priceMax: 2400,
     elevationDpl: "34 mdpl",
     elevationScore: "Aman",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
     isShortlisted: false,
     latLng: [-6.319, 106.663],
     latLngRoute: [
@@ -169,7 +174,7 @@ export const initialCuratedAreas: CuratedArea[] = [
     name: "Sawangan & Bojongsari",
     region: "Kota Depok / Tangsel Border",
     category: "strong-fit",
-    categoryLabel: "Kesesuaian Kuat",
+    categoryLabel: "Paling Sesuai",
     commuteTime: "~55 Menit",
     commuteMinutes: 55,
     commuteMode: "Tol Desari (Depok-Antasari) / Feeder KRL",
@@ -178,6 +183,8 @@ export const initialCuratedAreas: CuratedArea[] = [
     priceMax: 1650,
     elevationDpl: "62 mdpl",
     elevationScore: "Tinggi",
+    imageUrl:
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
     isShortlisted: true,
     latLng: [-6.415, 106.762],
     latLngRoute: [
@@ -227,7 +234,7 @@ export const initialCuratedAreas: CuratedArea[] = [
     name: "Margonda & Beji",
     region: "Kota Depok",
     category: "strong-fit",
-    categoryLabel: "Kesesuaian Kuat",
+    categoryLabel: "Paling Sesuai",
     commuteTime: "~42 Menit",
     commuteMinutes: 42,
     commuteMode: "KRL Lin Bogor (Pondok Cina / Depok Baru)",
@@ -236,6 +243,8 @@ export const initialCuratedAreas: CuratedArea[] = [
     priceMax: 1800,
     elevationDpl: "52 mdpl",
     elevationScore: "Tinggi",
+    imageUrl:
+      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80",
     isShortlisted: true,
     latLng: [-6.372, 106.833],
     latLngRoute: [
@@ -284,7 +293,7 @@ export const initialCuratedAreas: CuratedArea[] = [
     name: "Pamulang & Ciputat",
     region: "Tangerang Selatan",
     category: "strong-fit",
-    categoryLabel: "Kesesuaian Kuat",
+    categoryLabel: "Paling Sesuai",
     commuteTime: "~45 Menit",
     commuteMinutes: 45,
     commuteMode: "Feeder MRT Lebak Bulus / Tol Cinere-Serpong",
@@ -293,6 +302,8 @@ export const initialCuratedAreas: CuratedArea[] = [
     priceMax: 1900,
     elevationDpl: "38 mdpl",
     elevationScore: "Aman",
+    imageUrl:
+      "https://images.unsplash.com/photo-1598228723793-52759bba239c?auto=format&fit=crop&w=800&q=80",
     isShortlisted: false,
     latLng: [-6.345, 106.745],
     latLngRoute: [
@@ -341,7 +352,7 @@ export const initialCuratedAreas: CuratedArea[] = [
     name: "Cibubur & Cipayung",
     region: "Depok / Jakarta Timur Border",
     category: "strong-fit",
-    categoryLabel: "Kesesuaian Kuat",
+    categoryLabel: "Paling Sesuai",
     commuteTime: "~46 Menit",
     commuteMinutes: 46,
     commuteMode: "LRT Jabodebek Harjamukti / Tol Jagorawi",
@@ -350,6 +361,8 @@ export const initialCuratedAreas: CuratedArea[] = [
     priceMax: 2200,
     elevationDpl: "45 mdpl",
     elevationScore: "Aman",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&q=80",
     isShortlisted: false,
     latLng: [-6.368, 106.905],
     latLngRoute: [
@@ -398,7 +411,7 @@ export const initialCuratedAreas: CuratedArea[] = [
     name: "Bekasi Barat & Kranji",
     region: "Kota Bekasi",
     category: "strong-fit",
-    categoryLabel: "Kesesuaian Kuat",
+    categoryLabel: "Paling Sesuai",
     commuteTime: "~50 Menit",
     commuteMinutes: 50,
     commuteMode: "KRL Lin Cikarang (Kranji / Stasiun Bekasi)",
@@ -407,6 +420,8 @@ export const initialCuratedAreas: CuratedArea[] = [
     priceMax: 1750,
     elevationDpl: "22 mdpl",
     elevationScore: "Aman",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80",
     isShortlisted: false,
     latLng: [-6.235, 106.985],
     latLngRoute: [
@@ -455,7 +470,7 @@ export const initialCuratedAreas: CuratedArea[] = [
     name: "Cikarang Transit Corridor",
     region: "Kabupaten Bekasi",
     category: "challenge-assumptions",
-    categoryLabel: "Opsi Alternatif",
+    categoryLabel: "Alternatif",
     commuteTime: "~65 Menit",
     commuteMinutes: 65,
     commuteMode: "KRL Cikarang Ekspres / Tol Layang MBZ",
@@ -464,6 +479,8 @@ export const initialCuratedAreas: CuratedArea[] = [
     priceMax: 1200,
     elevationDpl: "18 mdpl",
     elevationScore: "Aman",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80",
     isShortlisted: false,
     latLng: [-6.262, 107.135],
     latLngRoute: [

@@ -186,10 +186,35 @@ Rumper prioritizes flat surfaces with tonal contrast at rest, rising to soft amb
 - **Secondary/Ghost:** Background `#e9f5ef`, text `#004f38`, hover background `#dcfce7`, border transparent.
 
 ### Cards / Containers
-- **Corner Style:** 16px (`rounded-2xl`)
+- **Corner Style:** 16px (`rounded-2xl` / `rounded-[20px]`) up to 26px (`rounded-[26px]`) for primary wizard cards.
 - **Background:** `#ffffff` (`var(--card)`)
-- **Border:** 1px solid `#d7e1e5` (`var(--border)`)
-- **Padding:** 16px (`p-4`) or 20px (`p-5`)
+- **Border:** 1px solid `#d7e1e5` or `#e5e5ea` (`var(--border)`)
+- **Padding:** 16px (`p-4`), 20px (`p-5`), or 28px (`p-7`)
+
+### Interactive Selection Cards (Radio / Checkbox Cards)
+Used for profiling options, household selection, friction discovery, and area shortlist cards.
+- **Resting State:** `bg-white border-[#d7e1e5] text-[#3d4f5b] hover:border-[#5c6c7a] hover:bg-[#f6f8f7]`
+- **Selected State:** `border-[#001e2b] bg-white text-[#001e2b] shadow-xs ring-2 ring-[#001e2b]/10 font-bold`
+- **Selection Indicator:** 24px circular badge `bg-[#00ed64] text-[#001e2b]` with check icon (`stroke-[3]`).
+
+### Tonal Segmented / Preset Filter Buttons
+Used for compact budget presets, price filters, category chips, and range selectors.
+- **Shape & Layout:** Rounded 16px (`rounded-[16px]`), `whitespace-nowrap`, single-line text constraint.
+- **Resting State:** `bg-white border-[#e5e5ea] text-[#1c1c1e] hover:border-[#c7c7cc] hover:bg-[#f2f2f7]/50`
+- **Selected State:** `bg-[#f0fdf4] border-[#15803d] text-[#14532d] ring-2 ring-[#22c55e]/25 font-extrabold shadow-xs`
+
+### Dynamic Telemetry & Calculation Banners
+Used for real-time financial estimates (KPR burden), score telemetry, and simulation results.
+- **Surface:** Evidence positive tint `bg-[#f0fdf4]` with subtle border `border-[#dcfce7]`.
+- **Corner Radius:** 20px (`rounded-[20px]`).
+- **Telemetry Metric:** Sans-serif bold/extrabold tabular numbers (`font-extrabold text-[#14532d] tabular-nums`), avoiding raw monospaced fonts for clean typographic spacing.
+- **Inline Disclaimer/Assumption Pill:** Single-line rounded full badge `bg-white px-3.5 py-2 rounded-full border border-[#e5e5ea] text-[11px] sm:text-xs text-[#5c6c7a] whitespace-nowrap shadow-2xs`.
+
+### Inset Control Boxes
+Used for range sliders, parameter fine-tuning, and secondary calculators.
+- **Surface:** Subordinate recessed background `bg-[#f2f2f7]/60` with hairline border `border-[#e5e5ea]`.
+- **Corner Radius:** 20px (`rounded-[20px]`).
+- **Sliders:** 2px track `bg-[#e5e5ea]` with deep teal thumb/accent (`accent-[#001e2b]`).
 
 ### Score Chips & Risk Badges
 - **Style:** Full pill (`rounded-full`), flex row inline-align.
@@ -201,15 +226,30 @@ Rumper prioritizes flat surfaces with tonal contrast at rest, rising to soft amb
 - **Corner Style:** Top-left & top-right 24px (`rounded-t-3xl`), border-t 1px `#d7e1e5`.
 - **Overlay:** Backdrop blur `backdrop-blur-sm` with dark tint overlay `bg-black/30`.
 
+## Named Design System Rules
+
+**The 10% Mint Highlight Rule.** Electric Mint (`#00ed64`) is reserved strictly for score telemetry, main action triggers, and active status indicators. Its high contrast demands limited surface area.
+
+**The Single-Line Preset Rule.** Actionable segment and preset buttons (such as budget ranges) must keep their label text on a single line (`whitespace-nowrap`) to prevent awkward line breaks. If items exceed screen width, structure them into clean multi-row grids (e.g. 3 items in Row 1, 2 items in Row 2).
+
+**The Indonesian Currency & Decimal Rule.** Follow standard Indonesian financial notation:
+- Use comma (`,`) as decimal separator: `Rp 1,8 Miliar`, `Rp 16,2 Jt` (never `1.8`).
+- For ranges, provide a single leading currency prefix: `Rp 500 – 800 Jt`, `Rp 1,2 – 1,8 M`.
+- Contextual Icon: Use `Wallet` or `Banknote`, avoiding US Dollar (`$`) signs.
+
+**The Risk Color Contract Rule.** Risk colors (Positive Green, Warning Amber, Danger Coral) must always be accompanied by descriptive text labels and icons to guarantee accessibility.
+
 ## Do's and Don'ts
 
 ### Do:
 - **Do** maintain high contrast ratio for all text on emerald and teal backgrounds.
 - **Do** use rounded pill badges (`rounded-full`) for all risk score and facility category indicators.
+- **Do** use `whitespace-nowrap` on compact status tags and assumption pills to avoid uneven two-line wrapping.
 - **Do** provide clear Indonesian microcopy for all verification checklist items and risk descriptions.
 - **Do** apply smooth spring transitions (`transition-all duration-200 ease-out`) for drawer slide-ins and modal popups.
 
 ### Don't:
 - **Don't** use raw harsh red `#ff0000` or neon red for risk items; use curated evidence danger coral `#c95746`.
 - **Don't** apply heavy dark drop-shadows on resting cards; keep cards flat with subtle 1px border strokes.
+- **Don't** use raw monospace (`font-mono`) for primary financial numbers when tabular sans-serif (`tabular-nums`) gives more natural letter spacing.
 - **Don't** clutter the Leaflet map panel; keep facility controls in clean floating glassmorphic pills.

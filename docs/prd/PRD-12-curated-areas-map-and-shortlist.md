@@ -37,6 +37,13 @@ flowchart TD
     C --> C1[View 2A: Mode Tampilan Peta - Split 1/3 Sidebar & 2/3 Map]
     C --> C2[View 2B: Mode Daftar Area Grid]
     C --> C3[View 2C: Mode Area Tersimpan / Shortlist]
+
+    %% Re-calibration & Edit Flow
+    C -->|Klik 'Ubah Prioritas' di Header| EditPref[Kembali ke Wizard Onboarding (Pre-filled Data)]
+    C1 -->|Klik Pin Sudirman & Pilih 'Ganti Titik Kantor'| EditAnchor[Buka Wizard Step 2: Titik Aktivitas]
+    EditPref -->|Simpan & Analisis Ulang| B
+    EditAnchor -->|Simpan & Analisis Ulang| B
+    EditPref -.->|Batal / Tutup X| C
     
     C1 --> D1[Klik Kartu Compact di Panel Kiri]
     D1 --> D2[Peta Kanan Fokus ke Pin + Rute Garis + Muncul Floating Detail Card]
@@ -182,6 +189,21 @@ Layout mengadopsi pola *Delivery Tracking Web UI* (Split 1/3 kiri dan 2/3 kanan)
   * **Tombol Aksi:**
     * Secondary: `Pilih Area Lain` (Menutup modal, kembali ke peta).
     * Primary: `Buka Laporan Workspace (1 Kuota) →` (Mengurangi kuota & membuka `App.tsx`).
+
+---
+
+### 4.5 Spesifikasi Rekalibrasi Parameter Pencarian (Ubah Preferensi)
+
+Memberikan kontrol penuh kepada pengguna untuk menyesuaikan kembali parameter pencarian (titik gravitasi kerja, batas anggaran KPR, tipe rumah tangga, atau simulasi skenario kompromi) langsung dari layar Peta Kurasi Wilayah tanpa kehilangan data sebelumnya.
+
+1. **Titik Sentuh (Touchpoints) Masuk**:
+   * **Header Action Button (`Ubah Prioritas`)**: Tombol secondary ghost pill pada header atas navigasi (`border-white/20`, icon `SlidersHorizontal`, teks *"Ubah Prioritas"*).
+   * **Contextual Map Pin Action (`📍 Sudirman (Pusat Aktivitas)`)**: Interaksi klik pada marker pusat gravitasi kerja di kanvas peta membuka popover penjelasan dengan tombol *"Ganti Titik Kantor / Gravitasi"*, yang langsung mengarahkan pengguna ke *Langkah 3 · Profiling (Step 2: Titik Aktivitas Rutin)*.
+2. **Prinsip & Guardrails Rekalibrasi**:
+   * **Pre-filled State**: Semua data yang sebelumnya telah diisi (`formData` di `useWizardStore`) tetap tersimpan utuh saat wizard dibuka kembali, sehingga pengguna tidak perlu memulai dari awal.
+   * **Non-Destructive & Safe Cancel**: Menekan tombol `X` (Tutup) di Wizard saat mode edit akan mengembalikan pengguna ke layar Peta Kurasi tanpa merusak state atau data yang sudah tersimpan.
+   * **Bebas Biaya Kuota (Zero Quota Impact)**: Melakukan kalibrasi ulang preferensi dan memperbarui peta rekomendasi **tidak memotong kuota evaluasi properti**. Kuota hanya digunakan ketika pengguna secara eksplisit mengklik *"Evaluasi Rumah"* dan mengonfirmasi di Modal Buka Kuota.
+   * **Transisi Sintesis Ulang**: Setelah pengguna menekan *"Simpan & Analisis Lokasi"*, sistem memutar animasi sintesis mikro (~2.5s) di `LocationDataLoadingScreen` sebelum menyajikan urutan dan kategori koridor yang telah diperbarui.
 
 ---
 

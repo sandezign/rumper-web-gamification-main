@@ -1,5 +1,11 @@
 import React, { useState } from "react"
-import { Sparkles, Check } from "lucide-react"
+import {
+  Train,
+  ShieldCheck,
+  Calculator,
+  ArrowRight,
+  Clock,
+} from "lucide-react"
 import commuteIcon from "../../../assets/illustrations/onboarding/bridge/rumper-bridge-commute.svg"
 import timeIcon from "../../../assets/illustrations/onboarding/bridge/rumper-bridge-time.svg"
 import floodIcon from "../../../assets/illustrations/onboarding/bridge/rumper-bridge-flood.svg"
@@ -10,14 +16,20 @@ import tradeoffIcon from "../../../assets/illustrations/onboarding/bridge/rumper
 
 interface Stage1BridgeExplainerProps {
   selectedFriction?: string
+  onStart?: () => void
+  onSelectScenario?: (scenarioIndex: number) => void
+  onSkip?: () => void
 }
 
 export default function Stage1BridgeExplainer({
-  selectedFriction,
+  selectedFriction: _selectedFriction,
+  onStart,
+  onSelectScenario,
+  onSkip,
 }: Stage1BridgeExplainerProps) {
   const [activeFactor, setActiveFactor] = useState<string | null>(null)
 
-  // Dynamic tilt response on center card when hovering specific satellite
+  // Dynamic physical tilt response on center card when hovering specific satellite
   const getCenterTiltClass = () => {
     switch (activeFactor) {
       case "commute":
@@ -35,33 +47,44 @@ export default function Stage1BridgeExplainer({
     }
   }
 
-  return (
-    <div className="text-deep-teal max-w-xl mx-auto w-full flex flex-col items-center text-center">
-      {/* Top Contextual Friction Bridge Pill */}
-      {selectedFriction ? (
-        <div className="inline-flex max-w-full items-center gap-2 px-4 py-2 bg-evidence-positive-bg rounded-full border border-evidence-positive/30 text-xs text-supporting-teal font-semibold mb-6 shadow-2xs transition-[transform,box-shadow] duration-200 hover:shadow-xs active:scale-[0.96]">
-          <Sparkles size={14} className="text-rumper-green-dark shrink-0 animate-sparkle-spin" />
-          <span className="min-w-0 max-w-md break-words">
-            Nyambung kendalamu:{" "}
-            <strong className="font-bold text-deep-teal">
-              &ldquo;{selectedFriction}&rdquo;
-            </strong>
-          </span>
-        </div>
-      ) : (
-        <div className="inline-flex max-w-full items-center gap-2 px-4 py-2 bg-evidence-positive-bg rounded-full border border-evidence-positive/30 text-xs text-supporting-teal font-semibold mb-6 shadow-2xs transition-[transform,box-shadow] duration-200 hover:shadow-xs active:scale-[0.96]">
-          <Sparkles size={14} className="text-rumper-green-dark shrink-0 animate-sparkle-spin" />
-          <span>Membantu mencari titik temu kompromi rumah pertamamu</span>
-        </div>
-      )}
+  const handleCardClick = (index: number) => {
+    if (onSelectScenario) {
+      onSelectScenario(index)
+    } else if (onStart) {
+      onStart()
+    }
+  }
 
-      {/* Hero visual: one centered trade-off with five supporting signals */}
+  const scenarioItems = [
+    {
+      icon: <Train className="w-5 h-5 text-rumper-green-dark" />,
+      title: "Waktu Komuter vs Luas Rumah",
+      desc: "Hemat tenaga dekat stasiun KRL vs ruang lebih lega tapi komut lebih jauh.",
+    },
+    {
+      icon: <ShieldCheck className="w-5 h-5 text-rumper-green-dark" />,
+      title: "Bebas Banjir vs Dekat Pusat Kota",
+      desc: "Rasa tenang bebas genangan saat musim hujan vs hemat waktu ke pusat aktivitas.",
+    },
+    {
+      icon: <Calculator className="w-5 h-5 text-rumper-green-dark" />,
+      title: "Cicilan Riil vs Biaya Operasional",
+      desc: "Hitung total beban bulanan (KPR, bensin, tol), bukan cuma patokan brosur.",
+    },
+  ]
+
+  return (
+    <div className="text-deep-teal max-w-xl mx-auto w-full flex flex-col items-center text-center px-2">
+
+      {/* 2. Hero Visual: Dynamic Equilibrium Orbit & Satellite Signals */}
       <div className="relative w-full max-w-sm h-64 sm:h-72 flex items-center justify-center mb-6 select-none">
         <span className="sr-only">
           Lima faktor rumah pertama mengelilingi simbol pertimbangan, dengan
           tiga skenario siap dicoba.
         </span>
-        <div className="absolute inset-8 bg-feature-mint/60 rounded-full blur-2xl pointer-events-none animate-pulse-glow" />
+
+        {/* Ambient Backlight Glow */}
+        <div className="absolute inset-8 bg-feature-mint/70 rounded-full blur-2xl pointer-events-none animate-pulse-glow" />
 
         {/* Orbit Radar Pulse Ripple */}
         <div className="absolute w-52 h-52 sm:w-60 sm:h-60 rounded-full border border-rumper-green/35 pointer-events-none animate-orbit-ripple" />
@@ -69,11 +92,11 @@ export default function Stage1BridgeExplainer({
         {/* Orbit Dotted Ring */}
         <div
           className={`absolute w-52 h-52 sm:w-60 sm:h-60 rounded-full border border-dashed pointer-events-none animate-orbit-spin transition-colors duration-300 ${
-            activeFactor ? "border-rumper-green-dark/60" : "border-quiet-ink/60"
+            activeFactor ? "border-rumper-green-dark/60" : "border-quiet-ink/50"
           }`}
         />
 
-        {/* Floating Orbital Icons with Magnetic Hover & Tooltips */}
+        {/* Floating Orbital Satellites with Tooltips */}
         {/* Top: Commuter Train */}
         <div
           className="absolute -top-1 sm:top-1 left-1/2 -translate-x-1/2 group z-20"
@@ -83,7 +106,7 @@ export default function Stage1BridgeExplainer({
           <button
             type="button"
             aria-label="Faktor Komuter KRL On-Time"
-            className="w-11 h-11 rounded-full bg-feature-mint shadow-sm border border-soft-green flex items-center justify-center animate-orbit-pop animate-float-1 transition-[transform,background-color,border-color,box-shadow] duration-200 group-hover:scale-120 group-hover:bg-canvas-white group-hover:border-rumper-green-dark group-hover:shadow-md cursor-pointer active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-deep-teal focus-visible:outline-offset-2"
+            className="w-11 h-11 rounded-full bg-white/95 backdrop-blur-md shadow-sm border border-soft-green/90 flex items-center justify-center animate-orbit-pop animate-float-1 transition-[transform,background-color,border-color,box-shadow] duration-200 group-hover:scale-115 group-hover:bg-canvas-white group-hover:border-rumper-green-dark group-hover:shadow-md cursor-pointer active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-deep-teal focus-visible:outline-offset-2"
           >
             <img
               src={commuteIcon}
@@ -92,8 +115,8 @@ export default function Stage1BridgeExplainer({
               className="w-7 h-7 object-contain transition-transform duration-200 group-hover:scale-110"
             />
           </button>
-          <div className="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:-translate-y-1 transition-[transform,opacity] duration-200 ease-out pointer-events-none bg-deep-teal text-canvas-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-md whitespace-nowrap z-30">
-            Komuter KRL On-Time
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:-translate-y-1 transition-[transform,opacity] duration-200 ease-out pointer-events-none bg-deep-teal/95 backdrop-blur-sm text-canvas-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-md whitespace-nowrap z-30">
+            Komuter KRL
           </div>
         </div>
 
@@ -106,7 +129,7 @@ export default function Stage1BridgeExplainer({
           <button
             type="button"
             aria-label="Faktor Efisiensi Waktu Tempuh"
-            className="w-10 h-10 rounded-full bg-feature-mint shadow-sm border border-soft-green flex items-center justify-center animate-orbit-pop animate-float-2 transition-[transform,background-color,border-color,box-shadow] duration-200 group-hover:scale-120 group-hover:bg-canvas-white group-hover:border-rumper-green-dark group-hover:shadow-md cursor-pointer active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-deep-teal focus-visible:outline-offset-2"
+            className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-md shadow-sm border border-soft-green/90 flex items-center justify-center animate-orbit-pop animate-float-2 transition-[transform,background-color,border-color,box-shadow] duration-200 group-hover:scale-115 group-hover:bg-canvas-white group-hover:border-rumper-green-dark group-hover:shadow-md cursor-pointer active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-deep-teal focus-visible:outline-offset-2"
           >
             <img
               src={timeIcon}
@@ -115,8 +138,8 @@ export default function Stage1BridgeExplainer({
               className="w-6 h-6 object-contain transition-transform duration-200 group-hover:scale-110"
             />
           </button>
-          <div className="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:-translate-y-1 transition-[transform,opacity] duration-200 ease-out pointer-events-none bg-deep-teal text-canvas-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-md whitespace-nowrap z-30">
-            Efisiensi Waktu
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:-translate-y-1 transition-[transform,opacity] duration-200 ease-out pointer-events-none bg-deep-teal/95 backdrop-blur-sm text-canvas-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-md whitespace-nowrap z-30">
+            Waktu Tempuh
           </div>
         </div>
 
@@ -129,7 +152,7 @@ export default function Stage1BridgeExplainer({
           <button
             type="button"
             aria-label="Faktor Kesiapan Lingkungan & Bebas Banjir"
-            className="w-10 h-10 rounded-full bg-feature-mint shadow-sm border border-soft-green flex items-center justify-center animate-orbit-pop animate-float-3 transition-[transform,background-color,border-color,box-shadow] duration-200 group-hover:scale-120 group-hover:bg-canvas-white group-hover:border-rumper-green-dark group-hover:shadow-md cursor-pointer active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-deep-teal focus-visible:outline-offset-2"
+            className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-md shadow-sm border border-soft-green/90 flex items-center justify-center animate-orbit-pop animate-float-3 transition-[transform,background-color,border-color,box-shadow] duration-200 group-hover:scale-115 group-hover:bg-canvas-white group-hover:border-rumper-green-dark group-hover:shadow-md cursor-pointer active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-deep-teal focus-visible:outline-offset-2"
           >
             <img
               src={floodIcon}
@@ -138,7 +161,7 @@ export default function Stage1BridgeExplainer({
               className="w-6 h-6 object-contain transition-transform duration-200 group-hover:scale-110"
             />
           </button>
-          <div className="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:-translate-y-1 transition-[transform,opacity] duration-200 ease-out pointer-events-none bg-deep-teal text-canvas-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-md whitespace-nowrap z-30">
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:-translate-y-1 transition-[transform,opacity] duration-200 ease-out pointer-events-none bg-deep-teal/95 backdrop-blur-sm text-canvas-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-md whitespace-nowrap z-30">
             Bebas Banjir
           </div>
         </div>
@@ -152,7 +175,7 @@ export default function Stage1BridgeExplainer({
           <button
             type="button"
             aria-label="Faktor Cicilan Riil & Anggaran"
-            className="w-10 h-10 rounded-full bg-feature-mint shadow-sm border border-soft-green flex items-center justify-center animate-orbit-pop animate-float-4 transition-[transform,background-color,border-color,box-shadow] duration-200 group-hover:scale-120 group-hover:bg-canvas-white group-hover:border-rumper-green-dark group-hover:shadow-md cursor-pointer active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-deep-teal focus-visible:outline-offset-2"
+            className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-md shadow-sm border border-soft-green/90 flex items-center justify-center animate-orbit-pop animate-float-4 transition-[transform,background-color,border-color,box-shadow] duration-200 group-hover:scale-115 group-hover:bg-canvas-white group-hover:border-rumper-green-dark group-hover:shadow-md cursor-pointer active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-deep-teal focus-visible:outline-offset-2"
           >
             <img
               src={budgetIcon}
@@ -161,8 +184,8 @@ export default function Stage1BridgeExplainer({
               className="w-6 h-6 object-contain transition-transform duration-200 group-hover:scale-110"
             />
           </button>
-          <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-1 transition-[transform,opacity] duration-200 ease-out pointer-events-none bg-deep-teal text-canvas-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-md whitespace-nowrap z-30">
-            Cicilan & Budget Riil
+          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-1 transition-[transform,opacity] duration-200 ease-out pointer-events-none bg-deep-teal/95 backdrop-blur-sm text-canvas-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-md whitespace-nowrap z-30">
+            Cicilan & Budget
           </div>
         </div>
 
@@ -175,7 +198,7 @@ export default function Stage1BridgeExplainer({
           <button
             type="button"
             aria-label="Faktor Ruang Terbuka Hijau & Luas Tanah"
-            className="w-10 h-10 rounded-full bg-feature-mint shadow-sm border border-soft-green flex items-center justify-center animate-orbit-pop animate-float-5 transition-[transform,background-color,border-color,box-shadow] duration-200 group-hover:scale-120 group-hover:bg-canvas-white group-hover:border-rumper-green-dark group-hover:shadow-md cursor-pointer active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-deep-teal focus-visible:outline-offset-2"
+            className="w-10 h-10 rounded-full bg-white/95 backdrop-blur-md shadow-sm border border-soft-green/90 flex items-center justify-center animate-orbit-pop animate-float-5 transition-[transform,background-color,border-color,box-shadow] duration-200 group-hover:scale-115 group-hover:bg-canvas-white group-hover:border-rumper-green-dark group-hover:shadow-md cursor-pointer active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-deep-teal focus-visible:outline-offset-2"
           >
             <img
               src={greenSpaceIcon}
@@ -184,14 +207,14 @@ export default function Stage1BridgeExplainer({
               className="w-6 h-6 object-contain transition-transform duration-200 group-hover:scale-110"
             />
           </button>
-          <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-1 transition-[transform,opacity] duration-200 ease-out pointer-events-none bg-deep-teal text-canvas-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-md whitespace-nowrap z-30">
-            Ruang Terbuka Hijau
+          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-1 transition-[transform,opacity] duration-200 ease-out pointer-events-none bg-deep-teal/95 backdrop-blur-sm text-canvas-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-md whitespace-nowrap z-30">
+            Ruang Terbuka
           </div>
         </div>
 
-        {/* Center Overlapping 3D Badges (Responsive Magnetic Link) */}
-        <div className="relative flex items-center justify-center group cursor-pointer active:scale-[0.96] transition-transform duration-150">
-          {/* Back Card: Property Pin Blueprint */}
+        {/* Center Layered Cards */}
+        <div className="relative flex items-center justify-center group cursor-pointer active:scale-[0.97] transition-transform duration-150">
+          {/* Back Card */}
           <div
             className={`absolute -right-5 -top-3 w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-canvas-white border border-subtle-border shadow-md flex items-center justify-center animate-back-card transition-[transform,box-shadow] duration-300 ${
               activeFactor
@@ -206,9 +229,9 @@ export default function Stage1BridgeExplainer({
             />
           </div>
 
-          {/* Front Card: Rumper Balance Symbol */}
+          {/* Front Card */}
           <div
-            className={`relative z-10 w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-supporting-teal shadow-lg flex items-center justify-center border-2 border-canvas-white transition-[transform,box-shadow] duration-300 ${getCenterTiltClass()} ${
+            className={`relative z-10 w-20 h-20 sm:w-22 sm:h-22 rounded-2xl bg-supporting-teal shadow-xl flex items-center justify-center border-2 border-canvas-white transition-[transform,box-shadow] duration-300 ${getCenterTiltClass()} ${
               !activeFactor
                 ? "group-hover:scale-108 group-hover:rotate-0 group-hover:shadow-2xl"
                 : ""
@@ -221,97 +244,79 @@ export default function Stage1BridgeExplainer({
             />
           </div>
         </div>
-
-        {/* Bottom Floating Pill Status Card (Concentric rounded-3xl with inner rounded-2xl) */}
-        <div className="absolute -bottom-2 z-20 bg-canvas-white/95 backdrop-blur-md px-4 py-2.5 rounded-3xl border border-subtle-border shadow-md flex items-center justify-between gap-4 w-72 sm:w-80 max-w-full animate-pill-float transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-soft-green active:scale-[0.96]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-2xl bg-feature-mint flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
-              <img src={homeIcon} alt="" className="w-5 h-5 object-contain" />
-            </div>
-            <span className="text-xs font-extrabold text-deep-teal tracking-tight">
-              <span className="tabular-nums">3</span> Skenario Nyata
-            </span>
-          </div>
-
-          <div className="min-h-6 px-2.5 py-0.5 rounded-full bg-feature-mint border border-soft-green text-rumper-green-dark flex items-center gap-1.5 animate-badge-shimmer">
-            <span className="text-xs font-extrabold uppercase tracking-wide">
-              Siap
-            </span>
-            <Check size={12} className="stroke-[3]" />
-          </div>
-        </div>
       </div>
 
-      {/* Typography: Title & Subtitle with text-balance and text-pretty */}
-      <div className="space-y-2 mb-8 max-w-lg">
+      {/* 3. Typography: Concise Title & Subtitle */}
+      <div className="space-y-2 mb-6 max-w-lg">
         <h2 className="text-2xl sm:text-3xl font-extrabold text-deep-teal tracking-tight leading-tight text-balance">
-          Pilih rumah pertama emang penuh kompromi
+          Pilih rumah pertama pasti ada kompromi
         </h2>
-        <p className="text-sm text-tertiary-ink leading-relaxed font-medium text-pretty">
-          Sebelum lanjut ke filter budget & lokasi, yuk uji prioritas aslimu
-          lewat simulasi trade-off harian di Jabodetabek:
+        <p className="text-xs sm:text-sm text-tertiary-ink leading-relaxed font-medium text-pretty max-w-md mx-auto">
+          Yuk uji prioritasmu lewat simulasi trade-off harian di Jabodetabek:
         </p>
       </div>
 
-      {/* Clean Checklist Items (Concentric rounded-2xl with active:scale-[0.96]) */}
-      <div className="w-full max-w-lg flex flex-col gap-3.5 text-left mb-4">
-        {/* Item 1 */}
-        <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-canvas-white border border-hairline shadow-2xs transition-[border-color,box-shadow,transform] duration-200 hover:border-soft-green hover:shadow-xs hover:-translate-y-0.5 active:scale-[0.96] cursor-pointer group">
+      {/* 4. Scenario Topic Cards (Clean Without Number Labels) */}
+      <div className="w-full max-w-lg flex flex-col gap-3 text-left mb-5">
+        {scenarioItems.map((item, idx) => (
           <div
-            aria-hidden="true"
-            className="w-6 h-6 rounded-full bg-rumper-green-dark text-canvas-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs transition-transform duration-200 group-hover:scale-110"
+            key={idx}
+            onClick={() => handleCardClick(idx)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault()
+                handleCardClick(idx)
+              }
+            }}
+            className="group relative flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-white border border-[#D7E1E5] shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-all duration-200 hover:border-rumper-green-dark/50 hover:shadow-[0_6px_18px_rgba(0,104,74,0.07)] hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer focus-visible:outline-2 focus-visible:outline-deep-teal focus-visible:outline-offset-2"
           >
-            <Check size={14} className="stroke-[3]" />
-          </div>
-          <div className="space-y-0.5">
-            <h3 className="text-sm font-bold text-deep-teal group-hover:text-rumper-green-dark transition-colors duration-200">
-              Waktu Komuter vs Luas Bangunan
-            </h3>
-            <p className="text-sm text-tertiary-ink leading-relaxed text-pretty">
-              Pilih hemat energi di KRL (rumah kompak) atau punya kamar &
-              halaman lebih luas.
-            </p>
-          </div>
-        </div>
+            {/* Topic Icon Container */}
+            <div
+              aria-hidden="true"
+              className="w-10 h-10 rounded-xl bg-feature-mint/80 border border-soft-green/60 text-rumper-green-dark flex items-center justify-center shrink-0 shadow-2xs transition-[background-color,border-color,transform] duration-200 group-hover:bg-rumper-green-dark group-hover:text-white group-hover:scale-105"
+            >
+              {React.cloneElement(item.icon, {
+                className:
+                  "w-5 h-5 transition-colors duration-200 group-hover:text-white",
+              })}
+            </div>
 
-        {/* Item 2 */}
-        <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-canvas-white border border-hairline shadow-2xs transition-[border-color,box-shadow,transform] duration-200 hover:border-soft-green hover:shadow-xs hover:-translate-y-0.5 active:scale-[0.96] cursor-pointer group">
-          <div
-            aria-hidden="true"
-            className="w-6 h-6 rounded-full bg-rumper-green-dark text-canvas-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs transition-transform duration-200 group-hover:scale-110"
-          >
-            <Check size={14} className="stroke-[3]" />
-          </div>
-          <div className="space-y-0.5">
-            <h3 className="text-sm font-bold text-deep-teal group-hover:text-rumper-green-dark transition-colors duration-200">
-              Kesiapan Lingkungan & Bebas Banjir
-            </h3>
-            <p className="text-sm text-tertiary-ink leading-relaxed text-pretty">
-              Bandingkan rasa tenang bebas genangan saat musim hujan vs
-              kedekatan ke pusat kota.
-            </p>
-          </div>
-        </div>
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-bold text-deep-teal group-hover:text-rumper-green-dark transition-colors duration-200">
+                {item.title}
+              </h3>
+              <p className="text-xs text-tertiary-ink leading-relaxed text-pretty mt-0.5">
+                {item.desc}
+              </p>
+            </div>
 
-        {/* Item 3 */}
-        <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-canvas-white border border-hairline shadow-2xs transition-[border-color,box-shadow,transform] duration-200 hover:border-soft-green hover:shadow-xs hover:-translate-y-0.5 active:scale-[0.96] cursor-pointer group">
-          <div
-            aria-hidden="true"
-            className="w-6 h-6 rounded-full bg-rumper-green-dark text-canvas-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs transition-transform duration-200 group-hover:scale-110"
-          >
-            <Check size={14} className="stroke-[3]" />
+            {/* Hover Action Indicator */}
+            <div className="flex items-center pl-1 text-tertiary-ink/40 group-hover:text-rumper-green-dark group-hover:translate-x-0.5 transition-all duration-200">
+              <ArrowRight size={15} />
+            </div>
           </div>
-          <div className="space-y-0.5">
-            <h3 className="text-sm font-bold text-deep-teal group-hover:text-rumper-green-dark transition-colors duration-200">
-              Cicilan Riil vs Biaya Operasional
-            </h3>
-            <p className="text-sm text-tertiary-ink leading-relaxed text-pretty">
-              Hitung total pengeluaran bulanan (bensin, tol, KPR), bukan cuma
-              harga brosur perumahan.
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
+
+      {/* 5. Bottom Timing Note */}
+      <p className="text-[11px] text-tertiary-ink/80 font-medium mb-3 flex items-center justify-center gap-1.5">
+        <Clock size={12} className="text-tertiary-ink/60 shrink-0" aria-hidden="true" />
+        <span>~2 menit · Pilihan bisa diubah kapan saja</span>
+      </p>
+
+      {/* 6. Skip Link Action at the Bottom of Page */}
+      {onSkip && (
+        <button
+          type="button"
+          onClick={onSkip}
+          className="text-xs font-semibold text-tertiary-ink hover:text-deep-teal transition-colors underline cursor-pointer py-1.5 active:scale-95"
+        >
+          Lewati langsung ke pengaturan budget &rarr;
+        </button>
+      )}
     </div>
   )
 }

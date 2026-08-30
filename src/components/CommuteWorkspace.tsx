@@ -27,7 +27,7 @@ const routes: RouteOption[] = [
   {
     id: "r1",
     title: "KRL Commuter Line",
-    destination: "Stasiun Bekasi ➔ Sudirman",
+    destination: "Stasiun Bekasi → Sudirman",
     duration: "45 min",
     mode: "Transit",
     riskBadge: "warning",
@@ -38,7 +38,7 @@ const routes: RouteOption[] = [
       { mode: "Angkot K05", detail: "Ke Stasiun Bekasi", time: "15 min" },
       {
         mode: "KRL Commuter Line",
-        detail: "Bekasi ➔ Manggarai",
+        detail: "Bekasi → Manggarai",
         time: "25 min",
       },
     ],
@@ -46,7 +46,7 @@ const routes: RouteOption[] = [
   {
     id: "r2",
     title: "Tol Jakarta–Cikampek",
-    destination: "Pintu Tol Bekasi Barat ➔ Semanggi",
+    destination: "Pintu Tol Bekasi Barat → Semanggi",
     duration: "55 min",
     mode: "Mobil / Taxi",
     riskBadge: "danger",
@@ -54,12 +54,12 @@ const routes: RouteOption[] = [
     legs: [
       {
         mode: "Mobil",
-        detail: "Jalan Raya Pekayon ➔ Tol Japek",
+        detail: "Jalan Raya Pekayon → Tol Japek",
         time: "15 min",
       },
       {
         mode: "Tol Utama",
-        detail: "Bekasi Barat ➔ Halim ➔ Semanggi",
+        detail: "Bekasi Barat → Halim → Semanggi",
         time: "40 min",
       },
     ],
@@ -67,7 +67,7 @@ const routes: RouteOption[] = [
   {
     id: "r3",
     title: "Rute Arteri / Sepeda Motor",
-    destination: "Jl. Kalimalang ➔ MT Haryono",
+    destination: "Jl. Kalimalang → MT Haryono",
     duration: "40 min",
     mode: "Motor",
     riskBadge: "info",
@@ -75,17 +75,23 @@ const routes: RouteOption[] = [
     recommendedTag: "Tercepat",
     legs: [
       { mode: "Motor", detail: "Jl. KH Noer Ali Kalimalang", time: "25 min" },
-      { mode: "Arteri Utama", detail: "Cawang ➔ Pancoran", time: "15 min" },
+      { mode: "Arteri Utama", detail: "Cawang → Pancoran", time: "15 min" },
     ],
   },
 ]
 
 interface CommuteWorkspaceProps {
   onSwitchToChecklist?: () => void
+  onOpenAssistant?: (
+    category: "perjalanan",
+    score?: number,
+    summary?: string
+  ) => void
 }
 
 export default function CommuteWorkspace({
   onSwitchToChecklist,
+  onOpenAssistant,
 }: CommuteWorkspaceProps) {
   const [selectedRouteId, setSelectedRouteId] = useState<string>("r1")
   const [addedToChecklist, setAddedToChecklist] = useState<boolean>(false)
@@ -100,13 +106,31 @@ export default function CommuteWorkspace({
   return (
     <Card variant="default" padding="lg" className="flex flex-col gap-6">
       {/* ── Section Header ── */}
-      <SectionHeader
-        stepNumber={3}
-        stepLabel="TAHAP"
-        icon={<Car size={12} className="text-emerald-400" />}
-        title="Mobilitas & Waktu Tempuh Perjalanan"
-        subtitle="Estimasi rute & waktu tempuh riil ke titik gravitasimu pas jam sibuk pagi dan sore."
-      />
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <SectionHeader
+          stepNumber={3}
+          stepLabel="TAHAP"
+          icon={<Car size={12} className="text-emerald-400" />}
+          title="Mobilitas & Waktu Tempuh Perjalanan"
+          subtitle="Estimasi rute & waktu tempuh riil ke titik gravitasimu pas jam sibuk pagi dan sore."
+        />
+        {onOpenAssistant && (
+          <button
+            type="button"
+            onClick={() =>
+              onOpenAssistant(
+                "perjalanan",
+                58,
+                `Analisis rute komut: ${selectedRoute.title} (${selectedRoute.duration}) ke ${selectedRoute.destination}`
+              )
+            }
+            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors shadow-2xs"
+          >
+            <span className="size-1.5 rounded-full bg-[#00A65A] animate-pulse" />
+            Tanya AI Rute
+          </button>
+        )}
+      </div>
 
       {/* ── Route Selection Grid Cards ── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4">

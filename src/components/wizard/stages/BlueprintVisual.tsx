@@ -135,8 +135,8 @@ export default function BlueprintVisual({
           </svg>
 
           {/* Technical Tag Badge */}
-          <span className="absolute top-2 right-2.5 text-[9px] font-extrabold tracking-wider uppercase text-[#00ED64] bg-[#003D4F]/90 px-2 py-0.5 rounded border border-[#00475B]">
-            📐 ISOMETRIK TRANSIT
+          <span className="absolute top-2 right-2.5 text-[10px] font-extrabold tracking-wider uppercase text-[#00ED64] bg-[#003D4F]/90 px-2 py-0.5 rounded border border-[#00475B]">
+            ISOMETRIK TRANSIT
           </span>
         </div>
       )}
@@ -257,8 +257,8 @@ export default function BlueprintVisual({
             </text>
           </svg>
 
-          <span className="absolute top-2 right-2.5 text-[9px] font-extrabold tracking-wider uppercase text-[#38BDF8] bg-[#003D4F]/90 px-2 py-0.5 rounded border border-[#00475B]">
-            📐 ISOMETRIK KAVLING
+          <span className="absolute top-2 right-2.5 text-[10px] font-extrabold tracking-wider uppercase text-[#38BDF8] bg-[#003D4F]/90 px-2 py-0.5 rounded border border-[#00475B]">
+            ISOMETRIK KAVLING
           </span>
         </div>
       )}
@@ -330,12 +330,12 @@ export default function BlueprintVisual({
               markerEnd="url(#arrow)"
             />
             <text x="85" y="68" fill="#00ED64" fontSize="8" fontWeight="bold">
-              Drainase Gravitasi Bebas Genangan ➔
+              Drainase Gravitasi Bebas Genangan →
             </text>
           </svg>
 
-          <span className="absolute top-2 right-2.5 text-[9px] font-extrabold tracking-wider uppercase text-[#00ED64] bg-[#003D4F]/90 px-2 py-0.5 rounded border border-[#00475B]">
-            📐 POTONGAN ELEVASI
+          <span className="absolute top-2 right-2.5 text-[10px] font-extrabold tracking-wider uppercase text-[#00ED64] bg-[#003D4F]/90 px-2 py-0.5 rounded border border-[#00475B]">
+            POTONGAN ELEVASI
           </span>
         </div>
       )}
@@ -418,8 +418,8 @@ export default function BlueprintVisual({
             </text>
           </svg>
 
-          <span className="absolute top-2 right-2.5 text-[9px] font-extrabold tracking-wider uppercase text-[#FF7E67] bg-[#381612]/90 px-2 py-0.5 rounded border border-[#5C231D]">
-            📐 SKETSA POLDER
+          <span className="absolute top-2 right-2.5 text-[10px] font-extrabold tracking-wider uppercase text-[#FF7E67] bg-[#381612]/90 px-2 py-0.5 rounded border border-[#5C231D]">
+            SKETSA POLDER
           </span>
         </div>
       )}
@@ -476,7 +476,7 @@ export default function BlueprintVisual({
               fontWeight="bold"
               textAnchor="middle"
             >
-              🛒 Minimarket
+              Minimarket
             </text>
 
             <rect
@@ -497,7 +497,7 @@ export default function BlueprintVisual({
               fontWeight="bold"
               textAnchor="middle"
             >
-              🏥 Klinik 24 Jam
+              Klinik 24 Jam
             </text>
 
             <rect
@@ -518,7 +518,7 @@ export default function BlueprintVisual({
               fontWeight="bold"
               textAnchor="middle"
             >
-              🏫 Sekolah / Kuliner
+              Sekolah / Kuliner
             </text>
 
             <text x="240" y="60" fill="#00ED64" fontSize="8" fontWeight="bold">
@@ -526,8 +526,8 @@ export default function BlueprintVisual({
             </text>
           </svg>
 
-          <span className="absolute top-2 right-2.5 text-[9px] font-extrabold tracking-wider uppercase text-[#00ED64] bg-[#003D4F]/90 px-2 py-0.5 rounded border border-[#00475B]">
-            📐 PETA RADIUS JALAN
+          <span className="absolute top-2 right-2.5 text-[10px] font-extrabold tracking-wider uppercase text-[#00ED64] bg-[#003D4F]/90 px-2 py-0.5 rounded border border-[#00475B]">
+            PETA RADIUS JALAN
           </span>
         </div>
       )}
@@ -641,8 +641,8 @@ export default function BlueprintVisual({
             </text>
           </svg>
 
-          <span className="absolute top-2 right-2.5 text-[9px] font-extrabold tracking-wider uppercase text-[#38BDF8] bg-[#003D4F]/90 px-2 py-0.5 rounded border border-[#00475B]">
-            📐 DENAH ONE-GATE
+          <span className="absolute top-2 right-2.5 text-[10px] font-extrabold tracking-wider uppercase text-[#38BDF8] bg-[#003D4F]/90 px-2 py-0.5 rounded border border-[#00475B]">
+            DENAH ONE-GATE
           </span>
         </div>
       )}

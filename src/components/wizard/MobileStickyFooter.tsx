@@ -38,7 +38,7 @@ export default function MobileStickyFooter({
           </>
         ) : flowStage === 2 ? (
           <>
-            <span>Mulai Coba (2 menit)</span>
+            <span>Mulai Coba</span>
             <ArrowRight size={20} className="text-[#001E2B]" />
           </>
         ) : flowStage >= 3 && flowStage <= 5 ? (
@@ -57,16 +57,6 @@ export default function MobileStickyFooter({
           </>
         )}
       </button>
-
-      {flowStage === 2 && onSkip && (
-        <button
-          type="button"
-          onClick={onSkip}
-          className="mt-2.5 text-xs font-semibold text-[#7C8C9A] hover:text-[#001E2B] transition-colors underline text-center w-full py-1 cursor-pointer"
-        >
-          Lewati langsung ke pengaturan budget
-        </button>
-      )}
     </div>
   )
 }

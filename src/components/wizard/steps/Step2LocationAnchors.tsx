@@ -256,31 +256,28 @@ export default function Step2LocationAnchors({
       {/* Step Header */}
       <div>
         <div className="text-xs font-bold uppercase tracking-wider text-[#00684A] mb-2 flex items-center gap-1.5">
-          <span>Langkah 02</span>
-          <span className="text-[#A8B3BC]">/</span>
-          <span>Titik Gravitasi</span>
+          <span>Lokasi Kerja</span>
         </div>
         <h2 className="text-2xl md:text-3xl font-extrabold text-[#001E2B] tracking-tight">
-          Titik Gravitasi & Lokasi Kerjamu
+          Lokasi Kantor & Tempat Kerjamu
         </h2>
         <p className="text-sm md:text-base text-[#5C6C7A] mt-1">
-          Kunci lokasi yang wajib kamu datengin tiap hari biar simulasi komut
-          jam sibuk akurat.
+          Pilih area kerja harianmu agar estimasi waktu komuter dan rute jam sibuk akurat.
         </p>
       </div>
 
       {/* Main Container Card */}
       <div className="bg-white rounded-3xl p-5 md:p-8 border border-[#D7E1E5] shadow-sm space-y-6">
-        {/* Titik Aktivitas Utama */}
+        {/* Lokasi Kantor Utama */}
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#5C6C7A]">
             <MapPin size={15} className="text-[#001E2B]" />
-            <span>Titik Gravitasi Utama (Kantor / Tempat Rutinmu):</span>
+            <span>Lokasi Kantor Utama:</span>
           </label>
 
           <CustomLocationSelect
             value={mainAnchor}
-            placeholder="Pilih lokasi kantor / aktivitas utama..."
+            placeholder="Pilih area kantor / tempat kerja utamamu..."
             isPrimary={true}
             allowClear={false}
             onSelect={(val) => onChange({ mainAnchor: val })}
@@ -289,12 +286,12 @@ export default function Step2LocationAnchors({
 
         <hr className="border-[#E1E5E8]" />
 
-        {/* Titik Aktivitas Kedua */}
+        {/* Lokasi Kantor Pasangan / Tambahan */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#5C6C7A]">
               <MapPin size={15} className="text-[#7C8C9A]" />
-              <span>Titik Gravitasi Kedua (Kantor Pasangan / Kampus):</span>
+              <span>Lokasi Kantor Pasangan / Lainnya:</span>
             </label>
             <span className="text-xs text-[#7C8C9A] font-medium">
               (Opsional)
@@ -303,7 +300,7 @@ export default function Step2LocationAnchors({
 
           <CustomLocationSelect
             value={secondAnchor}
-            placeholder="Pilih lokasi kedua jika ada (opsional)..."
+            placeholder="Pilih area kantor pasangan, kampus, atau cabang..."
             isPrimary={false}
             allowClear={true}
             onSelect={(val) => onChange({ secondAnchor: val })}

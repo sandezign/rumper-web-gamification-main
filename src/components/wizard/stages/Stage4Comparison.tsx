@@ -1,9 +1,9 @@
 import React from "react"
 import { Compass } from "lucide-react"
 import ScenarioView, { type ScenarioData } from "./ScenarioView"
-import {
-  useWizardState,
-  type ScenarioChoice,
+import type {
+  ScenarioChoice,
+  WizardFormData,
 } from "../../../store/useWizardStore"
 
 const SCENARIO_3_DATA: ScenarioData = {
@@ -25,7 +25,7 @@ const SCENARIO_3_DATA: ScenarioData = {
     price: "Rp 1.1 Miliar",
     imageUrl:
       "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=800&q=80",
-    imageTag: "🛒 Radius 500m Fasilitas Komplit",
+    imageTag: "Radius 500m Fasilitas Komplit",
     metrics: [
       {
         label: "FASILITAS SEKITAR",
@@ -50,6 +50,8 @@ const SCENARIO_3_DATA: ScenarioData = {
     ],
     akses: "Row jalan 6m, warung sayur & minimarket 2 menit jalan kaki",
     fasilitas: "Klinik 24 jam, sekolah, pasar tradisional radius 1 km",
+    kelebihan:
+      "Akses row jalan 6m tertata, warung sayur & minimarket hanya 2 menit jalan kaki. Klinik 24 jam, sekolah, dan pasar tradisional dalam radius 1 km.",
     kompromiNyata:
       "Lalu lintas lingkungan lebih ramai & suara aktivitas warga terasa.",
   },
@@ -61,7 +63,7 @@ const SCENARIO_3_DATA: ScenarioData = {
     price: "Rp 1.05 Miliar",
     imageUrl:
       "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
-    imageTag: "🛡️ 1-Gate System · Row Jalan 8m",
+    imageTag: "1-Gate System · Row Jalan 8m",
     metrics: [
       {
         label: "FASILITAS SEKITAR",
@@ -86,25 +88,35 @@ const SCENARIO_3_DATA: ScenarioData = {
     ],
     akses: "One-gate system, keamanan 24 jam, jalan aspal mulus row 8m",
     fasilitas: "Toko kelontong & pusat komersial butuh 3–4 km keluar gerbang",
+    kelebihan:
+      "One-gate system keamanan 24 jam dengan jalan paving block mulus row 8 meter. Lingkungan sangat hening dan privasi keluarga terjaga maksimal.",
     kompromiNyata: "Ketergantungan penuh pada ojol & minimarket agak jauh.",
   },
   feedbackMap: {
-    A: "✓ Prioritas dicatat: Kemudahan fasilitas jalan kaki (Siap lingkungan lebih ramai).",
-    B: "✓ Prioritas dicatat: Privasi & ketenangan maksimal (Siap berkendara buat belanja).",
+    A: "Prioritas dicatat: Kemudahan fasilitas jalan kaki (Siap lingkungan lebih ramai).",
+    B: "Prioritas dicatat: Privasi & ketenangan maksimal (Siap berkendara buat belanja).",
     neither:
-      "✓ Preferensi: Mau cluster privat tapi akses minimarket tetap dekat.",
+      "Preferensi dicatat: Mau cluster privat tapi akses minimarket tetap dekat.",
     reject:
-      "⚠️ Toleransi isolasi: Ketat (Akan memfilter perumahan yang terlalu pelosok).",
+      "Toleransi isolasi ketat: Memfilter perumahan yang terlalu pelosok.",
   },
 }
 
-export default function Stage4Comparison() {
-  const { formData, setScenarioResponse, skipToParameterSetup } =
-    useWizardState()
-  const currentChoice = formData.scenarioResponses["established-vs-quiet"]
+interface Stage4ComparisonProps {
+  formData: WizardFormData
+  onSelectChoice: (choice: ScenarioChoice) => void
+  onSkip?: () => void
+}
+
+export default function Stage4Comparison({
+  formData,
+  onSelectChoice,
+  onSkip,
+}: Stage4ComparisonProps) {
+  const currentChoice = formData.scenarioResponses?.["established-vs-quiet"]
 
   const handleSelect = (choice: ScenarioChoice) => {
-    setScenarioResponse("established-vs-quiet", choice)
+    onSelectChoice(choice)
   }
 
   return (
@@ -113,7 +125,7 @@ export default function Stage4Comparison() {
       selectedChoice={currentChoice}
       selectedFriction={formData.selectedFriction}
       onSelectChoice={handleSelect}
-      onSkip={skipToParameterSetup}
+      onSkip={onSkip}
     />
   )
 }

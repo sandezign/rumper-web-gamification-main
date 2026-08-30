@@ -177,10 +177,12 @@ const factors = [
 
 interface FactorRisksCardProps {
   onSelectFactor?: (factorId: string) => void
+  onOpenAssistant?: (category: "banjir" | "perjalanan" | "fasilitas" | "checklist" | "negosiasi", score?: number, summary?: string) => void
 }
 
 export default function FactorRisksCard({
   onSelectFactor,
+  onOpenAssistant,
 }: FactorRisksCardProps) {
   const [expanded, setExpanded] = useState(false)
   const visibleFactors = expanded ? factors : factors.slice(0, 3)
@@ -192,7 +194,7 @@ export default function FactorRisksCard({
       className="flex flex-col bg-white overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-slate-200/80 bg-slate-50/50">
+      <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-slate-200/80 bg-slate-50/50 flex-wrap gap-2">
         <div className="flex items-center gap-2">
           <h3 className="font-bold text-sm text-slate-900">
             Ringkasan 5 Faktor Risiko Lokasi
@@ -224,9 +226,21 @@ export default function FactorRisksCard({
             </svg>
           </span>
         </div>
-        <span className="text-xs text-slate-500 font-semibold tabular-nums">
-          {factors.length} faktor dipantau
-        </span>
+        <div className="flex items-center gap-2.5">
+          {onOpenAssistant && (
+            <button
+              type="button"
+              onClick={() => onOpenAssistant("banjir", 42, "Risiko paparan genangan air & banjir di sekitar anak Kali")}
+              className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-800 border border-rose-200 hover:bg-rose-100 transition-colors shadow-2xs"
+            >
+              <span className="size-1.5 rounded-full bg-rose-600 animate-pulse" />
+              Tanya AI Risiko
+            </button>
+          )}
+          <span className="text-xs text-slate-500 font-semibold tabular-nums">
+            {factors.length} faktor dipantau
+          </span>
+        </div>
       </div>
 
       {/* Factor Rows */}

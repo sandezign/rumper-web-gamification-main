@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useRef } from "react"
 import {
   User,
   Heart,
@@ -78,30 +78,41 @@ export default function Step1HouseholdWork({
   workPattern,
   onChange,
 }: Step1Props) {
+  const sectionBRef = useRef<HTMLDivElement>(null)
+
+  const handleSelectHousehold = (id: HouseholdType) => {
+    onChange({ householdType: id })
+    // Smooth progressive focus transition to section B
+    setTimeout(() => {
+      sectionBRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      })
+    }, 120)
+  }
+
   return (
     <div className="space-y-8 animate-fadeIn">
       {/* Step Header */}
       <div>
         <div className="text-xs font-bold uppercase tracking-wider text-[#00684A] mb-2 flex items-center gap-1.5">
-          <span>Langkah 01</span>
-          <span className="text-[#A8B3BC]">/</span>
           <span>Profil & Pola Kerja</span>
         </div>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-[#001E2B] tracking-tight">
+        <h2 className="text-2xl md:text-3xl font-extrabold text-[#001E2B] tracking-tight text-balance">
           Siapa Saja yang Tinggal & Pola Kerjamu?
         </h2>
-        <p className="text-sm md:text-base text-[#5C6C7A] mt-1">
-          Pilih yang paling pas sama rencana tempat tinggal dan rutinitas
-          kerjamu.
+        <p className="text-sm md:text-base text-[#5C6C7A] mt-1 text-pretty">
+          Pilih yang paling pas dengan rencana tempat tinggal dan rutinitas
+          mobilitas harianmu.
         </p>
       </div>
 
       {/* Section A: Tipe Rumah Tangga */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#5C6C7A]">
-          <Users size={16} className="text-[#5C6C7A]" />
-          <span>A. TIPE RUMAH TANGGA</span>
-        </div>
+      <fieldset className="space-y-3">
+        <legend className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#5C6C7A]">
+          <Users size={16} className="text-[#00684A]" />
+          <span>TIPE RUMAH TANGGA</span>
+        </legend>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
           {HOUSEHOLD_OPTIONS.map((opt) => {
@@ -109,18 +120,26 @@ export default function Step1HouseholdWork({
             const Icon = opt.icon
 
             return (
-              <div
+              <label
                 key={opt.id}
-                onClick={() => onChange({ householdType: opt.id })}
-                className={`relative p-4 md:p-5 rounded-2xl border cursor-pointer transition-all duration-200 flex flex-col justify-between min-h-[110px] select-none ${
+                className={`relative p-4 md:p-5 rounded-2xl border cursor-pointer transition-[transform,border-color,background-color,box-shadow] duration-150 flex flex-col justify-between min-h-[110px] select-none active:scale-[0.96] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#00684A] ${
                   isSelected
-                    ? "border-[#001E2B] bg-white shadow-sm ring-2 ring-[#001E2B]/5 scale-[1.01]"
-                    : "border-[#D7E1E5] bg-white hover:border-[#C1CCD6] hover:bg-[#F9FBFA]"
+                    ? "border-[#001E2B] bg-white shadow-sm ring-2 ring-[#001E2B]/10"
+                    : "border-[#D7E1E5] bg-white hover:border-[#5C6C7A] hover:bg-[#F6F8F7]"
                 }`}
               >
+                <input
+                  type="radio"
+                  name="household-type"
+                  value={opt.id}
+                  checked={isSelected}
+                  onChange={() => handleSelectHousehold(opt.id)}
+                  className="sr-only"
+                />
+
                 <div className="flex items-start justify-between">
                   <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
                       isSelected
                         ? "bg-[#001E2B] text-white"
                         : "bg-[#F4F7F6] text-[#5C6C7A]"
@@ -144,22 +163,22 @@ export default function Step1HouseholdWork({
                   >
                     {opt.title}
                   </h3>
-                  <p className="text-xs text-[#5C6C7A] font-medium mt-0.5">
+                  <p className="text-xs text-[#5C6C7A] font-medium mt-0.5 text-pretty">
                     {opt.subtitle}
                   </p>
                 </div>
-              </div>
+              </label>
             )
           })}
         </div>
-      </div>
+      </fieldset>
 
       {/* Section B: Pola Bekerja Harian */}
-      <div className="space-y-3 pt-2">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#5C6C7A]">
-          <Briefcase size={16} className="text-[#5C6C7A]" />
-          <span>B. POLA BEKERJA HARIAN</span>
-        </div>
+      <fieldset ref={sectionBRef} className="space-y-3 pt-2">
+        <legend className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#5C6C7A]">
+          <Briefcase size={16} className="text-[#00684A]" />
+          <span>POLA BEKERJA HARIAN</span>
+        </legend>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
           {WORK_OPTIONS.map((opt) => {
@@ -167,18 +186,26 @@ export default function Step1HouseholdWork({
             const Icon = opt.icon
 
             return (
-              <div
+              <label
                 key={opt.id}
-                onClick={() => onChange({ workPattern: opt.id })}
-                className={`relative p-4 md:p-5 rounded-2xl border cursor-pointer transition-all duration-200 flex flex-col justify-between min-h-[110px] select-none ${
+                className={`relative p-4 md:p-5 rounded-2xl border cursor-pointer transition-[transform,border-color,background-color,box-shadow] duration-150 flex flex-col justify-between min-h-[110px] select-none active:scale-[0.96] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-[#00684A] ${
                   isSelected
-                    ? "border-[#001E2B] bg-white shadow-sm ring-2 ring-[#001E2B]/5 scale-[1.01]"
-                    : "border-[#D7E1E5] bg-white hover:border-[#C1CCD6] hover:bg-[#F9FBFA]"
+                    ? "border-[#001E2B] bg-white shadow-sm ring-2 ring-[#001E2B]/10"
+                    : "border-[#D7E1E5] bg-white hover:border-[#5C6C7A] hover:bg-[#F6F8F7]"
                 }`}
               >
+                <input
+                  type="radio"
+                  name="work-pattern"
+                  value={opt.id}
+                  checked={isSelected}
+                  onChange={() => onChange({ workPattern: opt.id })}
+                  className="sr-only"
+                />
+
                 <div className="flex items-start justify-between">
                   <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
                       isSelected
                         ? "bg-[#001E2B] text-white"
                         : "bg-[#F4F7F6] text-[#5C6C7A]"
@@ -202,15 +229,15 @@ export default function Step1HouseholdWork({
                   >
                     {opt.title}
                   </h3>
-                  <p className="text-xs text-[#5C6C7A] font-medium mt-0.5">
+                  <p className="text-xs text-[#5C6C7A] font-medium mt-0.5 text-pretty">
                     {opt.subtitle}
                   </p>
                 </div>
-              </div>
+              </label>
             )
           })}
         </div>
-      </div>
+      </fieldset>
     </div>
   )
 }

@@ -10,9 +10,31 @@ export interface PropertyLocation {
   evidenceCount: number
   gapCount: number
   active?: boolean
+  latLng?: [number, number]
+  elevationDpl?: string
+  areaId?: string
+  commuteMinutes?: number
+  priceRange?: string
 }
 
 export const initialProperties: PropertyLocation[] = [
+  {
+    id: "prop-bintaro",
+    name: "Kandidat Bintaro",
+    subdistrict: "Pondok Aren",
+    city: "Tangerang Selatan",
+    status: "INVESTIGASI",
+    statusBadge: "warning",
+    score: 74,
+    riskSummary: "Kompromi komut KRL ~38 min & elevasi 28 mdpl relatif aman banjir",
+    evidenceCount: 6,
+    gapCount: 1,
+    active: true,
+    latLng: [-6.275, 106.715],
+    elevationDpl: "28 mdpl",
+    commuteMinutes: 38,
+    priceRange: "Rp 950 Jt – 2,8 M",
+  },
   {
     id: "prop-1",
     name: "Grand Galaxy City Block R",
@@ -24,45 +46,10 @@ export const initialProperties: PropertyLocation[] = [
     riskSummary: "Risiko banjir sedang & waktu tempuh komut 45 min",
     evidenceCount: 5,
     gapCount: 2,
-    active: true,
-  },
-  {
-    id: "prop-2",
-    name: "Cluster Bumi Asri",
-    subdistrict: "Pamulang",
-    city: "Tangerang Selatan",
-    status: "LANJUTKAN",
-    statusBadge: "success",
-    score: 82,
-    riskSummary: "Zona bebas banjir & akses tol 10 min",
-    evidenceCount: 8,
-    gapCount: 0,
     active: false,
-  },
-  {
-    id: "prop-3",
-    name: "Griya Kencana",
-    subdistrict: "Beji",
-    city: "Depok",
-    status: "INVESTIGASI",
-    statusBadge: "warning",
-    score: 64,
-    riskSummary: "Perlu validasi drainase lingkungan",
-    evidenceCount: 4,
-    gapCount: 1,
-    active: false,
-  },
-  {
-    id: "prop-4",
-    name: "Townhouse Ampera",
-    subdistrict: "Kemang",
-    city: "Jakarta Selatan",
-    status: "TUNDA",
-    statusBadge: "danger",
-    score: 45,
-    riskSummary: "Elevasi tanah rendah & potensi genangan tinggi",
-    evidenceCount: 3,
-    gapCount: 3,
-    active: false,
+    latLng: [-6.266, 106.99],
+    elevationDpl: "18 mdpl",
+    commuteMinutes: 45,
+    priceRange: "Rp 650 Jt – 1,6 M",
   },
 ]

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { useWizardState } from "../../store/useWizardStore"
 import DesktopSidebar from "./DesktopSidebar"
 import MobileHeader from "./MobileHeader"
@@ -17,17 +17,22 @@ import { ArrowLeft, ArrowRight, Check, X } from "lucide-react"
 interface ResponsiveWizardShellProps {
   onComplete?: () => void
   onCancel?: () => void
+  initialStage?: number
+  initialStep?: number
 }
 
 export default function ResponsiveWizardShell({
   onComplete,
   onCancel,
+  initialStage,
+  initialStep,
 }: ResponsiveWizardShellProps) {
   const {
     flowStage,
     parameterStep,
     formData,
     updateFormData,
+    setScenarioResponse,
     toggleCorridor,
     nextStage,
     prevStage,
@@ -35,6 +40,19 @@ export default function ResponsiveWizardShell({
     goToFlowStage,
     goToParameterStep,
   } = useWizardState()
+
+  useEffect(() => {
+    if (initialStep !== undefined) {
+      goToParameterStep(initialStep)
+    } else if (initialStage !== undefined) {
+      goToFlowStage(initialStage)
+    }
+  }, [initialStage, initialStep, goToFlowStage, goToParameterStep])
+
+  // Scroll to top on stage / step transition
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }, [flowStage, parameterStep])
 
   // Total display step calculation (1..9 total sub-steps for smooth progress)
   const currentTotalProgress = flowStage < 6 ? flowStage : 5 + parameterStep
@@ -122,14 +140,41 @@ export default function ResponsiveWizardShell({
             {flowStage === 2 && (
               <Stage1BridgeExplainer
                 selectedFriction={formData.selectedFriction}
+                onStart={handleNext}
+                onSelectScenario={(idx) => goToFlowStage(3 + idx)}
+                onSkip={skipToParameterSetup}
               />
             )}
 
-            {flowStage === 3 && <Stage2ValueProof />}
+            {flowStage === 3 && (
+              <Stage2ValueProof
+                formData={formData}
+                onSelectChoice={(choice) =>
+                  setScenarioResponse("transit-vs-space", choice)
+                }
+                onSkip={skipToParameterSetup}
+              />
+            )}
 
-            {flowStage === 4 && <Stage3EmpathyStatement />}
+            {flowStage === 4 && (
+              <Stage3EmpathyStatement
+                formData={formData}
+                onSelectChoice={(choice) =>
+                  setScenarioResponse("flood-vs-aesthetic", choice)
+                }
+                onSkip={skipToParameterSetup}
+              />
+            )}
 
-            {flowStage === 5 && <Stage4Comparison />}
+            {flowStage === 5 && (
+              <Stage4Comparison
+                formData={formData}
+                onSelectChoice={(choice) =>
+                  setScenarioResponse("established-vs-quiet", choice)
+                }
+                onSkip={skipToParameterSetup}
+              />
+            )}
 
             {/* Stage 6: Parameter Setup (Steps 1 to 4) */}
             {flowStage === 6 && (
@@ -200,7 +245,7 @@ export default function ResponsiveWizardShell({
                   </>
                 ) : flowStage === 2 ? (
                   <>
-                    <span>Mulai Coba (2 menit)</span>
+                    <span>Mulai Coba</span>
                     <ArrowRight size={16} aria-hidden="true" />
                   </>
                 ) : flowStage >= 3 && flowStage <= 5 ? (
@@ -214,7 +259,11 @@ export default function ResponsiveWizardShell({
                   </>
                 ) : flowStage === 6 && parameterStep === 4 ? (
                   <>
-                    <Check size={16} className="stroke-[3] text-[#001E2B]" aria-hidden="true" />
+                    <Check
+                      size={16}
+                      className="stroke-[3] text-[#001E2B]"
+                      aria-hidden="true"
+                    />
                     <span>Simpan & Mulai Riset Lokasi</span>
                   </>
                 ) : (
@@ -224,16 +273,6 @@ export default function ResponsiveWizardShell({
                   </>
                 )}
               </button>
-
-              {flowStage === 2 && (
-                <button
-                  type="button"
-                  onClick={skipToParameterSetup}
-                  className="text-xs font-medium text-[#5C6C7A] hover:text-[#001E2B] transition-colors underline cursor-pointer pr-2"
-                >
-                  Lewati langsung ke pengaturan budget
-                </button>
-              )}
             </div>
           </div>
         </div>

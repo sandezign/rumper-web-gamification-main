@@ -6,6 +6,10 @@ import {
   AlertTriangle,
   CheckCircle2,
   OctagonAlert,
+  Map,
+  MapPin,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react"
 import Badge from "./ui/Badge"
 import Button from "./ui/Button"
@@ -21,55 +25,48 @@ interface PropertyModalProps {
   totalQuota: number
   remainingQuota: number
   onOpenUpgrade: () => void
+  onOpenZeroQuotaModal?: () => void
+  onOpenCuratedAreas?: () => void
 }
 
 function StatusBadge({ status }: { status: string }) {
   if (status === "LANJUTKAN") {
     return (
-      <Badge
-        variant="success"
-        size="sm"
-        icon={<CheckCircle2 size={13} className="text-emerald-600 shrink-0" />}
-        className="shrink-0 font-bold text-[10px] sm:text-xs px-2.5 py-0.5 whitespace-nowrap"
-      >
+      <span className="text-[9px] sm:text-[10px] font-black uppercase px-2 py-0.5 rounded-full border bg-emerald-50 text-[#00684A] border-emerald-200 shrink-0 flex items-center gap-1">
+        <CheckCircle2 size={11} className="text-[#00684A] shrink-0" />
         Lanjutkan
-      </Badge>
+      </span>
     )
   }
   if (status === "TUNDA") {
     return (
-      <Badge
-        variant="danger"
-        size="sm"
-        icon={<OctagonAlert size={13} className="text-rose-600 shrink-0" />}
-        className="shrink-0 font-bold text-[10px] sm:text-xs px-2.5 py-0.5 whitespace-nowrap"
-      >
+      <span className="text-[9px] sm:text-[10px] font-black uppercase px-2 py-0.5 rounded-full border bg-rose-50 text-rose-800 border-rose-200 shrink-0 flex items-center gap-1">
+        <OctagonAlert size={11} className="text-rose-600 shrink-0" />
         Tunda
-      </Badge>
+      </span>
     )
   }
   return (
-    <Badge
-      variant="warning"
-      size="sm"
-      icon={<AlertTriangle size={13} className="text-amber-600 shrink-0" />}
-      className="shrink-0 font-bold text-[10px] sm:text-xs px-2.5 py-0.5 whitespace-nowrap"
-    >
+    <span className="text-[9px] sm:text-[10px] font-black uppercase px-2 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200 shrink-0 flex items-center gap-1">
+      <AlertTriangle size={11} className="text-amber-600 shrink-0" />
       Investigasi
-    </Badge>
+    </span>
   )
 }
 
-function RadioButton({ selected }: { selected: boolean }) {
+function ScoreBadge({ score }: { score: number }) {
+  const colorClass =
+    score >= 80
+      ? "bg-emerald-100 text-[#00684A] border-emerald-200"
+      : score >= 65
+        ? "bg-amber-100 text-amber-900 border-amber-200"
+        : "bg-rose-100 text-rose-800 border-rose-200"
+
   return (
     <div
-      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-        selected
-          ? "border-[#0F2B38] bg-[#0F2B38]"
-          : "border-slate-300 bg-white group-hover:border-slate-400"
-      }`}
+      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-2xl border flex items-center justify-center shrink-0 font-mono font-black text-xs sm:text-sm ${colorClass}`}
     >
-      {selected && <div className="w-2 h-2 rounded-full bg-white" />}
+      {score}
     </div>
   )
 }
@@ -84,6 +81,8 @@ export default function PropertyModal({
   totalQuota,
   remainingQuota,
   onOpenUpgrade,
+  onOpenZeroQuotaModal,
+  onOpenCuratedAreas,
 }: PropertyModalProps) {
   const [isAdding, setIsAdding] = useState(false)
   const [newName, setNewName] = useState("")
@@ -109,6 +108,15 @@ export default function PropertyModal({
     setIsAdding(false)
   }
 
+  const handleZeroQuotaPaywall = () => {
+    onClose()
+    if (onOpenZeroQuotaModal) {
+      onOpenZeroQuotaModal()
+    } else {
+      onOpenUpgrade()
+    }
+  }
+
   return (
     <div
       className="fixed inset-0 z-[3000] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
@@ -118,7 +126,7 @@ export default function PropertyModal({
       aria-labelledby="modal-title"
     >
       <div
-        className="w-full max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] sm:max-h-[85vh] animate-in slide-in-from-bottom-6 duration-200"
+        className="w-full max-w-xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh] sm:max-h-[85vh] animate-in slide-in-from-bottom-6 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile handle indicator */}
@@ -162,53 +170,95 @@ export default function PropertyModal({
             <h3 className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
               SEDANG AKTIF
             </h3>
-            <div className="p-3.5 sm:p-4 rounded-2xl border-2 border-[#0F2B38] bg-slate-50/90 flex items-center justify-between gap-3 shadow-xs min-h-[52px]">
-              <div className="flex items-center gap-3 min-w-0 flex-1">
-                <RadioButton selected={true} />
-                <div className="min-w-0 flex-1">
-                  <h4 className="font-bold text-xs sm:text-sm text-slate-900 truncate leading-snug">
-                    {activeProperty.name}
-                  </h4>
-                  <p className="text-[11px] sm:text-xs text-slate-500 truncate mt-0.5">
-                    {activeProperty.subdistrict}, {activeProperty.city}
-                  </p>
+            {activeProperty && (
+              <div className="p-3.5 sm:p-4 rounded-[22px] border-2 border-[#001E2B] bg-white shadow-md ring-2 ring-[#001E2B]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-start gap-3 min-w-0 flex-1">
+                  <ScoreBadge score={activeProperty.score} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="font-extrabold text-xs sm:text-sm text-[#001E2B] truncate leading-snug">
+                        {activeProperty.name}
+                      </h4>
+                      <StatusBadge status={activeProperty.status} />
+                      <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-[#001E2B] text-[#00ED64]">
+                        Aktif di Workspace
+                      </span>
+                    </div>
+                    <p className="text-[11px] sm:text-xs text-[#5C6C7A] truncate mt-1 flex items-center gap-1">
+                      <MapPin size={11} className="text-[#00684A] shrink-0" />
+                      <span>
+                        {activeProperty.subdistrict}, {activeProperty.city}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                  <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#001E2B] text-[#00ED64] flex items-center gap-1.5">
+                    <span>Sedang Dibuka</span>
+                    <ArrowRight size={13} />
+                  </span>
                 </div>
               </div>
-              <StatusBadge status={activeProperty.status} />
-            </div>
+            )}
           </div>
 
           {/* Section 2: PROPERTI TERSIMPAN */}
-          {savedProperties.length > 0 && (
-            <div>
-              <h3 className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-                PROPERTI TERSIMPAN
-              </h3>
-              <div className="flex flex-col gap-2 sm:gap-2.5">
+          <div>
+            <h3 className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+              PROPERTI TERSIMPAN ({savedProperties.length})
+            </h3>
+            {savedProperties.length > 0 ? (
+              <div className="flex flex-col gap-2.5">
                 {savedProperties.map((prop) => (
-                  <button
+                  <div
                     key={prop.id}
-                    type="button"
-                    onClick={() => handleSelect(prop.id)}
-                    className="w-full text-left p-3.5 sm:p-4 rounded-2xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/80 transition-all duration-150 ease-out-decel active:scale-[0.98] flex items-center justify-between gap-3 cursor-pointer group min-h-[52px]"
+                    className="p-3.5 sm:p-4 rounded-[22px] border border-[#E5E5EA] bg-white hover:border-[#CBD5E1] hover:bg-slate-50/70 transition-all duration-150 flex flex-col sm:flex-row sm:items-center justify-between gap-3 group"
                   >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <RadioButton selected={false} />
+                    <div className="flex items-start gap-3 min-w-0 flex-1">
+                      <ScoreBadge score={prop.score} />
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-[#0F2B38] truncate leading-snug">
-                          {prop.name}
-                        </h4>
-                        <p className="text-[11px] sm:text-xs text-slate-500 truncate mt-0.5">
-                          {prop.subdistrict}, {prop.city}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="font-extrabold text-xs sm:text-sm text-[#001E2B] group-hover:text-[#00684A] truncate leading-snug">
+                            {prop.name}
+                          </h4>
+                          <StatusBadge status={prop.status} />
+                        </div>
+                        <p className="text-[11px] sm:text-xs text-[#5C6C7A] truncate mt-1 flex items-center gap-1">
+                          <MapPin size={11} className="text-[#00684A] shrink-0" />
+                          <span>
+                            {prop.subdistrict}, {prop.city}
+                          </span>
                         </p>
                       </div>
                     </div>
-                    <StatusBadge status={prop.status} />
-                  </button>
+
+                    <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                      <button
+                        type="button"
+                        onClick={() => handleSelect(prop.id)}
+                        className="min-h-[36px] px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 hover:bg-[#001E2B] hover:text-[#00ED64] text-[#001E2B] flex items-center gap-1.5 transition-all cursor-pointer active:scale-95"
+                      >
+                        <span>Buka di Workspace</span>
+                        <ArrowRight size={13} />
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              /* Scenario 1: Encouraging empty callout when user only has 1 property */
+              <div className="p-4 rounded-2xl border border-dashed border-emerald-300 bg-emerald-50/60 flex flex-col gap-2.5 animate-in fade-in duration-150">
+                <div className="flex items-center gap-2 text-emerald-900 font-bold text-xs sm:text-sm">
+                  <Sparkles size={16} className="text-emerald-600 shrink-0" />
+                  <span>Kamu punya {remainingQuota} kuota audit lokasi gratis tersisa</span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-emerald-800 leading-relaxed">
+                  Tambahkan kandidat properti berikutnya untuk membandingkan skor risiko BNPB, elevasi banjir, dan estimasi waktu komut secara berdampingan.
+                </p>
+              </div>
+            )}
+          </div>
 
           {/* Section 3: Add New Property Form / CTA */}
           {isAdding ? (
@@ -229,7 +279,7 @@ export default function PropertyModal({
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="cth. Cluster Villa Serpong"
                   required
-                  className="w-full px-3.5 py-2.5 text-base sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0F2B38]"
+                  className="w-full px-3.5 py-2.5 text-base sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#001E2B]"
                 />
               </div>
               <div>
@@ -241,7 +291,7 @@ export default function PropertyModal({
                   value={newLocation}
                   onChange={(e) => setNewLocation(e.target.value)}
                   placeholder="cth. Tangerang Selatan"
-                  className="w-full px-3.5 py-2.5 text-base sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0F2B38]"
+                  className="w-full px-3.5 py-2.5 text-base sm:text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#001E2B]"
                 />
               </div>
               <div className="flex items-center justify-end gap-2 mt-2">
@@ -259,7 +309,21 @@ export default function PropertyModal({
               </div>
             </form>
           ) : (
-            <div className="pt-1 pb-2 sm:pb-0">
+            <div className="flex flex-col gap-2 pt-1 pb-2 sm:pb-0">
+              {onOpenCuratedAreas && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose()
+                    onOpenCuratedAreas()
+                  }}
+                  className="w-full py-3 px-4 rounded-2xl border border-emerald-500/30 bg-emerald-50 hover:bg-emerald-100/80 text-emerald-900 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.98] min-h-[44px]"
+                >
+                  <Map size={16} className="text-emerald-700 shrink-0" aria-hidden="true" />
+                  <span>Jelajahi Peta 8 Wilayah Jabodetabek</span>
+                </button>
+              )}
+
               {remainingQuota > 0 ? (
                 <button
                   type="button"
@@ -267,15 +331,12 @@ export default function PropertyModal({
                   className="w-full py-3.5 px-4 rounded-2xl border-2 border-dashed border-slate-300 hover:border-slate-400 hover:bg-slate-50/80 text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.98] min-h-[48px]"
                 >
                   <Plus size={18} className="text-slate-500" />
-                  <span>Tambah Properti Baru</span>
+                  <span>Tambah Properti Manual</span>
                 </button>
               ) : (
                 <button
                   type="button"
-                  onClick={() => {
-                    onClose()
-                    onOpenUpgrade()
-                  }}
+                  onClick={handleZeroQuotaPaywall}
                   className="w-full py-3.5 px-4 rounded-2xl border border-amber-300 bg-amber-50/80 hover:bg-amber-100 text-amber-900 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.98] min-h-[48px]"
                 >
                   <Lock size={16} className="text-amber-700 shrink-0" />

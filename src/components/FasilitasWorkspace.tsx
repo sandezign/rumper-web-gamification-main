@@ -30,6 +30,11 @@ interface FacilityCategory {
 interface FasilitasWorkspaceProps {
   visible: Record<FacilityCategoryKey, boolean>
   onToggle: (key: FacilityCategoryKey) => void
+  onOpenAssistant?: (
+    category: "fasilitas",
+    score?: number,
+    summary?: string
+  ) => void
 }
 
 // ── Category icon SVGs ────────────────────────────────────────────────────────
@@ -390,6 +395,7 @@ function CategoryRow({
 export default function FasilitasWorkspace({
   visible,
   onToggle,
+  onOpenAssistant,
 }: FasilitasWorkspaceProps) {
   const [expanded, setExpanded] =
     useState<Record<FacilityCategoryKey, boolean>>({
@@ -407,22 +413,40 @@ export default function FasilitasWorkspace({
   return (
     <Card variant="default" padding="lg" className="flex flex-col gap-4 w-full">
       {/* Section header */}
-      <SectionHeader
-        stepNumber={5}
-        stepLabel="TAHAP"
-        icon={<MapPin size={12} className="text-emerald-400" />}
-        title="Fasilitas Terdekat & POI"
-        subtitle="Fasilitas harian dalam radius ±3 km · nyalakan sakelar untuk cek persebaran di peta"
-        action={
-          <Badge
-            variant={totalVisible > 0 ? "info" : "neutral"}
-            size="md"
-            className="tabular-nums"
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <SectionHeader
+          stepNumber={5}
+          stepLabel="TAHAP"
+          icon={<MapPin size={12} className="text-emerald-400" />}
+          title="Fasilitas Terdekat & POI"
+          subtitle="Fasilitas harian dalam radius ±3 km · nyalakan sakelar untuk cek persebaran di peta"
+          action={
+            <Badge
+              variant={totalVisible > 0 ? "info" : "neutral"}
+              size="md"
+              className="tabular-nums"
+            >
+              {totalVisible} layer aktif
+            </Badge>
+          }
+        />
+        {onOpenAssistant && (
+          <button
+            type="button"
+            onClick={() =>
+              onOpenAssistant(
+                "fasilitas",
+                undefined,
+                "Analisis sebaran fasilitas sekolah, rumah sakit, dan kebutuhan harian"
+              )
+            }
+            className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors shadow-2xs"
           >
-            {totalVisible} layer aktif
-          </Badge>
-        }
-      />
+            <span className="size-1.5 rounded-full bg-[#00A65A] animate-pulse" />
+            Tanya AI Fasilitas
+          </button>
+        )}
+      </div>
 
       {/* Category card */}
       <Card

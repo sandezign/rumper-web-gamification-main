@@ -32,39 +32,48 @@ export default function AreaComparisonModal({
   if (!isOpen || areas.length === 0) return null
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 bg-[#001E2B]/75 backdrop-blur-md animate-fadeIn select-none">
+    <div
+      className="fixed inset-0 z-[9999] flex flex-col justify-end md:justify-center md:items-center p-0 md:p-8 bg-[#001E2B]/75 backdrop-blur-md animate-fadeIn select-none"
+      onClick={onClose}
+    >
       <div
-        className="relative w-full max-w-5xl max-h-[90vh] bg-white rounded-3xl border border-[#E1E5E8] shadow-2xl flex flex-col overflow-hidden text-[#001E2B] animate-scaleUp"
+        className="relative w-full max-w-5xl max-h-[92dvh] md:max-h-[90vh] bg-white rounded-t-[28px] md:rounded-3xl border-t md:border border-[#E1E5E8] shadow-2xl flex flex-col overflow-hidden text-[#001E2B] animate-slideUp md:animate-scaleUp"
+        onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
       >
         {/* Modal Top Header */}
-        <div className="p-6 bg-[#001E2B] text-white flex items-center justify-between border-b border-white/10 shrink-0 relative overflow-hidden">
+        <div className="p-5 pt-3 md:p-6 bg-[#001E2B] text-white flex flex-col relative overflow-hidden border-b border-white/10 shrink-0">
+          {/* Mobile Bottom Sheet Grab Handle */}
+          <div className="w-12 h-1.5 bg-white/30 rounded-full mx-auto mb-3 shrink-0 md:hidden" />
+
           {/* Subtle glow */}
           <div className="absolute top-0 right-0 w-48 h-48 bg-[#00ED64]/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="space-y-1 relative z-10">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#00ED64]/20 text-[#00ED64] border border-[#00ED64]/30">
-                Matriks Perbandingan
-              </span>
-              <span className="text-xs text-[#A8B3BC] font-semibold">
-                {areas.length} Area Terpilih
-              </span>
+          <div className="flex items-center justify-between relative z-10">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#00ED64]/20 text-[#00ED64] border border-[#00ED64]/30">
+                  Matriks Perbandingan
+                </span>
+                <span className="text-xs text-[#A8B3BC] font-semibold">
+                  {areas.length} Area Terpilih
+                </span>
+              </div>
+              <h2 className="text-lg md:text-xl font-black text-white tracking-tight">
+                Perbandingan Side-by-Side Area
+              </h2>
             </div>
-            <h2 className="text-xl font-black text-white tracking-tight">
-              Perbandingan Side-by-Side Koridor
-            </h2>
-          </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer relative z-10"
-            aria-label="Tutup"
-          >
-            <X size={18} />
-          </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer relative z-10 shrink-0"
+              aria-label="Tutup"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Scrollable Matrix Table Content */}
@@ -89,7 +98,17 @@ export default function AreaComparisonModal({
                       key={area.id}
                       className="p-4 font-black text-[#001E2B] min-w-[240px]"
                     >
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
+                        {area.imageUrl && (
+                          <div className="relative w-full h-24 rounded-xl overflow-hidden shadow-2xs border border-[#E1E5E8] bg-[#001E2B]">
+                            <img
+                              src={area.imageUrl}
+                              alt={area.name}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                          </div>
+                        )}
                         <span
                           className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full border inline-flex items-center gap-1 ${
                             isStrongFit
@@ -184,7 +203,7 @@ export default function AreaComparisonModal({
                 <td className="p-4 pl-0 font-extrabold text-[#004F38] bg-[#E9F5EF]/40">
                   <div className="flex items-center gap-2">
                     <Sparkles size={15} className="text-[#00684A]" />
-                    <span>Mengapa Selaras</span>
+                    <span>Kelebihan</span>
                   </div>
                 </td>
                 {areas.map((area) => (
@@ -202,7 +221,7 @@ export default function AreaComparisonModal({
                 <td className="p-4 pl-0 font-extrabold text-[#6E4E00] bg-[#FFF9E6]/40">
                   <div className="flex items-center gap-2">
                     <Scale size={15} className="text-[#B37400]" />
-                    <span>Kompromi Nyata</span>
+                    <span>Pertimbangan</span>
                   </div>
                 </td>
                 {areas.map((area) => (
@@ -267,16 +286,16 @@ export default function AreaComparisonModal({
         </div>
 
         {/* Modal Bottom Actions */}
-        <div className="p-5 bg-[#F9FBFA] border-t border-[#E1E5E8] flex items-center justify-between gap-4 shrink-0">
+        <div className="p-4 sm:p-5 bg-[#F9FBFA] border-t border-[#E1E5E8] flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 shrink-0 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:pb-5">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 rounded-full border border-[#D7E1E5] text-xs font-bold text-[#5C6C7A] hover:bg-white hover:text-[#001E2B] transition-all cursor-pointer"
+            className="min-h-[44px] sm:min-h-[38px] px-5 py-2 rounded-full border border-[#D7E1E5] text-xs font-bold text-[#5C6C7A] hover:bg-white hover:text-[#001E2B] transition-all cursor-pointer flex items-center justify-center"
           >
             Tutup Perbandingan
           </button>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-end gap-3">
             <span className="text-xs text-[#5C6C7A] font-semibold hidden sm:inline">
               Pilih satu area untuk dievaluasi dengan kuota
             </span>
@@ -284,7 +303,7 @@ export default function AreaComparisonModal({
               <button
                 type="button"
                 onClick={() => onSelectArea(areas[0])}
-                className="px-5 py-2.5 rounded-full bg-[#00ED64] hover:bg-[#00B545] text-[#001E2B] font-extrabold text-xs flex items-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer"
+                className="w-full sm:w-auto min-h-[44px] sm:min-h-[38px] px-5 py-2.5 rounded-full bg-[#00ED64] hover:bg-[#00B545] text-[#001E2B] font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm transition-all active:scale-95 cursor-pointer"
               >
                 <span>Evaluasi {areas[0].name.split("&")[0]}</span>
                 <ArrowRight size={14} />

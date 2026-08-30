@@ -156,7 +156,7 @@ Do **not** add a sixth due-diligence tab. Priority discovery belongs upstream in
 | `ResponsiveWizardShell` | Replace the promotional/validation sequence with scenario decisions, priority explanation, confirmation, and existing practical constraints | Produces confirmed `BuyerPriorityProfile` |
 | `useWizardStore` | Lift state to app-level store; add persistence, schema version, timestamps, reset/edit actions | Owns draft and confirmed profile |
 | `AppHeader` | Rename `Setup Gravitasi` to `Prioritas Saya`; show incomplete/confirmed state | Opens profile discovery or edit flow |
-| New `AreaRecommendationsWorkspace` | Display area cards with fit reasons, tradeoffs, and unknowns | Consumes profile plus area evidence |
+| `CuratedAreasMapScreen` / `AreaRecommendationsWorkspace` | Display area cards with fit reasons, tradeoffs, and unknowns; provide direct re-calibration touchpoints (header 'Ubah Prioritas' and interactive anchor pin) without quota penalty | Consumes profile plus area evidence; triggers re-calibration |
 | `ScoreCard` | Add `Yang cocok untuk Anda`, `Tradeoff utama`, and `Belum diketahui`; retain absolute risk verdict | Consumes property evaluation plus profile |
 | `FactorRisksCard` | Reorder non-critical factors by personal relevance; explain why a factor is emphasized | Consumes profile weights and dealbreakers |
 | `DeepDiveEvidenceWorkspace` | Highlight evidence linked to personal dealbreakers and preserve evidence confidence | Consumes profile and evidence records |
@@ -310,6 +310,42 @@ Each option must define:
 - neutral “it depends” or “I need more information” handling.
 
 Scenario mappings require product and UX approval and must be version-controlled. They must not be generated dynamically by the assistant in the first release.
+
+---
+
+## 10.1 UI/UX Interaction & Design Engineering Specifications
+
+To ensure the discovery wizard delivers exceptional perceived craft, intuitive mobile ergonomics, and strict accessibility, the following design engineering standards are mandatory:
+
+### A. Stage 1 Friction Discovery & Cognitive Chunking
+- **Thematic Chunking ($\le 4$ Rule):** To prevent cognitive entry fatigue, friction choices must be grouped into **3 core thematic categories** plus an expandable trigger:
+  1. 🚆 **Akses & Komuter:** *Klaim komut brosur vs jalan macet riil*.
+  2. 🌊 **Banjir & Lingkungan:** *Genangan air, elevasi tanah, & IPL pompa*.
+  3. 💰 **Budget & Legalitas:** *Takut boncos cicilan KPR & biaya tak terduga*.
+  4. ➕ **Pertimbangan Lainnya:** *Kekhawatiran spesifik lainnya*.
+- **Tactile Interaction:** Option cards must feature subtle tactile press states (`active:scale-[0.98] transition-transform duration-150`) with instant checkmark badge feedback.
+
+### B. Mobile Swipe Deck Interaction & Physics Guardrails
+- **Scroll & Gesture Collision Prevention:** Deprecate the vertical swipe-down decision trigger (`onSelectChoice("neither")`). Vertical drag gestures must yield to native document scrolling.
+- **Horizontal Axis Lock:** Card swipe physics must activate only when displacement is predominantly horizontal ($|\Delta X| > |\Delta Y| \times 1.5$ and $|\Delta X| > 10\text{px}$).
+- **Accessible Moderate Choice:** The "Moderat" compromise choice must be selectable with $100\%$ clarity via the sticky bottom thumb button bar.
+- **Micro-Physics:** Card rotation is clamped between $[-14^\circ, +14^\circ]$ with stamp opacity proportional to horizontal delta ($|\Delta X| / 60$).
+
+### C. Step 3 Budget Range & Dynamic KPR Financial Telemetry
+- **Cashflow Translation Telemetry:** Supplement total property price with an inline estimated monthly KPR installment telemetry badge:
+  $$\text{Cicilan/bln} \approx \frac{\text{Harga Properti} \times 0.90 \times (1 + 0.07 \times 20)}{20 \times 12}$$
+  Example output: `Est. Cicilan KPR: ~Rp 5.8 Jt – 8.7 Jt/bln (Asumsi DP 10%, 20 Thn)`.
+- **Layout Stability:** All monetary numbers and duration values must use `tabular-nums font-mono` to eliminate horizontal text jitter when dragging range sliders.
+- **Screen Reader Accessibility (WCAG 2.2 AA):** Range sliders must provide `aria-label`, `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and formatted `aria-valuetext` (e.g. `"Rp 800 Juta"`).
+
+### D. Step 1 Household & Work Progressive Disclosure
+- **Sequential Auto-Focus:** Selecting an option in Section A (Tipe Rumah Tangga) triggers a smooth auto-scroll/focus transition to Section B (Pola Kerja) to guide the dual-decision screen without cognitive overload.
+
+### E. Design System & Typography Tokens
+- **Type Ramp Normalization:** Micro-badges and telemetry tags must use `text-[10px]` (`text-xs font-bold leading-none`), complying with Rumper's `DESIGN.md` type ramp.
+- **Touch Target Minimum:** All interactive buttons and preset pills must maintain $\ge 44\times 44\text{px}$ minimum hit areas.
+- **Text Wrapping:** Headings use `text-wrap: balance` to prevent awkward lines; body copy uses `text-wrap: pretty` to eliminate orphan words.
+- **Transition Specificity:** Replace generic `transition-all` with explicit CSS transition properties (`transition-[transform,opacity,border-color,background-color]`).
 
 ---
 

@@ -44,6 +44,9 @@ export default function ShortlistAreasView({
   const tradeoffCount = shortlistedAreas.filter(
     (a) => a.category === "interesting-tradeoff",
   ).length
+  const challengeCount = shortlistedAreas.filter(
+    (a) => a.category === "challenge-assumptions",
+  ).length
 
   if (shortlistedAreas.length === 0) {
     return (
@@ -56,8 +59,8 @@ export default function ShortlistAreasView({
             Daftar Pilihanmu Masih Kosong
           </h3>
           <p className="text-xs text-[#5C6C7A] leading-relaxed">
-            Simpan koridor incaranmu dari peta atau daftar kartu dengan klik
-            ikon bookmark biar gampang bandingin trade-off nyatanya.
+            Simpan area incaranmu dari peta atau daftar kartu dengan klik ikon
+            bookmark biar gampang bandingin kelebihan dan pertimbangannya.
           </p>
         </div>
         <button
@@ -65,7 +68,7 @@ export default function ShortlistAreasView({
           onClick={onBackToMap}
           className="px-6 py-2.5 rounded-full bg-[#001E2B] text-white text-xs font-bold hover:bg-[#003D4F] transition-all shadow-sm cursor-pointer"
         >
-          Eksplorasi Peta 8 Koridor
+          Eksplorasi Peta 8 Area
         </button>
       </div>
     )
@@ -79,16 +82,25 @@ export default function ShortlistAreasView({
           <h2 className="text-xl font-black text-[#001E2B] tracking-tight">
             Daftar Area Pilihanmu (Shortlist)
           </h2>
-          <div className="flex items-center gap-2 text-xs font-bold bg-[#F4F7F8] px-3.5 py-1.5 rounded-full border border-[#E1E5E8]">
+          <div className="flex items-center gap-2 text-xs font-bold bg-[#F4F7F8] px-3.5 py-1.5 rounded-full border border-[#E1E5E8] flex-wrap">
             <span className="text-[#00684A] flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#00B545]" />
-              {strongFitCount} Kesesuaian Kuat
+              {strongFitCount} Paling Sesuai
             </span>
             <span className="text-[#A8B3BC]">•</span>
             <span className="text-[#B37400] flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#D4A017]" />
-              {tradeoffCount} Kompromi Menarik
+              {tradeoffCount} Moderate
             </span>
+            {challengeCount > 0 && (
+              <>
+                <span className="text-[#A8B3BC]">•</span>
+                <span className="text-[#B3261E] flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-[#D9383A]" />
+                  {challengeCount} Alternatif
+                </span>
+              </>
+            )}
           </div>
         </div>
         <p className="text-xs text-[#5C6C7A] leading-relaxed">
@@ -172,6 +184,21 @@ export default function ShortlistAreasView({
                 </div>
               </div>
 
+              {/* Area Visual Photo Banner */}
+              {area.imageUrl && (
+                <div className="relative w-full h-36 sm:h-40 rounded-2xl overflow-hidden shadow-2xs border border-[#E1E5E8] bg-[#001E2B]">
+                  <img
+                    src={area.imageUrl}
+                    alt={area.name}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute bottom-2.5 left-3 text-white text-xs font-semibold flex items-center gap-1">
+                    <MapPin size={11} className="text-emerald-400 shrink-0" aria-hidden="true" />
+                    <span>{area.region}</span>
+                  </div>
+                </div>
+              )}
+
               {/* Title & Narrative */}
               <div>
                 <h3 className="text-lg md:text-xl font-black text-[#001E2B] tracking-tight">
@@ -217,7 +244,7 @@ export default function ShortlistAreasView({
               <div className="p-3.5 rounded-2xl bg-[#FFF9E6] border border-[#D4A017]/30 text-xs">
                 <div className="flex items-center gap-1.5 font-bold text-[#6E4E00] mb-0.5">
                   <Scale size={13} className="text-[#B37400]" />
-                  <span>Kompromi Nyata:</span>
+                  <span>Pertimbangan:</span>
                 </div>
                 <p className="text-[#523A00] font-medium leading-relaxed pl-4">
                   {area.tradeoffReason}
@@ -231,7 +258,7 @@ export default function ShortlistAreasView({
                   onClick={() => onOpenDrawer(area)}
                   className="px-4 py-2.5 rounded-full border border-[#D7E1E5] text-xs font-bold text-[#5C6C7A] hover:text-[#001E2B] hover:bg-[#F4F7F6] transition-all cursor-pointer"
                 >
-                  Detail Koridor
+                  Detail Area
                 </button>
 
                 <button

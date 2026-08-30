@@ -29,8 +29,8 @@ const PARAMETER_STEPS = [
   },
   {
     step: 2,
-    title: "Titik Aktivitas Rutin",
-    subtitle: "Lokasi kantor & mobilitas",
+    title: "Lokasi Kantor & Rute",
+    subtitle: "Pusat kerja & mobilitas",
     icon: MapPin,
   },
   {
@@ -41,7 +41,7 @@ const PARAMETER_STEPS = [
   },
   {
     step: 4,
-    title: "Koridor Wilayah Incaran",
+    title: "Wilayah Incaran",
     subtitle: "Area fokus & ringkasan",
     icon: Compass,
   },
@@ -80,7 +80,7 @@ export default function DesktopSidebar({
           {flowStage === 1 && (
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#003D4F] text-[#00ED64] border border-[#003D4F]">
               <Clock size={14} className="shrink-0 text-[#00ED64]" />
-              <span>⚡ Setup Cepat (~90 dtk)</span>
+              <span>Setup Cepat (~90 dtk)</span>
             </div>
           )}
           {flowStage === 2 && (
@@ -116,7 +116,7 @@ export default function DesktopSidebar({
             {isPhase2Active &&
               "Bandingkan 3 situasi nyata buat nentuin apa yang paling penting buat kamu."}
             {isPhase3Active &&
-              "Isi anggaran, titik gravitasi rutin, dan koridor hunian incaranmu."}
+              "Isi anggaran, titik gravitasi rutin, dan wilayah hunian incaranmu."}
           </p>
         </div>
 

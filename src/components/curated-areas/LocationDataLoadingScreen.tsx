@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import {
   Sparkles,
   ArrowRight,
@@ -34,7 +34,7 @@ const SCANNING_STEPS = [
   {
     progressThreshold: 100,
     title:
-      "Ngeracik rekomendasi koridor Jabodetabek biar kamu gak beli kucing dalam karung",
+      "Ngeracik rekomendasi wilayah Jabodetabek biar kamu gak beli kucing dalam karung",
     source: "Rumper Evidence Engine",
     icon: Sparkles,
   },
@@ -45,23 +45,41 @@ export default function LocationDataLoadingScreen({
   userFriction,
 }: LocationDataLoadingScreenProps) {
   const [progress, setProgress] = useState(0)
+  const onCompleteRef = useRef(onComplete)
+  onCompleteRef.current = onComplete
+  const completedRef = useRef(false)
 
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval)
-          setTimeout(onComplete, 400)
+          if (!completedRef.current) {
+            completedRef.current = true
+            setTimeout(() => {
+              onCompleteRef.current()
+            }, 300)
+          }
           return 100
         }
         // Smooth non-linear increment
-        const increment = prev < 30 ? 4 : prev < 70 ? 3 : 5
-        return Math.min(100, prev + increment)
+        const increment = prev < 30 ? 5 : prev < 70 ? 4 : 6
+        const next = Math.min(100, prev + increment)
+        if (next >= 100) {
+          clearInterval(interval)
+          if (!completedRef.current) {
+            completedRef.current = true
+            setTimeout(() => {
+              onCompleteRef.current()
+            }, 300)
+          }
+        }
+        return next
       })
-    }, 85)
+    }, 70)
 
     return () => clearInterval(interval)
-  }, [onComplete])
+  }, [])
 
   // Determine current active step
   const currentStep =
@@ -148,7 +166,7 @@ export default function LocationDataLoadingScreen({
 
       {/* Bottom Action Footer */}
       <div className="relative z-10 w-full max-w-md flex items-center justify-between pt-4 border-t border-[#003D4F]/50 text-xs text-[#7C8C9A]">
-        <span>Memverifikasi Koridor Wilayah Jabodetabek</span>
+        <span>Memverifikasi Rekomendasi Wilayah Jabodetabek</span>
         <button
           type="button"
           onClick={onComplete}

@@ -28,29 +28,42 @@ Home buyers, renters, and seekers reviewing properties on mobile or desktop, eva
 
 ## Capabilities and Constraints
 
-- Interactive Leaflet map panel with facility filters (kesehatan, pendidikan, belanja, stasiun).
-- Step-by-step workspace (Ringkasan, Faktor Risiko, Perjalanan, Checklist, Fasilitas).
-- Tiered feature access with Upgrade Teasers & Drawers for premium unlocked insights.
-- AI Assistant drawer for deep-dive location questions.
-- Bilingual / Indonesian primary interface text.
+- **Buyer Priority Discovery & Onboarding:**
+  - 3-stage cognitive friction discovery (Akses & Komuter, Banjir & Lingkungan, Budget & Legalitas) to avoid entry cognitive overload.
+  - Scenario-led trade-off calibration engine simulating realistic Jabodetabek housing dilemmas (flood elevations, KRL commute frictions, cluster access).
+  - Mobile gesture safety: horizontal swipe physics locked exclusively to the X-axis ($|\Delta X| > |\Delta Y| \times 1.5$) to prevent vertical page scroll collisions.
+  - Dynamic financial telemetry in budget selection displaying estimated monthly KPR cashflow ranges alongside total property price.
+  - Progressive disclosure with auto-focus transitions across multi-question steps.
+- **Interactive Spatial Telemetry & Workspaces:**
+  - Interactive Leaflet map panel with facility filters (kesehatan, pendidikan, belanja, stasiun).
+  - 5-step property verification workspace (Ringkasan, Faktor Risiko, Perjalanan, Checklist, Fasilitas).
+  - Curated areas map and shortlist with suitability clustering.
+  - Tiered feature access with Upgrade Teasers & Drawers for premium unlocked insights.
+  - AI Assistant drawer for deep-dive location questions.
+  - Bilingual / Indonesian primary interface text.
 
 ## Brand Commitments
 
 - Product Name: Rumper
-- Clean, modern, accessible interface with emerald/slate accent highlights.
-- Clear, gamified scoring and visual risk telemetry.
+- Clean, modern, accessible interface with emerald/slate accent highlights and electric mint telemetry anchors.
+- Clear, gamified scoring and visual risk telemetry with empathetic, relatable Indonesian copy.
 
 ## Evidence on Hand
 
 - Runnable React + Vite application with Leaflet map integration (`src/App.tsx`, `src/components/*`).
+- Documented product requirements in `docs/prd/*` and design system in `DESIGN.md`.
 
 ## Product Principles
 
-1. **Clarity First**: Transform complex spatial and risk data into intuitive, actionable scores and visual indicators.
-2. **Progressive Disclosure**: Guide users through logical step-by-step evaluation flows without cognitive overload.
-3. **Interactive Telemetry**: Pair list-based workspace insights directly with map visualization.
-4. **Trust & Precision**: Provide transparent risk factor explanations and customizable verification checklists.
+1. **Clarity First**: Transform complex spatial, environmental, and financial risk data into intuitive, actionable scores and visual indicators.
+2. **Progressive Disclosure**: Guide users through logical step-by-step evaluation flows without cognitive overload ($\le 4$ working memory options per stage).
+3. **Interactive Telemetry**: Pair list-based workspace insights directly with live map visualization and dynamic financial calculations.
+4. **Trust & Precision**: Provide transparent risk factor explanations, explainable recommendations, and customizable verification checklists.
 
 ## Accessibility & Inclusion
 
-Ensure high contrast ratios, responsive mobile & desktop drawer support, readable typography for complex data cards, and keyboard/touch navigation support.
+- Ensure high contrast ratios (WCAG 2.2 AA compliant: $\ge 4.5:1$ for body text, $\ge 3:1$ for UI components).
+- Accessible form controls: explicit `aria-label`, `aria-valuemin`, `aria-valuemax`, `aria-valuenow`, and `aria-valuetext` on custom range sliders.
+- Touch ergonomics: minimum $44\times 44\text{px}$ touch target hit areas across all interactive buttons and preset pills.
+- Dynamic layout stability: tabular numbers (`tabular-nums font-mono`) for numerical scores and monetary estimates to prevent layout shift during state changes.
+- Responsive mobile & desktop drawer support, keyboard navigation focus indicators (`focus-visible:ring-2`), and screen reader status announcements.
